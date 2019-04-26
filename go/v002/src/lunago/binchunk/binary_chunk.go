@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 13:25:00
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-26 18:34:33
+* @Last Modified time: 2019-04-26 19:37:43
 */
 package binchunk
 
@@ -57,6 +57,15 @@ type Prototype struct {
 	LocVars			[]LocVar
 	UpvalueNames	[]string
 }
+
+const (
+	TAG_NIL		= 0x00
+	TAG_BOOLEAN	= 0x01
+	TAG_NUMBER	= 0x03
+	TAG_INTEGER	= 0x13
+	TAG_SHORT_STR	= 0x04
+	TAG_LONG_STR	= 0x14
+)
 
 
 
