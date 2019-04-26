@@ -204,21 +204,23 @@
        chunk中，指令表、常量表、子函数原型表等都是按照列表的形式进行存储的。格式为：先用cint记录列表
        长度，然后是存储n个列表元素。
 
+    package binchunk
+
+    type  binaryChunk struct{
+        header      //头部
+        sizeUpvalues byte    //主函数Upvlue数量
+        mainFunc    *Prototype   //主函数原型
+    }
+
+
+6、header头部
+    chunk的头部包括签名、版本号、格式编号、不同整数类型所占用的字节数、字节序以及浮点数的格式识别信息等。
+    header的go定义如下：
 
 
 
 
 
-       
-
-
-
-
-
-
-
-
-6、
 7、
 8、
 9、
