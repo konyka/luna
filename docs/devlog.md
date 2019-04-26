@@ -217,6 +217,56 @@
     chunk的头部包括签名、版本号、格式编号、不同整数类型所占用的字节数、字节序以及浮点数的格式识别信息等。
     header的go定义如下：
 
+    type header struct{
+        signature   [4]byte
+        version     byte
+        format      byte
+        luacData    [6]byte
+        cintSize    byte
+        sizetSize   byte
+        instructionSize byte
+        luaIntegerSize  byte
+        luaNumberSize   byte
+        luacInt int64
+        luacNum float64
+    }
+    1、签名signature
+        lua的chunk的签名是四个字节：esc、L、u、a的ascii码，即0x 1B 4C 75 61。
+        签名主要用来检测是否是合法的chunk，如果不是就拒绝加载。
+    2、版本号version
+        记录chunk文件生成时所使用的lua版本号。由三部分组成：Major version、Minior 
+        version、Release version。5.3.5表示Major version=5，Minior version=3，
+        Release version=5.
+        chunk中的版本号是根据Major version、Minior version得到的。计算方法为
+        Major version * 16 + Minior version。（5 * 16 + 3 = 80 = 0x53）Release version主要用于bug的修复，并不会对
+        chunk的格式进行调整。虚拟机在加载chunk的时候，会检测版本号version，如果和虚拟机的版本不匹配，
+        就拒绝加载这个chunk文件。
+    3、格式format
+        记录了chunk的格式编号，虚拟机在加载chunk的时候也会检查该格式编号，如果和虚拟机的版本不匹配，
+        就拒绝加载这个chunk。Lua默认使用的format为0x00.
+    4、luacData
+        之后的6个字节称之为LUAC_DATA,前两个字节0x1993，就是在1993年发布的1.0版本，后续的四个字节
+        依次是回车符0x0d、换行符0x0a、替换符0x1a、换行符0x0a。1993 0d0a 1a0a
+        这六个字节同样起到校验的作用，匹配就加载，否则拒绝。 
+    5、整数以及虚拟机指令的宽度
+       后续的五个字节依次记录了cint、size_t、虚拟机的指令、lua整数以及lua浮点数类型在chunk里面占用
+       的字节数。0408 0408 08
+       虚拟机在加载chunk的时候会检测这几个字节，如果不匹配就会拒绝加载。
+    6、luac_int
+        在接下来的若干个字节存储lua的整数0x5678.因为本机lua整数占用8个字节，所以使用8个字节存储0x567878 5600 0000 0000 00。至于为什么要存储这个东西，当然也是有原因的，那就是用来检测二进制chunk
+        的字节序 是大端字节序 还是小端字节序。虚拟机在记载chunk的时候，会使用这个数据来检测它的字节序
+        是否和本机的字节序相匹配，一样就加载，否则拒绝。
+    7、 luac_num
+        最后的若干个字节存储lua浮点数370.5，在这里使用的是8个字节进行存储。（00 0000 0000 2877 40）
+        同样，存储这个浮点数的目的也是为了检查二进制chunk使用的浮点数的格式。虚拟机在加载chunk文件的时
+        候，会使用这个浮点数，检查它的格式是否和本机一致，一致就加载否则就拒绝。一般浮点数的格式为ieee 754浮点格式。
+        
+
+
+
+
+
+
 
 
 
