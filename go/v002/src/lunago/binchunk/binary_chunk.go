@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 13:25:00
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-26 16:59:56
+* @Last Modified time: 2019-04-26 18:34:33
 */
 package binchunk
 
@@ -41,6 +41,22 @@ const (
 	LUAC_NUM			=370.5
 )
 
+
+type Prototype struct {
+	Source		string
+	LineDefined 	uint32
+	LastLineDefined	uint32
+	NumParams		byte
+	IsVararg		byte
+	MaxStackSize	byte
+	Code			[]uint32
+	Constants		[]interface{}
+	Upvalues 		[]Upvalue
+	Protos 			[]*Prototype
+	LineInfo		[]uint32
+	LocVars			[]LocVar
+	UpvalueNames	[]string
+}
 
 
 
