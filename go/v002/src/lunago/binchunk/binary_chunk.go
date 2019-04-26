@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 13:25:00
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-26 19:37:43
+* @Last Modified time: 2019-04-26 23:20:12
 */
 package binchunk
 
@@ -67,6 +67,10 @@ const (
 	TAG_LONG_STR	= 0x14
 )
 
+type Upvalue struct {
+	Instack	byte
+	Idx		byte
+}
 
 
 
