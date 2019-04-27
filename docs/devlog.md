@@ -260,20 +260,333 @@
         最后的若干个字节存储lua浮点数370.5，在这里使用的是8个字节进行存储。（00 0000 0000 2877 40）
         同样，存储这个浮点数的目的也是为了检查二进制chunk使用的浮点数的格式。虚拟机在加载chunk文件的时
         候，会使用这个浮点数，检查它的格式是否和本机一致，一致就加载否则就拒绝。一般浮点数的格式为ieee 754浮点格式。
-        
+
+
+7、函数原型
+    函数原型主要包括函数的基本信息、指令表、常量表、upvalue表、子函数原型表以及调试信息；
+    基本信息又包括源文件名、起止行号、固定的参数个数、是否是vararg参数、以及运行函数所必须的寄存器数量
+    调试信息包括行号表、局部变量表以及upvalue名称列表
+
+
+    type Prototype struct {
+        Source      string
+        LineDefined     uint32
+        LastLineDefined uint32
+        NumParams       byte
+        IsVararg        byte
+        MaxStackSize    byte
+        Code            []uint32
+        Constants       []interface{}
+        Upvalues        []Upvalue
+        Protos          []*Prototype
+        LineInfo        []uint32
+        LocVars         []LocVar
+        UpvalueNames    []string
+    }
+
+    1、源文件名Source
+        用来记载chunk是什么源文件编译出来的。为了避免重名，只有在main函数里，这个字段才会有真正的值。
+        在其他嵌套的函数原型中，该字段为空字符串。如果使用了-s选项进行编译的话，源文件名以及调试信息
+        会被从chunk中略去。
+
+         $hexdump -C luac.out 
+
+        00000000  1b 4c 75 61 53 00 19 93  0d 0a 1a 0a 04 08 04 08  |.LuaS...........|
+        00000010  08 78 56 00 00 00 00 00  00 00 00 00 00 00 28 77  |.xV...........(w|
+        00000020  40 01 10 40 68 65 6c 6c  6f 77 6f 72 6c 64 2e 6c  |@..@helloworld.l|
+        00000030  75 61 00 00 00 00 00 00  00 00 00 01 02 04 00 00  |ua..............|
+        00000040  00 06 00 40 00 41 40 00  00 24 40 00 01 26 00 80  |...@.A@..$@..&..|
+        00000050  00 02 00 00 00 04 06 70  72 69 6e 74 04 15 68 65  |.......print..he|
+        00000060  6c 6c 6f 20 77 6f 72 6c  64 ef bc 81 ef bc 81 ef  |llo world.......|
+        00000070  bc 81 01 00 00 00 01 00  00 00 00 00 04 00 00 00  |................|
+        00000080  06 00 00 00 06 00 00 00  06 00 00 00 06 00 00 00  |................|
+        00000090  00 00 00 00 01 00 00 00  05 5f 45 4e 56           |........._ENV|
+
+
+        10 40 68 65 6c 6c  6f 77 6f 72 6c 64 2e 6c 75 61
+
+        因为字符串长度小于253，因此使用的是短字符串形式进行存储。字符串长度+1 占用一个字节（0x10），
+        也就是十进制的16，在-1，字符串的长度为15。长度之后是@helloworld.lua，正好占用15个字节。
+        @表示chunk是从源文件编译得到的，如果是以=开头，则表示其他的意义。比如“=stdin”，说明这个chunk
+        是从标准输入编译而来，如果没有=，则表示chunk是从程序提供的字符串编译而来。去掉这个@符号后，
+        才是实际的源文件名称。
+
+    2、 起止行号LineDefined LastLineDefined
+        源文件名后的两个cin整数，就是原型对应的函数在源文件中的起止行号。如果是普通的函数，起止行号应该
+        都>0, 如果是main函数，则它们都为0.
+
+    3、固定参数个数 NumParams
+        起止行号之后的一个字节纪录了函数的固定参数的数量。这里所说的固定参数，是相对于变长参数Vararg而言
+        的。编译器生成的main函数没有固定参数，因为该位置为0.
+
+    4、是否是Vararg参数
+        接下来的一个字节用来记录函数是否为Vararg参数，也就是说是否是变长参数，1表示是，0表示不是。
+        main函数是Vararg函数，因此其值为1.
+
+    5、寄存器数量
+        下一个字节表示的是寄存器数量。Lua编译器会为每个函数生成一个指令表，也就是我们说的字节码。由于Lua
+        虚拟机是基于寄存器的，因此大部分的指令也都会涉及到虚拟寄存器的操作。Lua编译器会在编译函数的时候
+        ，将这个数量计算出来，并按照字节类型保存在函数的原型中。
+
+        这个字段也称之为MaxStackSize。因为在Lua虚拟机运行函数的时候，实际使用的是一种栈结构，这种结构，除了可以进行常规的push 、pop操作之外，还可以按照索引进行访问，可以用来模拟cpu的寄存器。
+    
+    6、指令表
+        之后就是指令表。在这个hello world中，main函数有 4 条指令，每个指令占用 4 个字节。
+
+    7、常量表
+        之后就是常量表，用于存储代码中出现的字面量，包括nil、布尔值、整数、浮点数以及字符串。
+        每个常量都以1 个字节的tag 开始，用于标示后续存放的是那种类型的常量。
+
+        tag     lua字面量类型    存储类型    
+        0x00    nil             不存储
+        0x01    boolean         字节（0、1）
+        0x03    number          Lua浮点数
+        0x13    integer         Lua整数
+        0x04    string          短字符串
+        0x14    string          长字符串
+
+        定义tag常量
+
+        const (
+            TAG_NIL     = 0x00
+            TAG_BOOLEAN = 0x01
+            TAG_NUMBER  = 0x03
+            TAG_INTEGER = 0x13
+            TAG_SHORT_STR   = 0x04
+            TAG_LONG_STR    = 0x14
+        )
+
+    8、Upvalue表
+        之后就是Upvalue表。每个元素占用两个字节。
+
+        定义Upvalue结构体：
+
+        type Upvalue struct {
+            Instack byte
+            Idx     byte
+        }
+
+        hello world 中有一个Upvalue：01 00 00 00 01 00
+
+    9、子函数原型列表
+        之后就是子函数原型列表。因为hello world中没有定义函数，因此该列表长度为0，占用四个4字节。
+    10、行号表
+        之后是行号表，cin类型。行号表中的行号和指令表中的指令是一一对应的关系，分别记录每条指令在
+        源码中对应的行号。hello代码只有4条指令，对应的行号都是1
+    11、局部变量表
+        之后就是局部变量表，用来记录局部变量名。表中的每个项都会包含变量名--使用字符串类型进行存储--
+        以及起止指令的索引--使用cint类型进行存储。
+        定义局部变量的结构体LocVar
+        type LocVar struct {
+            VarName     string
+            StartPC     uint32
+            EndPC       uint32
+        }
+
+        hello world中没有使用局部变量，所以局部变量表的长度为0，占用4个字节。
+    12、Upvalue名称列表
+        函数原型的最后一个部分就是Upvalue名称列表。该列表中的元素--使用字符串类型进行存储--）和
+        之前的Upvalue表中的元素一一对应。分别记录每个Upvalue在源代码中的名称。hello world程序
+        使用了一个Upvalue，名称为“_ENV”。
+        00 00  05 5f 45 4e 56           |........._ENV|
+
+        行号表，局部变量表以及Upvalue名称列表里面存储的都是调试信息，可以使用-s选项清空chunk中的
+        对应字段。
+    
+8、Undump函数
+    用来解析二进制chunk文件的信息：
+
+    func Undump(data []byte) *Prototype {
+        reader := &reader{byte}
+        reader.checkHeader()    //检查头部
+        reader.readByte()       //跳过Upvalue的数量
+        return reader.readProto("") //读取函数原型信息
+    }
+
+9、解析chunk文件
+    用来解析chunk的结构定义为：
+
+    type reader struct {
+        data []byte
+    }
+
+    结构reader只有一个data字段，存放将要被解析的二进制chunk数据。
+
+    1、读取基本的数据类型信息
+        读取基本的数据类型的方法一共有7种。其他的方法通过调用者几个方法来从chunk文件中提取信息。
+
+        readByte方法：从字节流中读取一个字节
+
+        func (self *reader) readByte() byte {
+            b ：= self.data[0]
+            self.data = self[1:]
+            return b 
+        }
+
+        readUint32():使用smallend方式从字节流中读取一个c int类型的整数，在c中占用4个字节，
+        对应go类型的uint32类型。
+
+        func (self *reader) readUint32() uint32 {
+            i := binary.LittleEndian.Uint32(self.data)
+            self.data = self.data[4:]
+            return i
+        }
+
+        readUint64():使用smallend方式从字节流中读取一个c size_t类型的整数，在c中占用8个字节，
+        对应go类型的uint64类型。
+
+        func (self *reader) readUint64() uint64 {
+            i := binary.LittleEndian.Uint64(self.data)
+            self.data = self.data[8:]
+            return i
+        }
+
+
+        readLuaInteger() 利用readUint64()方法从字节流中读取一个Lua整数（占用8个字节，对应go的
+        int64）.
+
+        func (self *reader) readLuaInteger() uint64 {
+            return int64(self.readUint64())
+        }
+
+        readLuaNumber()利用readUint64()方法从字节流中读取一个Lua浮点数（占用8个字节，对应go的
+        float64）.
+
+        func (self *reader) readLuaNumber() float64 {
+            return math.Float64frombits(self.readUint64())
+        }
+
+        readString()从字节流中读取字符串(对应go的string类型)。
+
+        func (self *reader) readString() string {
+            size := uint(self.readByte)     //short or long string
+            if 0 == size {  // null string
+                return ""
+            }
+
+            if 0xFF == size {   //long string
+                size = uint(self.readUint64())
+            }
+
+            bytes := self.readBytes(size - 1)
+            return string(bytes)
+        }
+
+        readBytes()方法从字节流中读取n个字节：
+
+        func (self *reader) readBytes(n uint) []byte {
+            bytes := self.data[:n]
+            self.data = self.data[n:]
+            return bytes
+        }
+
+    2、检查header
+        checkHeader()方法从字节流中读取并检测二进制chunk头的各个字段信息，如果
+        发现某个字段和预期的不一致，就调用panic停止加载chunk。
+
+        func (self *reader) checkHeader() {
+            if string(self.readBytes(4)) != LUA_SIGNATURE {
+                panic("not a precomplied chunk!")
+            } else if self.readByte() != LUAC_VERSION {
+                panic("version mismatch!")
+            } else if self.readByte() != LUAC_FORMAT {
+                panic("format mismatch!")
+            } else if string(self.readBytes(6)) != LUAC_DATA {
+                panic("corrupted")
+            } else if self.readByte() != CINT_SIZE {
+                panic("int size mismatch!")
+            } else if self.readByte() != CSIZET_SIZE {
+                panic("size_t size mismatch!")
+            } else if self.readByte() != INSTRUCTION_SIZE {
+                panic("instruciton size mismatch!")
+            } else if self.readByte() != LUA_INTEGER_SIZE {
+                panic("lua_Integer size mismatch!")
+            } else if self.readByte() != LUA_NUMBER_SIZE {
+                panic("lua_Number size mismatch!")
+            } else if self.readLuaInteger() != LUAC_INT {
+                panic("endianness mismatch!")
+            } else if self.readLuaNumber() != LUAC_NUM {
+                panic("float format mismatch!")
+            }
+        }
+
+
+    3、读取函数原型信息
+        readProto()方法从字节流中读取函数原型信息。
+
+        func (self *reader) readProto(parentSource string) *Prototype {
+    source := self.readString()
+            if "" == source {source = parentSource }
+
+            return &Prototype {
+                Source:         source,
+                LineDefined:    self.readUint32(),
+                LastLineDefined:self.readUint32(),
+                NumParams:      self.readByte(),
+                IsVararg:       self.readByte(),
+                MaxStackSize:   self.readByte(),
+                Code:           self.readCode(),
+                Constants:      self.readConstants(),
+                Upvalues:       self.readUpvalues(),
+                Protos:         self.readProtos(source),
+                LineInfo:       self.readLineInfo(),
+                LocVars:        self.readLocVars(),
+                UpvalueNames:   self.readUpvalueNames(),
+            }
+
+        }
+
+        Lua编译器只给main函数设置了源文件名，用来减少数据的冗余，这样子函数原型就需要从父函数原型
+        那里获取源文件名。
+
+        readCode():从字节流中读取指令列表。
+
+        func (self *reader) readCode() uint32 {
+            code := make( []uint32, self.readUint32() )
+            for i := range code {
+                code[i] = self.readUint32()
+            }
+            return code
+        }
+
+
+        readConstants()：从字节流中读取常量表
+
+        func (self *reader) readConstants() interface{} {
+            constants := make([]interface{}, self.readUint32())
+            for i := range constants {
+                constants[i] = self.readConstant()
+            }
+            return constants
+        }
+
+        readConstant():从字节流总读取一个常量
+
+        func (self *reader) readConstant() interface{} {
+            switch self.readByte() {
+                case TAG_NIL:       return nil
+                case TAG_BOOLEEAN:  return self.readByte() != 0
+                case TAG_INTEGET:   return self.readLuaInteger()
+                case TAG_NUMBER:    return self.readLuaNumber()
+                case TAG_SHORT_STR  return self.readString()
+                case TAG_LONG_STR   return self.readString()
+                default:            panic("corrupted")  
+            }
+        }
 
 
 
 
 
+    4、
+    5、
+    6、
+    7、
+    8、
+    9、
 
 
 
-
-
-7、
-8、
-9、
 10、11、12、13、14、15、16、17、18、19、20、21、22、23、24、25、26、27、28、29、30、
 
 
