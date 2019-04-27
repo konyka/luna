@@ -830,9 +830,23 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         OpArgK        // argument is a constant or register/constant
     )
 
+    指令表
+
+    lua实现把每条指令的基本信息都编码为一个字节，比如编码模式、是否设置寄存器A，操作数BC使用的类型。。
+    对其模仿的时候，我们使用结构体，而不是字节，并把操作码的名称保存起来。
+
+    定义opcode的结构体：
+
+    type opcode struct {
+        testFlag byte // operator is a test (next instruction must be a jump)
+        setAFlag byte // instruction set register A
+        argBMode byte // B arg mode
+        argCMode byte // C arg mode
+        opMode   byte // op mode
+        name     string
+    }
 
     
-
 2、
 3、
 4、

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 15:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 16:13:39
+* @Last Modified time: 2019-04-27 16:18:45
 */
  
 package vm
@@ -79,7 +79,14 @@ const (
 
 
 
-
+type opcode struct {
+	testFlag byte // operator is a test (next instruction must be a jump)
+	setAFlag byte // instruction set register A
+	argBMode byte // B arg mode
+	argCMode byte // C arg mode
+	opMode   byte // op mode
+	name     string
+}
 
 
 
