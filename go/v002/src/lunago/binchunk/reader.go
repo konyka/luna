@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 11:51:27
+* @Last Modified time: 2019-04-27 12:11:59
 */
 
 package binchunk
@@ -150,6 +150,34 @@ func (self *reader) readUpvalues() []Upvalue {
 	}
 	return upvalues
 }
+
+func (self *reader) readProtos(parentSource string) []*Prototype {
+	protos := make([]*Prototype, self.readUint32())
+	for i := range protos {
+		protos[i] = self.readProto(parentSource)
+	}
+	return protos
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

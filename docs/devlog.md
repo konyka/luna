@@ -587,7 +587,24 @@
             return upvalues
         }
 
+        因为函数原型本身是递归的数据结构，因此readProto()也会递归调用，并读取子函数的原型。
 
+        readProtos()：从公字节流中读取子函数的原型列表。
+
+        func (self *reader) readProtos(parentSource string) []*Prototype {
+            protos := make([]*Prototype, self.readUint32())
+            for i := range protos {
+                protos[i] = self.readProto(parentSource)
+            }
+            return protos
+        }
+
+        
+
+
+
+
+        
 
     4、
     5、
