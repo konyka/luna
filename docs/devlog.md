@@ -623,7 +623,15 @@
             return locVars
         }
 
+        readUpvalueNames():从字节流中读取Upvalue名称列表。
 
+        func (self *reader) readUpvalueNames() []string {
+            names := make([]string, slef.readUint32())
+            for i : = range names {
+                names[i] = self.readString()
+            }
+            return names
+        }
 
 
     4、

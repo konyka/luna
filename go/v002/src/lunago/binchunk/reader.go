@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 12:29:40
+* @Last Modified time: 2019-04-27 12:33:55
 */
 
 package binchunk
@@ -181,7 +181,13 @@ func (self *reader) readLocVars() []LocVar {
 }
 
 
-
+func (self *reader) readUpvalueNames() []string {
+	names := make([]string, slef.readUint32())
+	for i : = range names {
+		names[i] = self.readString()
+	}
+	return names
+}
 
 
 
