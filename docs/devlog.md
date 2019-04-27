@@ -1,6 +1,6 @@
 
 
-
+二进制chunk文件格式
 
 1、 lua源文件编译流程
 
@@ -641,6 +641,107 @@
     验证二进制chunk文件的解析效果
     lunago xxx.out（lua的二进制chunk文件）
 
+    func main() {
+        if len(os.Args) > 1 {
+            data,err := ioutil.ReadFile(os.Args[1])
+            if err != nil { panic("err") }
+            proto := binchunk.Undump(data)
+            list(proto)
+        }
+        println("Hello world!!!")
+    }
+
+    通过命令行参数把需要反编译的二进制chunk传递给main函数，接下来就会读取文件数据，并调用
+    Undump函数解析函数原型信息，之后通过list把函数原型的信息打印出来。
+
+    func list (f *binchunk.Prototype) {
+        printHeader(f)
+        printCode(f)
+        printDetail(f)
+
+        for _, p := range f.Protos {
+            list(p)
+        }
+
+    }
+
+    list首先打印函数的基本信息，之后是指令表和其他信息，然后递归调用，把子函数的信息也打印出来。
+
+    func printHeader(f *binchunk.Prototype) {
+        funcType := "main"
+        if f.LineDefined > 0 { funcType = "function" }
+
+        varargFlag := ""
+        if f.IsVararg > 0 { varargFlag = "+" }
+
+        fmt.Printf("\n%s <%s : %d, %d> (%d instructions)\n", funcType,
+                    f.Source, f.LineDefined, f.LastLineDefined, len(f.Code))
+
+        fmt.Printf("%d%s params, %d slots, %d upvalues, ", f.NumParams, varargFlag, 
+                    f.MaxStackSize, len(f.Upvalues))
+
+        fmt.Printf("%d locals, %d constants, %d functions\n", len(f.LocVars), 
+                    len(f.Constants), len(f.Protos))
+    }
+
+    下面的printCode仅仅打印指令的序号 、行号 以及16进制表示。
+
+    func printCode(f *binchunk.Prototype) {
+        for pc, c := range f.Code {
+            line := "-"
+            if len(f.LineInfo) > 0 {
+                line = fmt.Sprintf("%d", f.LineInfo[pc])
+            }
+            fmt.Printf("\t%d\t[%s]\t0x%08x\n", pc + 1, line, c)
+        }
+    }
+
+    printDetail函数打印常量表、局部变量表以及Upvalue表。
+
+    func printDetail(f *binchunk.Prototype) {
+        fmt.Printf("constants (%d):\n", len(f.Constants))
+        for i, k := range f.Constants {
+            fmt.Printf("\t%d\t%s\n", i+1, constantToString(k))      
+        }
+
+        fmt.Printf("locals (%d):\n", len(f.LocVars))
+        for i,locVar := range f.LocVars {
+            fmt.Print("\t%d\t%s\t%d\t%d\n", i, locVar.VarName,locVar.StartPC+1, 
+                locVar.EndPC+1)
+        }
+
+        fmt.Printf("upvalues (%d):\n", len(f.Upvalues))
+        for i, upval := range f.Upvalues {
+            fmt.Printf("\t%d\t%s\t%d\t%d\n", i, upvalName(f, i), upval.Instack, upval.Idx)
+        }
+
+    }
+
+    constantToString函数把常量表里面的常量转换为字符串。
+
+    func constantToString(k interface{}) string {
+        switch k.(type) {
+        case nil:       return "nil"
+        case bool:      return fmt.Sprintf("%t", k)
+        case float64:   return fmt.Sprintf("%g", k)
+        case int64:     return fmt.Sprintf("%d", k)
+        case string:    return fmt.Sprintf("%q", k)
+        default:    return "?"
+        }
+
+    }
+
+    upvalName函数根据Upvalue的索引从调试信息里面查找Upvalue的名称
+
+    func upvalName(f *binchunk.Prototype, idx int) string {
+        if len(f.UpvalueNames) > 0 {
+            return f.UpvalueNames[idx]
+        }
+        return "-"
+    }
+
+    最终的执行结果如下：
+
     $ ./lunago luac.out 
 
     main <@helloworld.lua : 0, 0> (4 instructions)
@@ -659,12 +760,52 @@
 
 ---------------------------------
 
+=======================================
+
+lua虚拟机指令以及编码格式 指令集
+
+虚拟机大致分为两类：stack based 以及register based。
+a、基于stack的虚拟机使用push 、pop 入栈出栈，其他的指令则是对stack top进行操作，因此指令集相对比较大，
+  不过指令的平均长度比较短；
+b、基于register的虚拟机，由于可以直接对寄存器进行寻址，因此不需要push 、pop指令，指令集相对较小。不过
+    由于需要把寄存器的地址编码到指令里面，所以指令的长度会比较长。
+
+按照指令长度，指令集可以分为Fixed-width指令集 和 variable-width指令集。lua虚拟机使用的是固定长度
+的指令集，每条指令占用4个字节--32bit，其中6bit用于opcode，其余26bit用于操作数operand。
+
+lua的指令，根据其作用，大致可以分为：常量加载指令、运算符相关指令、循环跳转指令、函数调用相关指令、
+    表操作指令以及Upvalue操作指令。
+
+1、指令编码格式
+    编码格式
+
+    每条lua指令占用4个字节，32bit，可以使用go的uint32进行表示。低6位用于操作码，高26位用于操作数。
+    根据高26bit的分配以及解释方式的不同，lua虚拟机指令可以分为4种，对应4种编码模式：iABC、iABx、
+    iAsBx、iAx。
+
+    iABC格式的指令可以额携带a b c 三个操作数，分别占用8 9 9个bit
+    iABx格式的指令可以额携带A 和 Bx 两个操作数，分别占用8 16个bit
+    iAsBx格式的指令可以额携带As 和Bx 两个操作数，分别占用8 18个bit
+    iAx格式的指令只可以额携带一个操作数，占用26个bit
+    4种模式种，只有iAsBx模式下的sBx操作数会被解释为有符号整数，其他情况下，操作数都被解释为无符号整数。
 
 
+    定义表示指令编码格式的常量，位于opcodes.go文件中。
 
 
+    
 
-11、12、13、14、15、16、17、18、19、20、21、22、23、24、25、26、27、28、29、30、
+
+2、
+3、
+4、
+5、
+6
+7、
+8、
+9、
+10、
+
 
 
 
