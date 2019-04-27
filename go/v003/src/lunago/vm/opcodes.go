@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 15:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 15:46:40
+* @Last Modified time: 2019-04-27 16:13:39
 */
  
 package vm
@@ -67,6 +67,16 @@ const (
 	OP_VARARG
 	OP_EXTRAARG
 )
+
+
+/* OpArgMask */
+const (
+	OpArgN = iota // argument is not used
+	OpArgU        // argument is used
+	OpArgR        // argument is a register or a jump offset
+	OpArgK        // argument is a constant or register/constant
+)
+
 
 
 

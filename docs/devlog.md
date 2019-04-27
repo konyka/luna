@@ -798,8 +798,40 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     操作码用于识别指令。因为lua虚拟机使用6bit表示操作码，因此最多可以表示64条指令。lua 5.3定义了47
     条指令，操作码从0开始，46截止。
 
-    
+    操作数
+    指令的参数就是操作数，每个指令可以携带1--3个操作数。其中参数A主要用来表示目标寄存器的索引，其他
+    操作数按照其表示的信息，可以大致分为4种：OpArgN、OpArgU、 OpArgR、 OpArgK。
 
+    OpArgN类型的操作数不表示任何信息，也就是说不会被使用。比如move指令只使用A、B操作数，不使用C操作数。
+    move指令的格式为iABC
+
+    OpArgU，操作数也可能表示布尔值、整数值、upvalue索引、子函数的索引等等。 
+
+    OpArgR类型的操作数载在iABC模式下表示寄存器的索引。在iAsBx模式下表示跳转偏移量。在move指令中，
+    A操作数表示目标寄存器的索引，B操作数（OpArgR类型）表示源寄存器的索引。move指令可以表示伪指令：
+    RA：= RB。
+
+
+    OpArgK类型的操作数表示常量表的索引或者寄存器的索引，分为两种情况：
+    1、loadk指令（iABx模式，用于将常量表中的常量加载到寄存器中），该指令的Bx操作数表示常量表的索引，
+        伪代码可以表示为RA ：= （Bx）。
+    2、部分iABC模式的指令，它们的B或者C操作数可以表示常量表的索引，也可以表示寄存器的索引。例如add，
+        RA ：= （B) + (C).对于这种既可以表示常量表的索引 ，又可以表示寄存器的索引的情况，怎么确定
+        索引的类型呢？在iABC模式中，BC操作数各占9bit，如果BC操作数属于OpArgK类型，那么就只能使用
+        9个bit中的低8bit，最高位的bit如果是1，表示操作数是常量表索引，如果是0表示是寄存器的索引。
+
+    定义表示操作数类型的常量：
+
+    /* OpArgMask */
+    const (
+        OpArgN = iota // argument is not used
+        OpArgU        // argument is used
+        OpArgR        // argument is a register or a jump offset
+        OpArgK        // argument is a constant or register/constant
+    )
+
+
+    
 
 2、
 3、
