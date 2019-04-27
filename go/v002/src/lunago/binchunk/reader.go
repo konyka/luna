@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 12:11:59
+* @Last Modified time: 2019-04-27 12:23:03
 */
 
 package binchunk
@@ -159,7 +159,13 @@ func (self *reader) readProtos(parentSource string) []*Prototype {
 	return protos
 }
 
-
+func (self *reader) readLineInfo() []uint32 {
+	lineInfo := make([]uint32, self.readUint32())
+	for i := range lineInfo {
+		lineInfo[i] = self.readUint32()
+	}
+	return lineInfo
+} 
 
 
 
