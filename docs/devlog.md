@@ -925,6 +925,14 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return
     }
 
+    ABx()用于从iABx模式的命令中提取参数：
+    
+    func (self Instruction) ABx() (a, bx int) {
+        a = int(self >> 6 & 0xFF)
+        bx = int(self >> 14)
+        return
+    }
+
 
 
 
