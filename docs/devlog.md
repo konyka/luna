@@ -916,6 +916,15 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return int(self & 0x3F)
     }
 
+    ABC()用于从iABC模式的指令中提取参数：
+
+    func (self Instruction) ABC() (a, b, c int) {
+        a = int(self >> 6 & 0xFF)
+        c = int(self >> 14 & 0x1FF)
+        b = int(self >> 23 & 0x1FF)
+        return
+    }
+
 
 
 
