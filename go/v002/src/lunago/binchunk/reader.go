@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 10:45:49
+* @Last Modified time: 2019-04-27 11:04:40
 */
 
 package binchunk
@@ -59,6 +59,32 @@ func (self *reader) readBytes(n uint) []byte {
 	bytes := self.data[:n]
 	self.data = self.data[n:]
 	return bytes
+}
+
+func (self *reader) checkHeader() {
+	if string(self.readBytes(4)) != LUA_SIGNATURE {
+		panic("not a precomplied chunk!")
+	} else if self.readByte() != LUAC_VERSION {
+		panic("version mismatch!")
+	} else if self.readByte() != LUAC_FORMAT {
+		panic("format mismatch!")
+	} else if string(self.readBytes(6)) != LUAC_DATA {
+		panic("corrupted")
+	} else if self.readByte() != CINT_SIZE {
+		panic("int size mismatch!")
+	} else if self.readByte() != CSIZET_SIZE {
+		panic("size_t size mismatch!")
+	} else if self.readByte() != INSTRUCTION_SIZE {
+		panic("instruciton size mismatch!")
+	} else if self.readByte() != LUA_INTEGER_SIZE {
+		panic("lua_Integer size mismatch!")
+	} else if self.readByte() != LUA_NUMBER_SIZE {
+		panic("lua_Number size mismatch!")
+	} else if self.readLuaInteger() != LUAC_INT {
+		panic("endianness mismatch!")
+	} else if self.readLuaNumber() != LUAC_NUM {
+		panic("float format mismatch!")
+	}
 }
 
 
