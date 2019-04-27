@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 11:04:40
+* @Last Modified time: 2019-04-27 11:19:28
 */
 
 package binchunk
@@ -86,6 +86,32 @@ func (self *reader) checkHeader() {
 		panic("float format mismatch!")
 	}
 }
+
+func (self *reader) readProto(parentSource string) *Prototype {
+	source := self.readString()
+	if "" == source {source = parentSource }
+
+	return &Prototype {
+		Source:			source,
+		LineDefined:	self.readUint32(),
+		LastLineDefined:self.readUint32(),
+		NumParams:		self.readByte(),
+		IsVararg:		self.readByte(),
+		MaxStackSize:	self.readByte(),
+		Code:			self.readCode(),
+		Constants:		self.readConstants(),
+		Upvalues: 		self.readUpvalues(),
+		Protos: 		self.readProtos(source),
+		LineInfo:		self.readLineInfo(),
+		LocVars:		self.readLocVars(),
+		UpvalueNames:	self.readUpvalueNames(),
+	}
+
+}
+
+
+
+
 
 
 
