@@ -574,9 +574,20 @@
             }
         }
 
+        readUpvalues():从字节流中读取Upvalue表信息。
 
+        func (self *reader) readUpvalues() Upvalue {
+            upvalues := make([]Upvalue, self.readUint32())
+            for i : = range upvalues {
+                upvalues[i] = Upvalue{
+                    Instack:    self.readByte(),
+                    Idx:        self.readByte(),
+                }
+            }
+            return upvalues
+        }
 
-
+        
 
     4、
     5、
