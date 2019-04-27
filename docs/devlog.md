@@ -926,15 +926,25 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
     ABx()用于从iABx模式的命令中提取参数：
-    
+
     func (self Instruction) ABx() (a, bx int) {
         a = int(self >> 6 & 0xFF)
         bx = int(self >> 14)
         return
     }
 
+    AsBx()用于从iAsBx模式的指令中提取参数：
 
+    func (self Instruction) AsBx() (a, sbx int) {
+        a, bx := self.ABx()
+        return a, bx - MAXARG_sBx
+    }
 
+    Ax（）用于从iAx模式的指令中提取参数：
+
+    func (self Instruction) Ax() int {
+        return int(self >> 6)
+    }
 
 
 
