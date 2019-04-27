@@ -2,12 +2,12 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 12:33:55
+* @Last Modified time: 2019-04-27 13:53:36
 */
 
 package binchunk
 
-improt "encoding/binary"
+import "encoding/binary"
 import "math"
 
 type reader struct {
@@ -15,8 +15,8 @@ type reader struct {
 }
 
 func (self *reader) readByte() byte {
-	b ：= self.data[0]
-	self.data = self[1:]
+	b := self.data[0]
+	self.data = self.data[1:]
 	return b 
 }
 
@@ -33,7 +33,7 @@ func (self *reader) readUint64() uint64 {
 	return i
 }
 
-func (self *reader) readLuaInteger() uint64 {
+func (self *reader) readLuaInteger() int64 {
 	return int64(self.readUint64())
 }
 
@@ -42,7 +42,7 @@ func (self *reader) readLuaNumber() float64 {
 }
 
 func (self *reader) readString() string {
-	size := uint(self.readByte)		//short or long string
+	size := uint(self.readByte())		//short or long string
 	if 0 == size {	// null string
 		return ""
 	}
@@ -110,7 +110,7 @@ func (self *reader) readProto(parentSource string) *Prototype {
 }
 
 
-func (self *reader) readCode() uint32 {
+func (self *reader) readCode() []uint32 {
 	code := make( []uint32, self.readUint32() )
 	for i := range code {
 		code[i] = self.readUint32()
@@ -119,7 +119,7 @@ func (self *reader) readCode() uint32 {
 }
 
 
-func (self *reader) readConstants() interface{} {
+func (self *reader) readConstants() []interface{} {
 	constants := make([]interface{}, self.readUint32())
 	for i := range constants {
 		constants[i] = self.readConstant()
@@ -130,11 +130,11 @@ func (self *reader) readConstants() interface{} {
 func (self *reader) readConstant() interface{} {
 	switch self.readByte() {
 		case TAG_NIL:		return nil
-		case TAG_BOOLEEAN:	return self.readByte() != 0
-		case TAG_INTEGET:	return self.readLuaInteger()
+		case TAG_BOOLEAN:	return self.readByte() != 0
+		case TAG_INTEGER:	return self.readLuaInteger()
 		case TAG_NUMBER:	return self.readLuaNumber()
-		case TAG_SHORT_STR	return self.readString()
-		case TAG_LONG_STR	return self.readString()
+		case TAG_SHORT_STR:	return self.readString()
+		case TAG_LONG_STR:	return self.readString()
 		default:			panic("corrupted")	
 	}
 }
@@ -142,7 +142,7 @@ func (self *reader) readConstant() interface{} {
 
 func (self *reader) readUpvalues() []Upvalue {
 	upvalues := make([]Upvalue, self.readUint32())
-	for i : = range upvalues {
+	for i := range upvalues {
 		upvalues[i] = Upvalue{
 			Instack:	self.readByte(),
 			Idx:		self.readByte(),
@@ -182,8 +182,8 @@ func (self *reader) readLocVars() []LocVar {
 
 
 func (self *reader) readUpvalueNames() []string {
-	names := make([]string, slef.readUint32())
-	for i : = range names {
+	names := make([]string, self.readUint32())
+	for i := range names {
 		names[i] = self.readString()
 	}
 	return names

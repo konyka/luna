@@ -634,16 +634,37 @@
         }
 
 
-    4、
-    5、
-    6、
-    7、
-    8、
-    9、
+
+
+10、单元测试
+
+    验证二进制chunk文件的解析效果
+    lunago xxx.out（lua的二进制chunk文件）
+
+    $ ./lunago luac.out 
+
+    main <@helloworld.lua : 0, 0> (4 instructions)
+    0+ params, 2 slots, 1 upvalues, 0 locals, 2 constants, 0 functions
+        1   [6] 0x00400006
+        2   [6] 0x00004041
+        3   [6] 0x01004024
+        4   [6] 0x00800026
+    constants (2):
+        1   "print"
+        2   "hello world！！！"
+    locals (0):
+    upvalues (1):
+        0   _ENV    1   0
+    Hello world!!!
+
+---------------------------------
 
 
 
-10、11、12、13、14、15、16、17、18、19、20、21、22、23、24、25、26、27、28、29、30、
+
+
+
+11、12、13、14、15、16、17、18、19、20、21、22、23、24、25、26、27、28、29、30、
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 13:25:00
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 09:48:04
+* @Last Modified time: 2019-04-27 13:33:11
 */
 package binchunk
 
@@ -79,7 +79,7 @@ type LocVar struct {
 }
 
 func Undump(data []byte) *Prototype {
-	reader := &reader{byte}
+	reader := &reader{data}
 	reader.checkHeader()	//检查头部
 	reader.readByte()		//跳过Upvalue的数量
 	return reader.readProto("")	//读取函数原型信息
