@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 11:50:16
+* @Last Modified time: 2019-04-27 11:51:27
 */
 
 package binchunk
@@ -140,7 +140,7 @@ func (self *reader) readConstant() interface{} {
 }
 
 
-func (self *reader) readUpvalues() Upvalue {
+func (self *reader) readUpvalues() []Upvalue {
 	upvalues := make([]Upvalue, self.readUint32())
 	for i : = range upvalues {
 		upvalues[i] = Upvalue{

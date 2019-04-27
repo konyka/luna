@@ -576,7 +576,7 @@
 
         readUpvalues():从字节流中读取Upvalue表信息。
 
-        func (self *reader) readUpvalues() Upvalue {
+        func (self *reader) readUpvalues() []Upvalue {
             upvalues := make([]Upvalue, self.readUint32())
             for i : = range upvalues {
                 upvalues[i] = Upvalue{
@@ -587,7 +587,7 @@
             return upvalues
         }
 
-        
+
 
     4、
     5、
