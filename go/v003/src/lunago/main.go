@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 13:55:42
+* @Last Modified time: 2019-04-27 17:33:32
 */
 package main
 
@@ -10,6 +10,7 @@ import "fmt"
 import "io/ioutil"
 import "os"
 import "lunago/binchunk"
+import . "lunago/vm"
 
 
 func main() {
@@ -57,7 +58,12 @@ func printCode(f *binchunk.Prototype) {
 		if len(f.LineInfo) > 0 {
 			line = fmt.Sprintf("%d", f.LineInfo[pc])
 		}
-		fmt.Printf("\t%d\t[%s]\t0x%08x\n", pc + 1, line, c)
+		i := Instruction(c)
+
+		//fmt.Printf("\t%d\t[%s]\t0x%08x\n", pc + 1, line, c)
+		fmt.Printf("\t%d\t[%s]\t%s \t", pc + 1, line, i.OpName())
+		printOperands(i)
+		fmt.Printf("\n")
 	}
 }
 
@@ -100,6 +106,43 @@ func upvalName(f *binchunk.Prototype, idx int) string {
 }
 
 
+func printOperands(i Instruction) {
+	switch i.OpMode() {
+	case IABC:
+		a, b, c := i.ABC()
+
+		fmt.Printf("%d", a)
+		if i.BMode() != OpArgN {
+			if b > 0xFF {
+				fmt.Printf(" %d", -1-b&0xFF)
+			} else {
+				fmt.Printf(" %d", b)
+			}
+		}
+		if i.CMode() != OpArgN {
+			if c > 0xFF {
+				fmt.Printf(" %d", -1-c&0xFF)
+			} else {
+				fmt.Printf(" %d", c)
+			}
+		}
+	case IABx:
+		a, bx := i.ABx()
+
+		fmt.Printf("%d", a)
+		if i.BMode() == OpArgK {
+			fmt.Printf(" %d", -1-bx)
+		} else if i.BMode() == OpArgU {
+			fmt.Printf(" %d", bx)
+		}
+	case IAsBx:
+		a, sbx := i.AsBx()
+		fmt.Printf("%d %d", a, sbx)
+	case IAx:
+		ax := i.Ax()
+		fmt.Printf("%d", -1-ax)
+	}
+}
 
 
 

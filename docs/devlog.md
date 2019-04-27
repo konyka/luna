@@ -975,12 +975,111 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
     CMode()返回操作数C的使用模式
-    
+
     func (self Instruction) CMode() byte {
         return opcodes[self.Opcode()].argCMode
     }
 
 
+    单元测试
+
+    完善之前的反编译工具，打印指令的操作码还有操作数。
+    增加
+    import . "lunago/vm"
+    修改如下代码
+
+    func printCode(f *binchunk.Prototype) {
+        for pc, c := range f.Code {
+            line := "-"
+            if len(f.LineInfo) > 0 {
+                line = fmt.Sprintf("%d", f.LineInfo[pc])
+            }
+            //将uint32类型转换为Instruction类型
+            i := Instruction(c)
+
+            //fmt.Printf("\t%d\t[%s]\t0x%08x\n", pc + 1, line, c)
+            fmt.Printf("\t%d\t[%s]\t%s \t", pc + 1, line, i.OpName())
+            printOperands(i)
+            fmt.Printf("\n")
+        }
+    }
+
+    把指令从uint32类型转换成自定义的Instruction类型，这样就可以很方便的拿到指令的操作数了。
+
+    printOperands（）用于打印操作数。
+
+
+    func printOperands(i Instruction) {
+        switch i.OpMode() {
+        case IABC:
+            a, b, c := i.ABC()
+
+            fmt.Printf("%d", a)
+            if i.BMode() != OpArgN {
+                if b > 0xFF {
+                    fmt.Printf(" %d", -1-b&0xFF)
+                } else {
+                    fmt.Printf(" %d", b)
+                }
+            }
+            if i.CMode() != OpArgN {
+                if c > 0xFF {
+                    fmt.Printf(" %d", -1-c&0xFF)
+                } else {
+                    fmt.Printf(" %d", c)
+                }
+            }
+        case IABx:
+            a, bx := i.ABx()
+
+            fmt.Printf("%d", a)
+            if i.BMode() == OpArgK {
+                fmt.Printf(" %d", -1-bx)
+            } else if i.BMode() == OpArgU {
+                fmt.Printf(" %d", bx)
+            }
+        case IAsBx:
+            a, sbx := i.AsBx()
+            fmt.Printf("%d %d", a, sbx)
+        case IAx:
+            ax := i.Ax()
+            fmt.Printf("%d", -1-ax)
+        }
+    }
+
+
+    对于iABC模式的指令，首先打印操作数A，而操作数BC在某些指令里面可能并没有使用，所以不一定会打印出来。
+    如果操作数BC的最高位是1，那么她就表示常量表索引，使用负数来输出。
+
+    对于iABx模式的指令，也是先打印出操作数A，然后是操作数Bx。如果操作数Bx表示常量表索引，一样使用负数
+    输出。
+
+    对于iAsBx模式的指令，先打印操作数A，在打印操作数sBx；对于iAx模式的指令，只会打印操作数Ax就足够了。
+
+    测试结果如下：
+
+    $ ./lunago luac.out 
+
+    main <@helloworld.lua : 0, 0> (4 instructions)
+    0+ params, 2 slots, 1 upvalues, 0 locals, 2 constants, 0 functions
+        1   [6] GETTABUP    0 0 -1
+        2   [6] LOADK       1 -2
+        3   [6] CALL        0 2 1
+        4   [6] RETURN      0 1
+    constants (2):
+        1   "print"
+        2   "hello world！！！"
+    locals (0):
+    upvalues (1):
+        0   _ENV    1   0
+    Hello world!!!
+
+
+ ========================================
+ 
+ Lua api
+
+    
 2、
 3、
 4、
