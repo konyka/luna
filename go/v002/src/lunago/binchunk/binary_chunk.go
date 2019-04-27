@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 13:25:00
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-26 23:20:12
+* @Last Modified time: 2019-04-27 09:48:04
 */
 package binchunk
 
@@ -72,5 +72,16 @@ type Upvalue struct {
 	Idx		byte
 }
 
+type LocVar struct {
+	VarName 	string
+	StartPC		uint32
+	EndPC		uint32
+}
 
+func Undump(data []byte) *Prototype {
+	reader := &reader{byte}
+	reader.checkHeader()	//检查头部
+	reader.readByte()		//跳过Upvalue的数量
+	return reader.readProto("")	//读取函数原型信息
+}
 
