@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 12:23:03
+* @Last Modified time: 2019-04-27 12:29:40
 */
 
 package binchunk
@@ -168,7 +168,17 @@ func (self *reader) readLineInfo() []uint32 {
 } 
 
 
-
+func (self *reader) readLocVars() []LocVar {
+	locVars := make([]LocVar, self.readUint32())
+	for i := range locVars {
+		locVars[i] = LocVar {
+			VarName:	self.readString(),
+			StartPC:	self.readUint32(),
+			EndPC:		self.readUint32(),
+		}
+	}
+	return locVars
+}
 
 
 

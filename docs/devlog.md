@@ -609,7 +609,19 @@
             return lineInfo
         } 
 
+        readLocVars():从字节流中读取局部变量表。
 
+        func (self *reader) readLocVars() []LocVar {
+            locVars := make([]LocVar, self.readUint32())
+            for i := range locVars {
+                locVars[i] = LocVar {
+                    VarName:    self.readString(),
+                    StartPC:    self.readUint32(),
+                    EndPC:      self.readUint32(),
+                }
+            }
+            return locVars
+        }
 
 
 
