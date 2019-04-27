@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 09:51:17
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 11:19:28
+* @Last Modified time: 2019-04-27 11:40:55
 */
 
 package binchunk
@@ -110,10 +110,34 @@ func (self *reader) readProto(parentSource string) *Prototype {
 }
 
 
+func (self *reader) readCode() uint32 {
+	code := make( []uint32, self.readUint32() )
+	for i := range code {
+		code[i] = self.readUint32()
+	}
+	return code
+}
 
 
+func (self *reader) readConstants() interface{} {
+	constants := make([]interface{}, self.readUint32())
+	for i := range constants {
+		constants[i] = self.readConstant()
+	}
+	return constants
+}
 
-
+func (self *reader) readConstant() interface{} {
+	switch self.readByte() {
+		case TAG_NIL:		return nil
+		case TAG_BOOLEEAN:	return self.readByte() != 0
+		case TAG_INTEGET:	return self.readLuaInteger()
+		case TAG_NUMBER:	return self.readLuaNumber()
+		case TAG_SHORT_STR	return self.readString()
+		case TAG_LONG_STR	return self.readString()
+		default:			panic("corrupted")	
+	}
+}
 
 
 
