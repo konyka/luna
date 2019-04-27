@@ -899,6 +899,22 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         opcode{0, 0, OpArgU, OpArgU, IAx /*  */, "EXTRAARG"}, // extra (larger) argument for previous opcode
     }
 
+    指令的解码
+
+    之前使用的是uint32类型来表示存在二进制chunk文件里面的指令，为了便于操作，给指令定义一个专门的
+    类型。创建instruction。go，并定义Instruction类型来表示指令的类型。
+
+    type Instruction uint32
+
+
+    然后给这个类型定义一些方法，用于解码指令。
+
+
+    Opcode()用于从指令中提取操作码：
+
+    func (self Instruction) Opcode() int {
+        return int(self & 0x3F)
+    }
 
 
 
@@ -906,7 +922,6 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
 
 
 
-    
 2、
 3、
 4、
