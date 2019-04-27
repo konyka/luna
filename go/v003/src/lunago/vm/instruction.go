@@ -2,13 +2,21 @@
 * @Author: konyka
 * @Date:   2019-04-27 16:27:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 16:47:24
+* @Last Modified time: 2019-04-27 17:00:55
 */
 
 package vm
 
-const MAXARG_Bx = 1<<18 - 1       // 262143
-const MAXARG_sBx = MAXARG_Bx >> 1 // 131071
+const MAXARG_Bx = 1<<18 - 1       // 2 ^ 18- 1 = 262143
+const MAXARG_sBx = MAXARG_Bx >> 1 // (2 ^ 18 -1 ) / 2 = 131071
+
+/*
+	min									max
+Bx   0              131071				262143
+sBx  -131071			0				131071
+
+
+ */
 
 /*
  31       22       13       5    0
@@ -54,7 +62,21 @@ func (self Instruction) Ax() int {
 	return int(self >> 6)
 }
 
+func (self Instruction) OpName() string {
+	return opcodes[self.Opcode()].name
+}
 
+func (self Instruction) OpMode() byte {
+	return opcodes[self.Opcode()].opMode
+}
+
+func (self Instruction) BMode() byte {
+	return opcodes[self.Opcode()].argBMode
+}
+
+func (self Instruction) CMode() byte {
+	return opcodes[self.Opcode()].argCMode
+}
 
 
 

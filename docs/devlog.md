@@ -946,7 +946,39 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return int(self >> 6)
     }
 
+    说明：sBx操作数共18bit，表示的是有符号整数。有很多方式可以把有符号整数编码为bit序列，比如2的补码。
+    Lua虚拟机采用了一种称之为偏移二进制码的方法---offset binary--也称之为Excess—K。具体来说，如果
+    把sBx解释成无符号整数的时候，它的数值为x，那么解释成有符号整数的时候，它的数值就是x - K。K是sBx
+    所能表示的最大无符号整数值的二分之一，也就是上面中的 MAXARG_sBx。
 
+        min                                 max
+    Bx   0              131071              262143
+    sBx  -131071            0               131071
+
+    Bx 以及 sBx 的取值范围
+
+    OpName()返回指令的操作码名称
+
+    func (self Instruction) OpName() string {
+        return opcodes[self.Opcode()].name
+    }
+
+    OpMode()返回指令的编码模式
+
+    func (self Instruction) OpMode() byte {
+        return opcodes[self.Opcode()].opMode
+    }
+    BMode()返回操作数B的使用模式
+
+    func (self Instruction) BMode() byte {
+        return opcodes[self.Opcode()].argBMode
+    }
+
+    CMode()返回操作数C的使用模式
+    
+    func (self Instruction) CMode() byte {
+        return opcodes[self.Opcode()].argCMode
+    }
 
 
 2、
