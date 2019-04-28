@@ -1330,8 +1330,16 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         PushString(s string)
     }
 
-    
 
+    定义 luaState 结构体
+
+    有了LuaState 接口，还需要定义一个结构体来实现这个接口。
+
+    package state
+
+    type luaState struct {
+        stack *luaStack
+    }
 
 
 
