@@ -1491,7 +1491,11 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         }
     }
 
+    其实前面的Pop()方法之时SetTop()方法的特殊情况，完全可以使用SetTop()方法实现。
 
+    func (self *luaState) Pop(n int) {
+        self.SetPop(-n - 1)
+    }
 
 
 
