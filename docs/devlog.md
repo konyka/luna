@@ -1344,12 +1344,29 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     go并不强制要求显式实现接口，只要结构体实现了接口的全部方法，它就隐式实现了该接口。
     增加New（）函数，用来创建luaState的实例。
 
-    
+    func New() *luaState {
+        return &luaState{
+            stack: newLuaStack(20),
+        }
+    }
+
+    暂时先把lua栈的容量设置为20.
 
 
+    操作栈的基本方法
 
+    GetTop() 、Pop（）、CheckStack（）。。。。。。
 
+    api_stack.go实现文件中的代码：
 
+    package state
+
+    /**
+     * 返回栈顶索引
+     */
+    func (self *luaState) GetTop() int {
+        return self.stack.top
+    }
 
 
 
