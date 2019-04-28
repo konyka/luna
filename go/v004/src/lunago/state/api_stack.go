@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 13:29:10
+* @Last Modified time: 2019-04-28 13:31:07
 */
 
 
@@ -46,5 +46,24 @@ func (self *luaState) Pop(n int) {
         self.stack.pop()
     }
 }
+/**
+ * [ Copy()方法把值从一个位置复制到另一个位置。 ]
+ * @Author   konyka
+ * @DateTime 2019-04-28T13:30:02+0800
+ * @param    {[type]}                 self *luaState)    Copy(fromIdx, toIdx int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) Copy(fromIdx, toIdx int) {
+    val := self.stack.get(fromIdx)
+    self.stack.set(toIdx, val)
+}
+
+
+
+
+
+
+
+
 
 

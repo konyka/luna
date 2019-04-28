@@ -1399,7 +1399,12 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         }
     }
 
+    Copy()方法把值从一个位置复制到另一个位置。
 
+    func (self *luaState) Copy(fromIdx, toIdx int) {
+        val := self.stack.get(fromIdx)
+        self.stack.set(toIdx, val)
+    }
 
 
 
