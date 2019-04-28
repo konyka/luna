@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 22:51:18
+* @Last Modified time: 2019-04-28 23:19:25
 */
 
 package state
@@ -75,7 +75,13 @@ func (self *luaState) IsBoolean(idx int) bool {
     return self.Type(idx) == LUA_TBOOLEAN
 }
 
-
+/**
+ * IsString()判断指定索引处的值是不是字符串或者数字。
+ */
+func (self *luaState) IsString(idx int) bool {
+    t := self.Type(idx)
+    return t == LUA_TSTRING || t == LUA_TNUMBER
+}
 
 
 
