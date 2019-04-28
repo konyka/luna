@@ -1428,6 +1428,8 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
     Rotate()旋转操作。Insert就是旋转操作的一种。
+    旋转操作。Rotate(idx, n int) 将[idx, top] 索引区间内的值朝着栈顶方向旋转 n 个位置。
+    如果n是负数，那么实际的效果就是朝着栈底方向旋转。
 
     func (self *luaState) Rotate(idx, n int) {
         t := self.stack.top - 1           /* end of stack segment being rotated */
@@ -1444,7 +1446,13 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
 
-
+    /**
+     * [ Remove() 删除置顶索引处的值，然后将该值上面的所有值全部向下移动一个位置。]
+    */
+    func (self *luaState) Remove(idx int) {
+        self.Rotate(idx, -1)
+        self.Pop(1)
+    }
 
 
 

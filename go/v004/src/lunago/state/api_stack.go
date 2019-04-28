@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 13:49:22
+* @Last Modified time: 2019-04-28 14:37:03
 */
 
 
@@ -95,7 +95,8 @@ func (self *luaState) Insert(idx int) {
 }
 
 /**
- * [旋转操作。]
+ * [旋转操作。Rotate(idx, n int) 将[idx, top] 索引区间内的值朝着栈顶方向旋转 n 个位置。
+ * 如果n是负数，那么实际的效果就是朝着栈底方向旋转。 ]
  * @Author   konyka
  * @DateTime 2019-04-28T13:49:09+0800
  * @param    {[type]}                 self *luaState)    Rotate(idx, n int [description]
@@ -115,5 +116,16 @@ func (self *luaState) Rotate(idx, n int) {
     self.stack.reverse(p, t)   /* reverse the entire segment */
 }
 
+/**
+ * [ Remove() 删除置顶索引处的值，然后将该值上面的所有值全部向下移动一个位置。]
+ * @Author   konyka
+ * @DateTime 2019-04-28T13:56:31+0800
+ * @param    {[type]}                 self *luaState)    Remove(idx int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) Remove(idx int) {
+    self.Rotate(idx, -1)
+    self.Pop(1)
+}
 
 
