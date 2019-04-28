@@ -1137,10 +1137,55 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
 
     创建lua_state.go文件，并在里面定义用来表示lua值的luaValue类型。
 
+    package state
+
+    type luaState interface{}
+
+    在这里我们仍然使用interface{}来表示各种不同类型的Lua值。
+
+    添加typeOf（）函数，根据变量的值 返回其类型：
+
+    func typeOf(val luaValue) LuaType {
+        switch val.(type) {
+        case nil:
+            return LUA_TNIL
+        case bool:
+            return LUA_TBOOLEAN
+        case int64, float64:
+            return LUA_TNUMBER
+        case string:
+            return LUA_TSTRING
+        default:
+            panic("todo!")
+        }
+    }
 
 
+    lua栈索引
+
+    a、在大多数编程语言中，数组或者列表的索引都是从0开始的，然而在lua api里面，栈索引是从1开始的。
+    b、lua中索引可以为事负值。正数索引称之为绝对索引，从栈底1开始递增，负数索引称之为相对索引。从
+        栈顶-1开始递减。lua api会在内部把相对索引转换为绝对索引。
+    c、如果lua栈的容量为n，栈顶索引是top（0 < top <= n），我们称位于[1，top]闭区间内的索引为有效
+        Valid索引，位于位于[1,n]闭区间内的索引为可接受accettable的索引。如果要往栈里面写入值，必须
+        给lua api提供 有效索引，否则可能会导致错误，甚至程序崩溃。如果仅仅是从栈里面读取值，则可以
+        提供 可接受索引。对于无效的可接受索引，其行为差不多相当于该索引处存放的是nil值。
 
 
+    定义luaStack 结构体
+
+    在lua_stack。go中定义luaStack结构体。
+
+    package state
+
+    type luaStack struct {
+        slots   []luaValue  //用来存放值
+        top     int //记录栈顶的索引
+    }
+
+    定义函数newLuaStack（）,用来创建指定容量的栈。
+
+    
 
 
 
