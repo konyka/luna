@@ -1498,15 +1498,66 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
 
+    Push方法
+
+    将Lua值从外部push到栈顶。先将5中基本类型的值push到栈顶，以后在添加其他的方法。
+
+    package state
+    
+    func (self *luaState) PushNil() {
+        self.stack.push(nil)
+    }
+
+    func (self *luaState) PushBoolean(b bool) {
+        self.stack.push(b)
+    }
+
+    func (self *luaState) PushInteger(n int64) {
+        self.stack.push(n)
+    }
+
+    func (self *luaState) PushNumber(n float64) {
+        self.stack.push(n)
+    }
+
+    func (self *luaState) PushString(s string) {
+        self.stack.push(s)
+    }
 
 
+    Access方法
+    用于从栈中获取数据信息。差不多仅仅使用索引访问栈中存储的信息，不会改变栈的状态。
+    api_access.go.
 
+    package state
 
+    import "fmt"
+    import . "luago/api"
 
+    TypeName()方法不需要读取任何栈数据，只是把给定的lua类型转换为对应的字符串表示。
 
-
-
-
+      func (self *luaState) TypeName(tp LuaType) string {
+        switch tp {
+        case LUA_TNONE:
+            return "no value"
+        case LUA_TNIL:
+            return "nil"
+        case LUA_TBOOLEAN:
+            return "boolean"
+        case LUA_TNUMBER:
+            return "number"
+        case LUA_TSTRING:
+            return "string"
+        case LUA_TTABLE:
+            return "table"
+        case LUA_TFUNCTION:
+            return "function"
+        case LUA_TTHREAD:
+            return "thread"
+        default:
+            return "userdata"
+        }
+    }  
 
 
 
