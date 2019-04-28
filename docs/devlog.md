@@ -1599,6 +1599,12 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return t == LUA_TSTRING || t == LUA_TNUMBER
     }   
 
+    IsNumber()方法判断给定随你处的值是不是数字类型，如果可以转化为数字类型也可以。
+
+    func (self *luaState) IsNumber(idx int) bool {
+        _, ok := self.ToNumberX(idx)
+        return ok
+    }
 
 
 

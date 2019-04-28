@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 23:19:25
+* @Last Modified time: 2019-04-28 23:22:38
 */
 
 package state
@@ -83,6 +83,13 @@ func (self *luaState) IsString(idx int) bool {
     return t == LUA_TSTRING || t == LUA_TNUMBER
 }
 
+/**
+ * IsNumber()方法判断给定随你处的值是不是数字类型，如果可以转化为数字类型也可以。
+ */
+func (self *luaState) IsNumber(idx int) bool {
+    _, ok := self.ToNumberX(idx)
+    return ok
+}
 
 
 
