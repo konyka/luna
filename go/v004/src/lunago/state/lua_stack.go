@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 10:35:21
+* @Last Modified time: 2019-04-28 10:56:54
 */
 
 package state
@@ -64,7 +64,15 @@ func (self *luaStack) pop() luaValue {
 	return val
 }
 
-
+/**
+ * absIndex()方法吧索引切换成绝对索引--并没有考虑索引是否有效
+ */
+func (self *luaStack) absIndex(idx int) int {
+	if idx >= 0 {
+		return idx
+	}
+	return idx + self.top + 1
+}
 
 
 

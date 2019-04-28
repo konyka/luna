@@ -1227,7 +1227,14 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return val
     }
 
-    
+    absIndex()方法吧索引切换成绝对索引--并没有考虑索引是否有效
+
+    func (self *luaStack) absIndex(idx int) int {
+        if idx >= 0 {
+            return idx
+        }
+        return idx + self.top + 1
+    }
 
 
 
