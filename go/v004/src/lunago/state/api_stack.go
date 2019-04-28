@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 13:38:57
+* @Last Modified time: 2019-04-28 13:41:34
 */
 
 
@@ -70,7 +70,17 @@ func (self *luaState) PushValue(idx int) {
     self.stack.push(val)
 }
 
-
+/**
+ * [ 将栈顶的值弹出，然后写入到指定的位置。]
+ * @Author   konyka
+ * @DateTime 2019-04-28T13:41:20+0800
+ * @param    {[type]}                 self *luaState)    Replace(idx int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) Replace(idx int) {
+    val := self.stack.pop()
+    self.stack.set(idx, val)
+}
 
 
 
