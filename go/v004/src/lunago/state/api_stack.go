@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 13:46:08
+* @Last Modified time: 2019-04-28 13:49:22
 */
 
 
@@ -94,6 +94,26 @@ func (self *luaState) Insert(idx int) {
     self.Rotate(idx, 1)
 }
 
+/**
+ * [旋转操作。]
+ * @Author   konyka
+ * @DateTime 2019-04-28T13:49:09+0800
+ * @param    {[type]}                 self *luaState)    Rotate(idx, n int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) Rotate(idx, n int) {
+    t := self.stack.top - 1           /* end of stack segment being rotated */
+    p := self.stack.absIndex(idx) - 1 /* start of segment */
+    var m int                         /* end of prefix */
+    if n >= 0 {
+        m = t - n
+    } else {
+        m = p - n - 1
+    }
+    self.stack.reverse(p, m)   /* reverse the prefix with length 'n' */
+    self.stack.reverse(m+1, t) /* reverse the suffix */
+    self.stack.reverse(p, t)   /* reverse the entire segment */
+}
 
 
 

@@ -1427,7 +1427,21 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         self.Rotate(idx, 1)
     }
 
+    Rotate()旋转操作。Insert就是旋转操作的一种。
 
+    func (self *luaState) Rotate(idx, n int) {
+        t := self.stack.top - 1           /* end of stack segment being rotated */
+        p := self.stack.absIndex(idx) - 1 /* start of segment */
+        var m int                         /* end of prefix */
+        if n >= 0 {
+            m = t - n
+        } else {
+            m = p - n - 1
+        }
+        self.stack.reverse(p, m)   /* reverse the prefix with length 'n' */
+        self.stack.reverse(m+1, t) /* reverse the suffix */
+        self.stack.reverse(p, t)   /* reverse the entire segment */
+    }
 
 
 
