@@ -1560,6 +1560,15 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }  
 
 
+    Type()根据索引返回值的类型，如果索引无效，则返回LUA_TNONE.
+
+    func (self *luaState) Type(idx int) LuaType {
+        if self.stack.isValid(idx) {
+            val := self.stack.get(idx)
+            return typeOf(val)
+        }
+        return LUA_TNONE
+    }
 
 
 

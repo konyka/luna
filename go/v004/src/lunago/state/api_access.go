@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 22:42:40
+* @Last Modified time: 2019-04-28 22:45:40
 */
 
 package state
@@ -36,6 +36,16 @@ func (self *luaState) TypeName(tp LuaType) string {
     }
 }
 
+/**
+ * Type()根据索引返回值的类型，如果索引无效，则返回LUA_TNONE.
+ */
+func (self *luaState) Type(idx int) LuaType {
+    if self.stack.isValid(idx) {
+        val := self.stack.get(idx)
+        return typeOf(val)
+    }
+    return LUA_TNONE
+}
 
 
 
