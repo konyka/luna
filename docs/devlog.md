@@ -1369,9 +1369,22 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
 
+    /**
+     * AbsIndex(idx int)把索引转化为绝对索引。
+     */
+    func (self *luaState) AbsIndex(idx int) int {
+        return self.stack.absIndex(idx)
+    }
 
 
+     /**
+     * lua栈的容量不会自动增长，使用者需要检查栈的剩余空间，看看是否可以push n 个值而不会溢出。
+     * 如果剩余空间足够 或者扩容成功 返回true，否则返回false.
+     * n 表示需要多少个剩余空间存放数据。
+     */
+    func (self *luaState) CheckStack(n int) bool {
+        self.stack.check(n)
+        return true // ??? never fails
+    }   
 
-
-
-
+    扩容的逻辑已经在luaStack结构体中实现，这里只是简单的调用相关的方法。暂时忽略扩展失败的情况。
