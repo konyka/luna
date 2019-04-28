@@ -1570,7 +1570,27 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return LUA_TNONE
     }
 
+    IsType()
 
+    IsNone() IsNil() IsNoneOrNil() IsBoolean() 用来判断给定的索引处的值是否属于特定的类型，可以使用Type()来实现。
+
+    func (self *luaState) IsNone(idx int) bool {
+    return self.Type(idx) == LUA_TNONE
+    }
+
+    func (self *luaState) IsNil(idx int) bool {
+        return self.Type(idx) == LUA_TNIL
+    }
+
+
+    func (self *luaState) IsNoneOrNil(idx int) bool {
+        return self.Type(idx) <= LUA_TNIL
+    }
+
+
+    func (self *luaState) IsBoolean(idx int) bool {
+        return self.Type(idx) == LUA_TBOOLEAN
+    }
 
 
 

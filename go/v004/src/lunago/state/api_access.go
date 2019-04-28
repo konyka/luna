@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 22:45:40
+* @Last Modified time: 2019-04-28 22:51:18
 */
 
 package state
@@ -47,6 +47,33 @@ func (self *luaState) Type(idx int) LuaType {
     return LUA_TNONE
 }
 
+/**
+ * 判断是否是none
+ */
+func (self *luaState) IsNone(idx int) bool {
+    return self.Type(idx) == LUA_TNONE
+}
+
+/**
+ * 判断是否是nil
+ */
+func (self *luaState) IsNil(idx int) bool {
+    return self.Type(idx) == LUA_TNIL
+}
+
+/**
+ * 判断是否是none 或者 nil
+ */
+func (self *luaState) IsNoneOrNil(idx int) bool {
+    return self.Type(idx) <= LUA_TNIL
+}
+
+/**
+ * 判断是否是boolean 
+ */
+func (self *luaState) IsBoolean(idx int) bool {
+    return self.Type(idx) == LUA_TBOOLEAN
+}
 
 
 
