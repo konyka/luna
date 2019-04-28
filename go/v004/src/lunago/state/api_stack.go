@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 13:18:18
+* @Last Modified time: 2019-04-28 13:29:10
 */
 
 
@@ -34,6 +34,17 @@ func (self *luaState) CheckStack(n int) bool {
     return true // ??? never fails
 }
 
-
+/**
+ * [ Pop(n int) 方法从栈顶弹出n 个值。]
+ * @Author   konyka
+ * @DateTime 2019-04-28T13:27:39+0800
+ * @param    {[type]}                 self *luaState)    Pop(n int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) Pop(n int) {
+    for i := 0; i < n; i++ {
+        self.stack.pop()
+    }
+}
 
 
