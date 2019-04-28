@@ -1421,7 +1421,11 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         self.stack.set(idx, val)
     }
 
-
+    Insert()方法将栈顶的值弹出，然后将其值插入到指定的位置。
+    原来idx以及之后的值则分别向上移动一个位置。
+    func (self *luaState) Insert(idx int) {
+        self.Rotate(idx, 1)
+    }
 
 
 

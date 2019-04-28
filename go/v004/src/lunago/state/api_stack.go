@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 13:41:34
+* @Last Modified time: 2019-04-28 13:46:08
 */
 
 
@@ -82,7 +82,17 @@ func (self *luaState) Replace(idx int) {
     self.stack.set(idx, val)
 }
 
-
+/**
+ * [ Insert()方法将栈顶的值弹出，然后将其值插入到指定的位置。
+ * 原来idx以及之后的值则分别向上移动一个位置。]
+ * @Author   konyka
+ * @DateTime 2019-04-28T13:42:32+0800
+ * @param    {[type]}                 self *luaState)    Insert(idx int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) Insert(idx int) {
+    self.Rotate(idx, 1)
+}
 
 
 
