@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 11:01:09
+* @Last Modified time: 2019-04-28 11:03:57
 */
 
 package state
@@ -93,6 +93,21 @@ func (self *luaStack) get(idx int) luaValue {
 	return nil
 }
 
+/**
+ * [set()根据索引向栈里面写入值，如果索引无效，调用panic（）终止]
+ * @Author   konyka
+ * @DateTime 2019-04-28T11:03:08+0800
+ * @param    {[type]}                 self *luaStack)    set(idx int, val luaValue [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaStack) set(idx int, val luaValue) {
+	absIdx := self.absIndex(idx)
+	if absIdx > 0 && absIdx <= self.top {
+		self.slots[absIdx-1] = val
+		return
+	}
+	panic("invalid index!")
+}
 
 
 

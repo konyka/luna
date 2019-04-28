@@ -1253,5 +1253,14 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return nil
     }
 
+    set()根据索引向栈里面写入值，如果索引无效，调用panic（）终止
 
+    func (self *luaStack) set(idx int, val luaValue) {
+        absIdx := self.absIndex(idx)
+        if absIdx > 0 && absIdx <= self.top {
+            self.slots[absIdx-1] = val
+            return
+        }
+        panic("invalid index!")
+    }
 
