@@ -1459,9 +1459,37 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
 
     在lua_stack.go中添加如下代码：
 
-    
+    func (self *luaStack) reverse(from, to int) {
+        slots := self.slots
+        for from < to {
+            slots[from], slots[to] = slots[to], slots[from]
+            from++
+            to--
+        }
+    }
 
+    SetTop()将栈顶索引设置为指定的值。如果指定的值小于当前栈顶的索引，效果则相当于弹出操作，指定值0
+    相当于清空栈。
+    如果指定的值 n 大于当前栈顶的索引，则效果相当于push （n - 栈顶索引） 个nil值。
+    SetTop()根据不同的情况执行push 、pop操作。
 
+    func (self *luaState) SetTop(idx int) {
+        newTop := self.stack.absIndex(idx)
+        if newTop < 0 {
+            panic("stack underflow!")
+        }
+
+        n := self.stack.top - newTop
+        if n > 0 {
+            for i := 0; i < n; i++ {
+                self.stack.pop()
+            }
+        } else if n < 0 {
+            for i := 0; i > n; i-- {
+                self.stack.push(nil)
+            }
+        }
+    }
 
 
 

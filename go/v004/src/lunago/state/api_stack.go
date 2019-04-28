@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 22:14:05
+* @Last Modified time: 2019-04-28 22:25:01
 */
 
 
@@ -128,7 +128,32 @@ func (self *luaState) Remove(idx int) {
     self.Pop(1)
 }
 
+/**
+ * [ SetTop()将栈顶索引设置为指定的值。如果指定的值小于当前栈顶的索引，效果则相当于弹出操作，指定值0
+ * 如果指定的值 n 大于当前栈顶的索引，则效果相当于push （n - 栈顶索引） 个nil值。
+ * SetTop()根据不同的情况执行push 、pop操作。]
+ * @Author   konyka
+ * @DateTime 2019-04-28T22:24:10+0800
+ * @param    {[type]}                 self *luaState)    SetTop(idx int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) SetTop(idx int) {
+    newTop := self.stack.absIndex(idx)
+    if newTop < 0 {
+        panic("stack underflow!")
+    }
 
+    n := self.stack.top - newTop
+    if n > 0 {
+        for i := 0; i < n; i++ {
+            self.stack.pop()
+        }
+    } else if n < 0 {
+        for i := 0; i > n; i-- {
+            self.stack.push(nil)
+        }
+    }
+}
 
 
 
