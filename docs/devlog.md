@@ -1406,7 +1406,12 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         self.stack.set(toIdx, val)
     }
 
+    PushValue()方法把指定索引处的值push到栈顶。
 
+    func (self *luaState) PushValue(idx int) {
+        val := self.stack.get(idx)
+        self.stack.push(val)
+    }
 
 
 

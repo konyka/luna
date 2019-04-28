@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 13:31:07
+* @Last Modified time: 2019-04-28 13:38:57
 */
 
 
@@ -58,7 +58,17 @@ func (self *luaState) Copy(fromIdx, toIdx int) {
     self.stack.set(toIdx, val)
 }
 
-
+/**
+ * [ PushValue()方法把指定索引处的值push到栈顶。 ]
+ * @Author   konyka
+ * @DateTime 2019-04-28T13:32:52+0800
+ * @param    {[type]}                 self *luaState)    PushValue(idx int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) PushValue(idx int) {
+    val := self.stack.get(idx)
+    self.stack.push(val)
+}
 
 
 
