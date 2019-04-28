@@ -1264,3 +1264,86 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         panic("invalid index!")
     }
 
+
+    Lua State
+
+    Lua State状态机封装了lua解释器的状态信息。暂时先将lua state中当作只有一个lua栈，简化理解，
+    以后在扩展。
+
+    定义lua state借口
+
+    因为lua是使用c语言进行编写的，因此lua api就是很多结构体lua_State 进行操作的函数或者宏定义。
+    go支持接口设计，因此可以吧这些函数整合到一个接口中。本程序仅仅实现一些基本的栈操作函数：基础栈操作
+    的函数，栈访问的函数 以及 压栈的函数。
+
+    新建lua_state.go文件，定义LuaState接口。
+
+    package api
+    /**
+     * [LuaType int 类型]
+     * @type {[type]}
+     */
+    type LuaType = int
+
+    /**
+     * LuaState 接口定义
+     * 
+     */
+    type LuaState interface {
+        /* basic stack manipulation */
+        GetTop() int
+        AbsIndex(idx int) int
+        CheckStack(n int) bool
+        Pop(n int)
+        Copy(fromIdx, toIdx int)
+        PushValue(idx int)
+        Replace(idx int)
+        Insert(idx int)
+        Remove(idx int)
+        Rotate(idx, n int)
+        SetTop(idx int)
+        /* access functions (stack -> Go) */
+        TypeName(tp LuaType) string
+        Type(idx int) LuaType
+        IsNone(idx int) bool
+        IsNil(idx int) bool
+        IsNoneOrNil(idx int) bool
+        IsBoolean(idx int) bool
+        IsInteger(idx int) bool
+        IsNumber(idx int) bool
+        IsString(idx int) bool
+        IsTable(idx int) bool
+        IsThread(idx int) bool
+        IsFunction(idx int) bool
+        ToBoolean(idx int) bool
+        ToInteger(idx int) int64
+        ToIntegerX(idx int) (int64, bool)
+        ToNumber(idx int) float64
+        ToNumberX(idx int) (float64, bool)
+        ToString(idx int) string
+        ToStringX(idx int) (string, bool)
+        /* push functions (Go -> stack) */
+        PushNil()
+        PushBoolean(b bool)
+        PushInteger(n int64)
+        PushNumber(n float64)
+        PushString(s string)
+    }
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
