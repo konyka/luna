@@ -1236,8 +1236,12 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return idx + self.top + 1
     }
 
+    isValid()判断所有是否有效
 
-
+    func (self *luaStack) isValid(idx int) bool {
+        absIdx := self.absIndex(idx)
+        return absIdx > 0 && absIdx <= self.top
+    }
 
 
 

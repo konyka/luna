@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 10:56:54
+* @Last Modified time: 2019-04-28 10:59:04
 */
 
 package state
@@ -74,7 +74,13 @@ func (self *luaStack) absIndex(idx int) int {
 	return idx + self.top + 1
 }
 
-
+/**
+ * isValid()判断所有是否有效
+ */
+func (self *luaStack) isValid(idx int) bool {
+	absIdx := self.absIndex(idx)
+	return absIdx > 0 && absIdx <= self.top
+}
 
 
 
