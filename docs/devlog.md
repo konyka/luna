@@ -1243,7 +1243,15 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return absIdx > 0 && absIdx <= self.top
     }
 
+    get()根据索引从栈里面取值，如果索引无效 返回nil
 
+    func (self *luaStack) get(idx int) luaValue {
+        absIdx := self.absIndex(idx)
+        if absIdx > 0 && absIdx <= self.top {
+            return self.slots[absIdx-1]
+        }
+        return nil
+    }
 
 
 

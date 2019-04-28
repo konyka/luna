@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 10:59:04
+* @Last Modified time: 2019-04-28 11:01:09
 */
 
 package state
@@ -82,7 +82,16 @@ func (self *luaStack) isValid(idx int) bool {
 	return absIdx > 0 && absIdx <= self.top
 }
 
-
+/**
+ * get()根据索引从栈里面取值，如果索引无效 返回nil
+ */
+func (self *luaStack) get(idx int) luaValue {
+	absIdx := self.absIndex(idx)
+	if absIdx > 0 && absIdx <= self.top {
+		return self.slots[absIdx-1]
+	}
+	return nil
+}
 
 
 
