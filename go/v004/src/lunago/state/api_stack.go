@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 14:37:03
+* @Last Modified time: 2019-04-28 22:14:05
 */
 
 
@@ -127,5 +127,23 @@ func (self *luaState) Remove(idx int) {
     self.Rotate(idx, -1)
     self.Pop(1)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

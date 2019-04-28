@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 11:03:57
+* @Last Modified time: 2019-04-28 22:17:44
 */
 
 package state
@@ -109,7 +109,21 @@ func (self *luaStack) set(idx int, val luaValue) {
 	panic("invalid index!")
 }
 
-
+/**
+ * [ reverse()方法就是循环交换两个位置的值。 ]
+ * @Author   konyka
+ * @DateTime 2019-04-28T22:17:15+0800
+ * @param    {[type]}                 self *luaStack)    reverse(from, to int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaStack) reverse(from, to int) {
+	slots := self.slots
+	for from < to {
+		slots[from], slots[to] = slots[to], slots[from]
+		from++
+		to--
+	}
+}
 
 
 
