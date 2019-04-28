@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 09:13:01
+* @Last Modified time: 2019-04-28 09:20:37
 */
 
 package state
@@ -36,6 +36,25 @@ func (self *luaStack) check(n int) {
 		self.slots = append(self.slots, nil)
 	}
 }
+
+/**
+ * [push()方法用来将值push到栈顶，如果溢出，就先暂时调用panic（）终止程序的执行。
+]
+ * @Author   konyka
+ * @DateTime 2019-04-28T09:20:13+0800
+ * @param    {[type]}                 self *luaStack)    push(val luaValue [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaStack) push(val luaValue) {
+	if self.top == len(self.slots) {
+		panic("stack overflow!")
+	}
+	self.slots[self.top] = val
+	self.top++
+}
+
+
+
 
 
 
