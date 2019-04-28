@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 23:22:38
+* @Last Modified time: 2019-04-28 23:24:13
 */
 
 package state
@@ -91,6 +91,13 @@ func (self *luaState) IsNumber(idx int) bool {
     return ok
 }
 
-
+/**
+ * IsInteger()判断指定索引处的值是不是整数类型。
+ */
+func (self *luaState) IsInteger(idx int) bool {
+    val := self.stack.get(idx)
+    _, ok := val.(int64)
+    return ok
+}
 
 
