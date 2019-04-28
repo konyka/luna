@@ -1185,9 +1185,15 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
 
     定义函数newLuaStack（）,用来创建指定容量的栈。
 
-    
+    //创建指定容量的栈
+    func newLuaStack(size int) *luaStack {
+        return &luaStack{
+            slots: make([]luaValue, size),
+            top:   0,
+        }
+    }
 
-
+    接下来为luaStack结构体定义一些方法。
 
 
 
