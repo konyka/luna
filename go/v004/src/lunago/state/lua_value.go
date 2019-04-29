@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 19:32:20
+* @Last Modified time: 2019-04-29 08:41:17
 */
 
 package state
@@ -24,8 +24,19 @@ func typeOf(val luaValue) LuaType {
 	}
 }
 
-
-
+/**
+ * 在Lua中，只有nil、false表示假，其他都表示真。lua_value.go定义convertToBoolean。
+ */
+func convertToBoolean(val luaValue) bool {
+	switch x := val.(type) {
+	case nil:
+		return false
+	case bool:
+		return x
+	default:
+		return true
+	}
+}
 
 
 

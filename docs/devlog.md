@@ -1621,4 +1621,30 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return convertToBoolean(val)
     }
 
+    在Lua中，只有nil、false表示假，其他都表示真。lua_value.go定义convertToBoolean。
+
+    func convertToBoolean(val luaValue) bool {
+        switch x := val.(type) {
+        case nil:
+            return false
+        case bool:
+            return x
+        default:
+            return true
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
