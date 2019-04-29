@@ -2343,17 +2343,22 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         panic("comparison error!")
     }
 
+    Len(idx int)：用于获取长度的运算
+    访问指定索引处的值取其长度，然后push到栈顶。state/api_misc.go
 
+    package state
 
+    func (self *luaState) Len(idx int) {
+        val := self.stack.get(idx)
 
+        if s, ok := val.(string); ok {
+            self.stack.push(int64(len(s)))
+        } else {
+            panic("length error!")
+        }
+    }
 
-
-
-
-
-
-     Compare(idx1, idx2 int, op CompareOp) bool：用于执行比较运算
-     Len(idx int)：用于获取长度的运算
+     
      Concat(n int)：用于执行字符串拼接的运算。
 
 
