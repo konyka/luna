@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 10:08:53
+* @Last Modified time: 2019-04-29 10:57:07
 */
 
 package state
@@ -190,7 +190,26 @@ func (self *luaState) ToStringX(idx int) (string, bool) {
     }
 }
 
+/**
+ * //判断是否是table
+ */
+func (self *luaState) IsTable(idx int) bool {
+    return self.Type(idx) == LUA_TTABLE
+}
 
+/**
+ * 判断是否是funciton
+ */
+func (self *luaState) IsFunction(idx int) bool {
+    return self.Type(idx) == LUA_TFUNCTION
+}
+
+/**
+ * 判断是否是thread
+ */
+func (self *luaState) IsThread(idx int) bool {
+    return self.Type(idx) == LUA_TTHREAD
+}
 
 
 
