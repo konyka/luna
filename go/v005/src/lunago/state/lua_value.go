@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 12:49:01
+* @Last Modified time: 2019-04-29 13:05:57
 */
 
 package state
@@ -60,7 +60,25 @@ func convertToFloat(val luaValue) (float64, bool) {
 	}
 }
 
-
+/**
+ * [convertToInteger 任意值转化为整数]
+ * @Author   konyka
+ * @DateTime 2019-04-29T13:05:52+0800
+ * @param    {[type]}                 val luaValue)     (int64, bool [description]
+ * @return   {[type]}                     [description]
+ */
+func convertToInteger(val luaValue) (int64, bool) {
+	switch x := val.(type) {
+	case int64:
+		return x, true
+	case float64:
+		return number.FloatToInteger(x)
+	case string:
+		return _stringToInteger(x)
+	default:
+		return 0, false
+	}
+}
 
 
 

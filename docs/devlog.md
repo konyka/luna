@@ -2010,7 +2010,21 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return convertToFloat(val)
     }
 
+    任意值转化为整数
+    lua_value.go 添加函数convertToInteger()方法：
 
+    func convertToInteger(val luaValue) (int64, bool) {
+        switch x := val.(type) {
+        case int64:
+            return x, true
+        case float64:
+            return number.FloatToInteger(x)
+        case string:
+            return _stringToInteger(x)
+        default:
+            return 0, false
+        }
+    }
 
 
 
