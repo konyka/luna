@@ -2102,8 +2102,57 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
             LUA_OPLE        // <=
         )
 
+    方法的实现
+
+     Arith(op ArithOp)：
+
+     可以执行算术以及按位运算，局的运算由参数指定，操作数则从栈顶弹出。对于二元运算，该方法会从栈顶弹出
+     两个值进行计算，然后将结果push到栈顶。
+
+     对于一元运算，该函数从栈顶pop一个值进行计算，然后把结果push到栈顶。
+
+     该方法是lua运算符在api层面上的映射，也需要遵守前面的自动类型转换的规则。为了减少代码的重复，我们先把算术运算和位移运算统一映射位go语言的运算符，或者之前预先定义好的函数。
+     创建state/api_arith.go，并在其中定义若干函数类型的变量：
+
+    package state
+
+    import "math"
+    import . "luago/api"
+    import "luago/number"
 
 
+    var (
+        iadd  = func(a, b int64) int64 { return a + b }
+        fadd  = func(a, b float64) float64 { return a + b }
+        isub  = func(a, b int64) int64 { return a - b }
+        fsub  = func(a, b float64) float64 { return a - b }
+        imul  = func(a, b int64) int64 { return a * b }
+        fmul  = func(a, b float64) float64 { return a * b }
+        imod  = number.IMod
+        fmod  = number.FMod
+        pow   = math.Pow
+        div   = func(a, b float64) float64 { return a / b }
+        iidiv = number.IFloorDiv
+        fidiv = number.FFloorDiv
+        band  = func(a, b int64) int64 { return a & b }
+        bor   = func(a, b int64) int64 { return a | b }
+        bxor  = func(a, b int64) int64 { return a ^ b }
+        shl   = number.ShiftLeft
+        shr   = number.ShiftRight
+        iunm  = func(a, _ int64) int64 { return -a }
+        funm  = func(a, _ float64) float64 { return -a }
+        bnot  = func(a, _ int64) int64 { return ^a }
+    )
+
+
+
+
+
+
+
+     Compare(idx1, idx2 int, op CompareOp) bool：用于执行比较运算
+     Len(idx int)：用于获取长度的运算
+     Concat(n int)：用于执行字符串拼接的运算。
 
 
 
