@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 08:58:58
+* @Last Modified time: 2019-04-29 09:12:30
 */
 
 package state
@@ -157,7 +157,38 @@ func (self *luaState) ToIntegerX(idx int) (int64, bool) {
     return i, ok
 }
 
+/**
+ * 从指定的索引处取出一个值，如果值是字符串，则返回字符串。
+ * 如果值是数字，则将其转换为字符串--会修改栈，然后返回字符串。否则，返回空字符串。
+ */
+func (self *luaState) ToString(idx int) string {
+    s, _ := self.ToStringX(idx)
+    return s
+}
 
+/**
+ * 从指定的索引处取出一个值，如果值是字符串，则返回字符串。
+ * 如果值是数字，则将其转换为字符串--会修改栈，然后返回字符串。否则，返回空字符串。
+ * ToStringX()方法，其中返回值的第二个返回类型是布尔类型，表示转换是否成功。。
+ * @Author   konyka
+ * @DateTime 2019-04-29T09:07:59+0800
+ * @param    {[type]}                 self *luaState)    ToStringX(idx int) (string, bool [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) ToStringX(idx int) (string, bool) {
+    val := self.stack.get(idx)
+
+    switch x := val.(type) {
+    case string:
+        return x, true
+    case int64, float64:
+        s := fmt.Sprintf("%v", x) //  todo 这里会修改stack
+        self.stack.set(idx, s)
+        return s, true
+    default:
+        return "", false
+    }
+}
 
 
 

@@ -1667,7 +1667,7 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     ToInteger() ToIntegerX()
 
     从指定的索引处取出一个整数值，如果值不是整数类型，则需要进行类型转换。
-    
+
     ToInteger()：如果值不是整数类型，并且也没有办法转换成整数类型，返回0.
 
     ToIntegerX()：如果值不是整数类型，并且也没有办法转换成整数类型，则会报告转换是否成功。
@@ -1684,7 +1684,32 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return i, ok
     }
 
+    ToString() ToStringX()
 
+    从指定的索引处取出一个值，如果值是字符串，则返回字符串。如果值是数字，则将其转换为字符串--会修改栈，然后返回字符串。否则，返回空字符串。
+    在c api中，该函数值有一个返回值，如果返回NULL，则表示指定的索引处的值不是字符串或者数字，由于go
+    语言字符串类型没有对应的nil值，因此采用ToInteger() ToIntegerX()类似的做法，添加一个
+    ToStringX()方法，其中返回值的第二个返回类型是布尔类型，表示转换是否成功。
+
+    func (self *luaState) ToString(idx int) string {
+        s, _ := self.ToStringX(idx)
+        return s
+    }
+
+    func (self *luaState) ToStringX(idx int) (string, bool) {
+        val := self.stack.get(idx)
+
+        switch x := val.(type) {
+        case string:
+            return x, true
+        case int64, float64:
+            s := fmt.Sprintf("%v", x) // todo 这里会修改stack
+            self.stack.set(idx, s)
+            return s, true
+        default:
+            return "", false
+        }
+    }
 
 
 
