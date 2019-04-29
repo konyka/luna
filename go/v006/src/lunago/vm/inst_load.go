@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 19:13:25
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 19:45:06
+* @Last Modified time: 2019-04-29 19:54:47
 */
 
 package vm
@@ -55,7 +55,24 @@ func loadBool(i Instruction, vm LuaVM) {
     }
 }
 
+/**
+ * [loadK ：R(A) := Kst(Bx)
+ * loadk(iABx模式)将常量表里面的某个常量加载到指定的寄存器中，
+ * 寄存器的索引由操作数A指定，常量表的索引由操作数Bx指定。
+ * ]
+ * @Author   konyka
+ * @DateTime 2019-04-29T19:53:57+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func loadK(i Instruction, vm LuaVM) {
+    a, bx := i.ABx()
+    a += 1
 
+    vm.GetConst(bx)
+    vm.Replace(a)
+}
 
 
 
