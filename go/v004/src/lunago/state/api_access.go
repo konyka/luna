@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 08:37:32
+* @Last Modified time: 2019-04-29 08:48:17
 */
 
 package state
@@ -108,7 +108,32 @@ func (self *luaState) ToBoolean(idx int) bool {
     return convertToBoolean(val)
 }
 
+/**
+ * ToNumber()：如果值不是数字类型，并且也没有办法转换成数字类型，返回0
+ */
+func (self *luaState) ToNumber(idx int) float64 {
+    n, _ := self.ToNumberX(idx)
+    return n
+}
 
+/**
+ * [ ToNumberX()：如果值不是数字类型，并且也没有办法转换成数字类型，则会报告转换是否成功。]
+ * @Author   konyka
+ * @DateTime 2019-04-29T08:48:02+0800
+ * @param    {[type]}                 self *luaState)    ToNumberX(idx int) (float64, bool [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) ToNumberX(idx int) (float64, bool) {
+    val := self.stack.get(idx)
+    switch x := val.(type) {
+    case float64:
+        return x, true
+    case int64:
+        return float64(x), true
+    default:
+        return 0, false
+    }
+}
 
 
 
