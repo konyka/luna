@@ -2066,6 +2066,73 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         Concat(n int)
     }   
 
+     Arith(op ArithOp)：用于执行算术以及按位运算
+     Compare(idx1, idx2 int, op CompareOp) bool：用于执行比较运算
+     Len(idx int)：用于获取长度的运算
+     Concat(n int)：用于执行字符串拼接的运算。
+
+     Arith(op ArithOp)：为了区分具体执行的是什么运算，lua api为每个算术和按位运算符都指定了一个
+     运算码，在api/consts.go中添加这些常量定义：
+
+     /* arithmetic functions const */
+    const (
+        LUA_OPADD  = iota // +
+        LUA_OPSUB         // -
+        LUA_OPMUL         // *
+        LUA_OPMOD         // %
+        LUA_OPPOW         // ^
+        LUA_OPDIV         // /
+        LUA_OPIDIV        // //
+        LUA_OPBAND        // &
+        LUA_OPBOR         // |
+        LUA_OPBXOR        // ~
+        LUA_OPSHL         // <<
+        LUA_OPSHR         // >>
+        LUA_OPUNM         // -
+        LUA_OPBNOT        // ~
+    )
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
