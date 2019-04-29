@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 18:41:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 18:42:50
+* @Last Modified time: 2019-04-29 18:52:58
 */
 
 
@@ -28,6 +28,23 @@ func move(i Instruction, vm LuaVM) {
 }
 
 
+/**
+ * [jmp pc+=sBx; if (A) close all upvalues >= R(A - 1)
+ * jmp指令不会改变寄存器的状态]
+ * @Author   konyka
+ * @DateTime 2019-04-29T18:52:31+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func jmp(i Instruction, vm LuaVM) {
+    a, sBx := i.AsBx()
+
+    vm.AddPC(sBx)
+    if a != 0 {
+        panic("todo: jmp!")
+    }
+}
 
 
 
