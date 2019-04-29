@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 20:32:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 21:11:17
+* @Last Modified time: 2019-04-29 21:15:19
 */
 
 package vm
@@ -72,6 +72,24 @@ func shl(i Instruction, vm LuaVM)  { _binaryArith(i, vm, LUA_OPSHL) }  // <<
 func shr(i Instruction, vm LuaVM)  { _binaryArith(i, vm, LUA_OPSHR) }  // >>
 func unm(i Instruction, vm LuaVM)  { _unaryArith(i, vm, LUA_OPUNM) }   // -
 func bnot(i Instruction, vm LuaVM) { _unaryArith(i, vm, LUA_OPBNOT) }  // ~
+
+
+/**
+ * [length R(A) := length of R(B)]
+ * @Author   konyka
+ * @DateTime 2019-04-29T21:15:12+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func length(i Instruction, vm LuaVM) {
+    a, b, _ := i.ABC()
+    a += 1
+    b += 1
+
+    vm.Len(b)
+    vm.Replace(a)
+}
 
 
 

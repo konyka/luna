@@ -2741,8 +2741,21 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     func unm(i Instruction, vm LuaVM)  { _unaryArith(i, vm, LUA_OPUNM) }   // -
     func bnot(i Instruction, vm LuaVM) { _unaryArith(i, vm, LUA_OPBNOT) }  // ~   
 
+    长度以及拼接指令
 
+    len
+    len指令（iABC模式）进行的操作和一元算术运算指令类似，伪代码表示如下：
 
+    R（A）：= length of R(B)
+    
+    func length(i Instruction, vm LuaVM) {
+        a, b, _ := i.ABC()
+        a += 1
+        b += 1
+
+        vm.Len(b)
+        vm.Replace(a)
+    }
 
 
 
