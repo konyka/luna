@@ -2358,11 +2358,34 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         }
     }
 
-     
+     暂时值考虑字符串的长度，对其他情况先调用panic终止程序的执行，以后在完善。
+
+
      Concat(n int)：用于执行字符串拼接的运算。
 
+     该方法从栈顶pop n 个值，然后对这些值进行拼接，然后把结果push 到栈顶。
+     
+    state/api_misc.go下添加方法：
 
+    func (self *luaState) Concat(n int) {
+        if n == 0 {
+            self.stack.push("")
+        } else if n >= 2 {
+            for i := 1; i < n; i++ {
+                if self.IsString(-1) && self.IsString(-2) {
+                    s2 := self.ToString(-1)
+                    s1 := self.ToString(-2)
+                    self.stack.pop()
+                    self.stack.pop()
+                    self.stack.push(s1 + s2)
+                    continue
+                }
 
+                panic("concatenation error!")
+            }
+        }
+        // n == 1, do nothing
+    }
 
 
 
