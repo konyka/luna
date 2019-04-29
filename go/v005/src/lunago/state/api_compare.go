@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 14:58:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 14:59:02
+* @Last Modified time: 2019-04-29 15:04:49
 */
 
 
@@ -11,7 +11,7 @@ package state
 import . "luago/api"
 
 /**
- * 
+ * 对指定索引处的两个值进行比较，返回结果。此函数不会改变栈的状态.
  */
 func (self *luaState) Compare(idx1, idx2 int, op CompareOp) bool {
     if !self.stack.isValid(idx1) || !self.stack.isValid(idx2) {
@@ -33,7 +33,41 @@ func (self *luaState) Compare(idx1, idx2 int, op CompareOp) bool {
 }
 
 
-
+/**
+ * 用于比较两个值是否相等
+ */
+func _eq(a, b luaValue) bool {
+    switch x := a.(type) {
+    case nil:
+        return b == nil
+    case bool:
+        y, ok := b.(bool)
+        return ok && x == y
+    case string:
+        y, ok := b.(string)
+        return ok && x == y
+    case int64:
+        switch y := b.(type) {
+        case int64:
+            return x == y
+        case float64:
+            return float64(x) == y
+        default:
+            return false
+        }
+    case float64:
+        switch y := b.(type) {
+        case float64:
+            return x == y
+        case int64:
+            return x == float64(y)
+        default:
+            return false
+        }
+    default:
+        return a == b
+    }
+}
 
 
 

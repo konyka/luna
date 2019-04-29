@@ -2256,7 +2256,38 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     Compare()方法先按照索引取出两个操作数，然后根据操作码调用_eq()\_lt()\_le()函数进行比较。
     _eq()函数用于比较两个值是否相等。
 
-
+    func _eq(a, b luaValue) bool {
+        switch x := a.(type) {
+        case nil:
+            return b == nil
+        case bool:
+            y, ok := b.(bool)
+            return ok && x == y
+        case string:
+            y, ok := b.(string)
+            return ok && x == y
+        case int64:
+            switch y := b.(type) {
+            case int64:
+                return x == y
+            case float64:
+                return float64(x) == y
+            default:
+                return false
+            }
+        case float64:
+            switch y := b.(type) {
+            case float64:
+                return x == y
+            case int64:
+                return x == float64(y)
+            default:
+                return false
+            }
+        default:
+            return a == b
+        }
+    }
 
 
 
