@@ -1662,10 +1662,27 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         }
     }
 
+    在c语言中，可以通过返回值、指针类型的参数实现多个返回值的效果，go本身就支持多个返回值，所以不需要借助指针操作。
+
+    ToInteger() ToIntegerX()
+
+    从指定的索引处取出一个整数值，如果值不是整数类型，则需要进行类型转换。
+    
+    ToInteger()：如果值不是整数类型，并且也没有办法转换成整数类型，返回0.
+
+    ToIntegerX()：如果值不是整数类型，并且也没有办法转换成整数类型，则会报告转换是否成功。
+
+    func (self *luaState) ToInteger(idx int) int64 {
+        i, _ := self.ToIntegerX(idx)
+        return i
+    }
 
 
-
-
+    func (self *luaState) ToIntegerX(idx int) (int64, bool) {
+        val := self.stack.get(idx)
+        i, ok := val.(int64)
+        return i, ok
+    }
 
 
 
