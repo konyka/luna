@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 11:14:40
+* @Last Modified time: 2019-04-29 13:20:07
 */
 
 
@@ -12,6 +12,8 @@ package api
  * @type {[type]}
  */
 type LuaType = int
+type ArithOp = int
+type CompareOp = int
 
 /**
  * LuaState 接口定义
@@ -56,6 +58,12 @@ type LuaState interface {
     PushInteger(n int64)
     PushNumber(n float64)
     PushString(s string)
+    /* Comparison and arithmetic functions */
+    Arith(op ArithOp)
+    Compare(idx1, idx2 int, op CompareOp) bool
+    /* miscellaneous functions */
+    Len(idx int)
+    Concat(n int)
 }
 
 

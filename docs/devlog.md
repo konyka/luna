@@ -2046,7 +2046,25 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return convertToInteger(val)
     }
 
+    扩展LuaState接口
 
+    前面主要从lua的角度对lua运算符和核运算时可能会进行的自动类型转换进行了说明，在api层面，有几个方法专门用来支持lua运算符。在lua_state.go中，在LuaState接口中添加方法：
+
+     package api
+
+    type LuaType = int
+    type ArithOp = int
+    type CompareOp = int
+
+    type LuaState interface {
+        。。。。。。
+        /* Comparison and arithmetic functions */
+        Arith(op ArithOp)
+        Compare(idx1, idx2 int, op CompareOp) bool
+        /* miscellaneous functions */
+        Len(idx int)
+        Concat(n int)
+    }   
 
 
 
