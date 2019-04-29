@@ -2747,7 +2747,7 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     len指令（iABC模式）进行的操作和一元算术运算指令类似，伪代码表示如下：
 
     R（A）：= length of R(B)
-    
+
     func length(i Instruction, vm LuaVM) {
         a, b, _ := i.ABC()
         a += 1
@@ -2757,7 +2757,25 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         vm.Replace(a)
     }
 
+    2、concat
+        cancat(iABC 模式)，将连续的n个寄存器（起止索引分别由操作数B、C指定）里的值拼接，将结果放到另一个寄存器中（索引由操作数A指定）。
 
+        R（A）：= R（B）.. ... .. R(C)
+
+        func concat(i Instruction, vm LuaVM) {
+            a, b, c := i.ABC()
+            a += 1
+            b += 1
+            c += 1
+
+            n := c - b + 1
+            vm.CheckStack(n)
+            for i := b; i <= c; i++ {
+                vm.PushValue(i)
+            }
+            vm.Concat(n)
+            vm.Replace(a)
+        }
 
 
 

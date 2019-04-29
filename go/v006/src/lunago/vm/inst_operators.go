@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 20:32:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 21:15:19
+* @Last Modified time: 2019-04-29 22:44:48
 */
 
 package vm
@@ -92,5 +92,28 @@ func length(i Instruction, vm LuaVM) {
 }
 
 
+/**
+ * [concat R(A) := R(B).. ... ..R(C)
+ * cancat(iABC 模式)，将连续的n个寄存器（起止索引分别由操作数B、C指定）里的值拼接，将结果放到另一个寄存器中（索引由操作数A指定）]
+ * @Author   konyka
+ * @DateTime 2019-04-29T22:44:01+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func concat(i Instruction, vm LuaVM) {
+    a, b, c := i.ABC()
+    a += 1
+    b += 1
+    c += 1
+
+    n := c - b + 1
+    vm.CheckStack(n)
+    for i := b; i <= c; i++ {
+        vm.PushValue(i)
+    }
+    vm.Concat(n)
+    vm.Replace(a)
+}
 
 
