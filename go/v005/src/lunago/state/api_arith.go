@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 14:14:14
+* @Last Modified time: 2019-04-29 14:29:21
 */
 
 
@@ -62,8 +62,29 @@ var operators = []operator{
     operator{bnot, nil},
 }
 
+/**
+ * [func [-(2|1), +1, e]]
+ * @Author   konyka
+ * @DateTime 2019-04-29T14:28:40+0800
+ * @param    {[type]}                 self *luaState)    Arith(op ArithOp [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) Arith(op ArithOp) {
+    var a, b luaValue // operands
+    b = self.stack.pop()
+    if op != LUA_OPUNM && op != LUA_OPBNOT {
+        a = self.stack.pop()
+    } else {
+        a = b
+    }
 
-
+    operator := operators[op]
+    if result := _arith(a, b, operator); result != nil {
+        self.stack.push(result)
+    } else {
+        panic("arithmetic error!")
+    }
+}
 
 
 
