@@ -2681,14 +2681,51 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
             vm.Replace(a)
         }
 
-        
+算术运算符
+    1、二元算术运算指令
+    二元算术运算指令（iABC 模式），对连个寄存器或者常量值（索引由操作数B、C指定）进行运算， 将结果放到另一个寄存器中（随你由操作数A指定）。如果用RK（N）表示寄存器或者常量值，那么二元算术运算指令的伪代码可以如下表示：
 
+    R（A）:= RK(B) op RK(C)  
 
+    vm/inst_operators.go中的实现代码：
+    package vm
 
+    import . "lunago/api"
 
+    func _binaryArith(i Instruction, vm LuaVM, op ArithOp) {
+        a, b, c := i.ABC()
+        a += 1
 
+        vm.GetRK(b)
+        vm.GetRK(c)
+        vm.Arith(op)
+        vm.Replace(a)
+    }
 
+    _binaryArith(），以后会使用它来实现二元算术运算指令。
 
+    先调用之前准备好的GetRK（）函数把两个操作数push 到栈顶，然后调用Arith（）进行算术运算，算术运算完毕之后，操作数已经从栈顶pop，取而代之的是运算结果，调用Replace（）把它移动到指定的寄存器即可。
+
+    2、一元算术运算指令
+
+    一元算术运算指令（iABC 模式），对操作数B所指定的寄存器里面的值进行运算，
+    然后把结果放到操作数 A 所指定的寄存器中，操作数 C 没有使用。可以使用如下伪代码表示：
+
+    R（A）：= op R（B）
+
+    func _unaryArith(i Instruction, vm LuaVM, op ArithOp) {
+        a, b, _ := i.ABC()
+        a += 1
+        b += 1
+
+        vm.PushValue(b)
+        vm.Arith(op)
+        vm.Replace(a)
+    }
+
+    有了上面这两个函数，实现算术运算符就容易多了。
+
+    
 
 
 
