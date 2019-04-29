@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 11:26:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 11:46:29
+* @Last Modified time: 2019-04-29 11:53:06
 */
 
 package number
@@ -46,8 +46,16 @@ func FMod(a, b float64) float64 {
     return a - math.Floor(a/b)*b
 }
 
-
-
+/**
+ * << 左移
+ */
+func ShiftLeft(a, n int64) int64 {
+    if n >= 0 {
+        return a << uint64(n)
+    } else {
+        return ShiftRight(a, -n)
+    }
+}
 
 
 
