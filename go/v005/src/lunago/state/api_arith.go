@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 13:59:06
+* @Last Modified time: 2019-04-29 14:08:26
 */
 
 
@@ -37,7 +37,10 @@ var (
 )
 
 
-
+type operator struct {
+    integerFunc func(int64, int64) int64
+    floatFunc   func(float64, float64) float64
+}
 
 
 
