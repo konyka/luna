@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 14:36:36
+* @Last Modified time: 2019-04-29 14:47:13
 */
 
 
@@ -88,7 +88,9 @@ func (self *luaState) Arith(op ArithOp) {
         panic("arithmetic error!")
     }
 }
-
+/**
+ * 
+ */
 func _arith(a, b luaValue, op operator) luaValue {
     if op.floatFunc == nil { // bitwise
         if x, ok := convertToInteger(a); ok {
@@ -112,6 +114,7 @@ func _arith(a, b luaValue, op operator) luaValue {
     }
     return nil
 }
+
 
 
 
