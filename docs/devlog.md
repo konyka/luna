@@ -2290,12 +2290,36 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
 
+    只有当两个操作数载Lua语言层面具有相同的类型时，== 运算才有可能返回true。nil、布尔以及字符串类型的等于操作比较简单。整数和浮点数仅仅在lua实现层面有差别，在lua语言层面统一表现为数字类型，因此需要相互转换。其他类型的值暂时先按照引用进行比较，以后在完善。
 
+    func _lt(a, b luaValue) bool {
+        switch x := a.(type) {
+        case string:
+            if y, ok := b.(string); ok {
+                return x < y
+            }
+        case int64:
+            switch y := b.(type) {
+            case int64:
+                return x < y
+            case float64:
+                return float64(x) < y
+            }
+        case float64:
+            switch y := b.(type) {
+            case float64:
+                return x < y
+            case int64:
+                return x < float64(y)
+            }
+        }
+        panic("comparison error!")
+    }
 
+    < 操作仅仅对数字和字符串类型有意义，其他的情况以后再说，暂时调用panic终止程序的执行。_le（） 和
+    _lt()基本一样。
 
-
-
-
+    
 
 
 

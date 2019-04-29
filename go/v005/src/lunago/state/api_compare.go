@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 14:58:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 15:04:49
+* @Last Modified time: 2019-04-29 15:17:39
 */
 
 
@@ -69,7 +69,32 @@ func _eq(a, b luaValue) bool {
     }
 }
 
-
+/**
+ * 小于操作 <
+ */
+func _lt(a, b luaValue) bool {
+    switch x := a.(type) {
+    case string:
+        if y, ok := b.(string); ok {
+            return x < y
+        }
+    case int64:
+        switch y := b.(type) {
+        case int64:
+            return x < y
+        case float64:
+            return float64(x) < y
+        }
+    case float64:
+        switch y := b.(type) {
+        case float64:
+            return x < y
+        case int64:
+            return x < float64(y)
+        }
+    }
+    panic("comparison error!")
+}
 
 
 
