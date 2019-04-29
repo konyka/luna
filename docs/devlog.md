@@ -1690,6 +1690,7 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     在c api中，该函数值有一个返回值，如果返回NULL，则表示指定的索引处的值不是字符串或者数字，由于go
     语言字符串类型没有对应的nil值，因此采用ToInteger() ToIntegerX()类似的做法，添加一个
     ToStringX()方法，其中返回值的第二个返回类型是布尔类型，表示转换是否成功。
+    ToString()调用ToStringX(),忽略第二个返回值就可以了。
 
     func (self *luaState) ToString(idx int) string {
         s, _ := self.ToStringX(idx)
@@ -1710,6 +1711,59 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
             return "", false
         }
     }
+
+    //判断是否是table
+    func (self *luaState) IsTable(idx int) bool {
+        return self.Type(idx) == LUA_TTABLE
+    }
+
+    //判断是否是funciton
+    func (self *luaState) IsFunction(idx int) bool {
+        return self.Type(idx) == LUA_TFUNCTION
+    }
+
+    //判断是否是thread
+    func (self *luaState) IsThread(idx int) bool {
+        return self.Type(idx) == LUA_TTHREAD
+    }
+    单元测试
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
