@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 10:39:59
+* @Last Modified time: 2019-04-29 12:49:01
 */
 
 package state
@@ -40,7 +40,25 @@ func convertToBoolean(val luaValue) bool {
 	}
 }
 
-
+/**
+ * [convertToFloat description]
+ * @Author   konyka
+ * @DateTime 2019-04-29T12:49:00+0800
+ * @param    {[type]}                 val luaValue)     (float64, bool [description]
+ * @return   {[type]}                     [description]
+ */
+func convertToFloat(val luaValue) (float64, bool) {
+	switch x := val.(type) {
+	case int64:
+		return float64(x), true
+	case float64:
+		return x, true
+	case string:
+		return number.ParseFloat(x)
+	default:
+		return 0, false
+	}
+}
 
 
 

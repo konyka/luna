@@ -1981,6 +1981,61 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return f, err == nil
     }
 
+    这两个函数都有两个返回值，其中第一个返回值是解析后的值，第二个返回值说明解析是否成功。
+
+
+    任意值转换为浮点数
+
+    在lua_value.go中定义函数convertToFloat()：
+
+    func convertToFloat(val luaValue) (float64, bool) {
+        switch x := val.(type) {
+        case int64:
+            return float64(x), true
+        case float64:
+            return x, true
+        case string:
+            return number.ParseFloat(x)
+        default:
+            return 0, false
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
