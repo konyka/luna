@@ -2,15 +2,15 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 14:47:13
+* @Last Modified time: 2019-04-29 15:46:00
 */
 
 
 package state
 
 import "math"
-import . "luago/api"
-import "luago/number"
+import . "lunago/api"
+import "lunago/number"
 
 
 var (

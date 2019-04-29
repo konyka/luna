@@ -2,13 +2,13 @@
 * @Author: konyka
 * @Date:   2019-04-29 14:58:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 15:20:55
+* @Last Modified time: 2019-04-29 15:46:15
 */
 
 
 package state
 
-import . "luago/api"
+import . "lunago/api"
 
 /**
  * 对指定索引处的两个值进行比较，返回结果。此函数不会改变栈的状态.

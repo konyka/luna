@@ -2,12 +2,13 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 13:09:14
+* @Last Modified time: 2019-04-29 15:48:56
 */
 
 package state
 
 import . "lunago/api"
+import "lunago/number"
 
 type luaValue interface{}
 

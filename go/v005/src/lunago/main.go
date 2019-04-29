@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 10:45:51
+* @Last Modified time: 2019-04-29 15:39:34
 */
 package main
 
@@ -14,23 +14,22 @@ import _ "lunago/binchunk"
 
 func main() {
 	ls := state.New()
-	ls.PushBoolean(true)
+	
+	ls.PushInteger(1)
+	ls.PushString("2.0")
+	ls.PushString("3.0")
+	ls.PushNumber(4.0)
 	printStack(ls)
-	ls.PushInteger(10)
+
+	ls.Arith(LUA_OPADD)
 	printStack(ls)
-	ls.PushNil()
+	ls.Arith(LUA_OPBNOT)
 	printStack(ls)
-	ls.PushString("hello")
+	ls.Len(2)
 	printStack(ls)
-	ls.PushValue(-4)
+	ls.Concat(3)
 	printStack(ls)
-	ls.Replace(3)
-	printStack(ls)
-	ls.SetTop(6)
-	printStack(ls)
-	ls.Remove(-3)
-	printStack(ls)
-	ls.SetTop(-5)
+	ls.PushBoolean(ls.Compare(1, 2, LUA_OPEQ))
 	printStack(ls)
 
 }

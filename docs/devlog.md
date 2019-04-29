@@ -2364,7 +2364,7 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
      Concat(n int)：用于执行字符串拼接的运算。
 
      该方法从栈顶pop n 个值，然后对这些值进行拼接，然后把结果push 到栈顶。
-     
+
     state/api_misc.go下添加方法：
 
     func (self *luaState) Concat(n int) {
@@ -2387,9 +2387,38 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         // n == 1, do nothing
     }
 
+    如果n 为0，不弹出任何值，直接往栈顶push一个空的字符串，否则，将栈顶的两个值弹出，进行拼接，然后将结果push到栈顶。这个过程一直持续，直到n个值都处理完。在弹出栈顶值之前，需要先调用ToString()将其转换为字符串，如果转换失败，暂时先调用panic终止程序的执行，以后在完善。
 
+    单元测试
 
+    package main
 
+    import "fmt"
+    import . "luago/api"
+    import _ "luago/binchunk"
+    import "luago/state"
+
+    func main() {
+        ls := state.New()
+        ls.PushInteger(1)
+        ls.PushString("2.0")
+        ls.PushString("3.0")
+        ls.PushNumber(4.0)
+        printStack(ls)
+
+        ls.Arith(LUA_OPADD)
+        printStack(ls)
+        ls.Arith(LUA_OPBNOT)
+        printStack(ls)
+        ls.Len(2)
+        printStack(ls)
+        ls.Concat(3)
+        printStack(ls)
+        ls.PushBoolean(ls.Compare(1, 2, LUA_OPEQ))
+        printStack(ls)
+    }
+
+    先创建一个luaState()实例，然后push一些值，进行各种运算 ，并将整个栈打印出来。
 
 
 
