@@ -1963,7 +1963,23 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
         
 
+    字符串解析为数字
 
+    parser.go，定义将字符串解析为整数和浮点数的函数。
+
+    package number
+
+    import "strconv"
+
+    func ParseInteger(str string) (int64, bool) {
+        i, err := strconv.ParseInt(str, 10, 64)
+        return i, err == nil
+    }
+
+    func ParseFloat(str string) (float64, bool) {
+        f, err := strconv.ParseFloat(str, 64)
+        return f, err == nil
+    }
 
 
 
