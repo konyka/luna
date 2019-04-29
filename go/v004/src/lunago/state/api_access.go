@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 23:24:13
+* @Last Modified time: 2019-04-29 08:37:32
 */
 
 package state
@@ -99,5 +99,34 @@ func (self *luaState) IsInteger(idx int) bool {
     _, ok := val.(int64)
     return ok
 }
+
+/**
+ * ToBoolean()从指定的索引处取出一个boolean值，如果值不是布尔类型，则需要进行类型转换。
+ */
+func (self *luaState) ToBoolean(idx int) bool {
+    val := self.stack.get(idx)
+    return convertToBoolean(val)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

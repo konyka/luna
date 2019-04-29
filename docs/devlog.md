@@ -1614,6 +1614,11 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         return ok
     }
 
+    ToBoolean()从指定的索引处取出一个boolean值，如果值不是布尔类型，则需要进行类型转换。
 
+    func (self *luaState) ToBoolean(idx int) bool {
+        val := self.stack.get(idx)
+        return convertToBoolean(val)
+    }
 
 
