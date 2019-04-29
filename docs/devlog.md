@@ -2666,9 +2666,22 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
             vm.Replace(a)
         }      
 
+        先调用之前准备好的GetConst（）函数吧给定的常量push到栈顶，然后调用Replace（）把它移动到指定的索引处。操作数Bx占用18个bit，能表示的最大无符号整数是262143，大部分lua函数的常量表大小都不会超过这个数字，因此这个限制通常不是神没问题。不过lua也经常被当作数据描述语言使用，因此常量表的大小可能会超出这个现实也并不奇怪，为了应对这种情况，lua还提供了一条loadkx指令。
 
+        loadkx指令（也是iABx模式）需要和EXTEAARG指令（iAx模式）配合使用。用后者的Ax操作数来指定常量的索引。Ax操作数占用26个bit，可以表达的最大无符号整数是67108864，可以满足大部分情况了。
 
+        // R(A) := Kst(extra arg)
+        func loadKx(i Instruction, vm LuaVM) {
+            a, _ := i.ABx()
+            a += 1
+            ax := Instruction(vm.Fetch()).Ax()
 
+            //vm.CheckStack(1)
+            vm.GetConst(ax)
+            vm.Replace(a)
+        }
+
+        
 
 
 
