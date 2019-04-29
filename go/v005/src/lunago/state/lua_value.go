@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 13:05:57
+* @Last Modified time: 2019-04-29 13:09:14
 */
 
 package state
@@ -78,6 +78,25 @@ func convertToInteger(val luaValue) (int64, bool) {
 	default:
 		return 0, false
 	}
+}
+
+
+/**
+ * [ _stringToInteger  对于浮点数，可以调用之前定义的FLoatToInteger()方法将其转换为整数，
+ * 对于字符串，可以先试试能够直接解析为整数，如果不能，在尝试将其解析为浮点数，然后转换为整数。]
+ * @Author   konyka
+ * @DateTime 2019-04-29T13:08:42+0800
+ * @param    {[type]}                 s string)       (int64, bool [description]
+ * @return   {[type]}                   [description]
+ */
+func _stringToInteger(s string) (int64, bool) {
+	if i, ok := number.ParseInteger(s); ok {
+		return i, true
+	}
+	if f, ok := number.ParseFloat(s); ok {
+		return number.FloatToInteger(f)
+	}
+	return 0, false
 }
 
 

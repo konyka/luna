@@ -2027,9 +2027,24 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
 
+    对于浮点数，可以调用之前定义的FLoatToInteger()方法将其转换为整数，对于字符串，可以先试试能够直接解析为整数，如果不能，在尝试将其解析为浮点数，然后转换为整数。_stringToInteger()代码如下：
 
+    func _stringToInteger(s string) (int64, bool) {
+        if i, ok := number.ParseInteger(s); ok {
+            return i, true
+        }
+        if f, ok := number.ParseFloat(s); ok {
+            return number.FloatToInteger(f)
+        }
+        return 0, false
+    }
 
+    至此，可以使用convertToInteger()函数完善api_access.go中的ToIntegerX（）函数，修改为：
 
+    func (self *luaState) ToIntegerX(idx int) (int64, bool) {
+        val := self.stack.get(idx)
+        return convertToInteger(val)
+    }
 
 
 

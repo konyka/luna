@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 12:56:49
+* @Last Modified time: 2019-04-29 13:12:10
 */
 
 package state
@@ -146,8 +146,7 @@ func (self *luaState) ToInteger(idx int) int64 {
  */
 func (self *luaState) ToIntegerX(idx int) (int64, bool) {
     val := self.stack.get(idx)
-    i, ok := val.(int64)
-    return i, ok
+    return convertToInteger(val)
 }
 
 /**
