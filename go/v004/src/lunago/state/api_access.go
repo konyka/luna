@@ -2,13 +2,13 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 09:12:30
+* @Last Modified time: 2019-04-29 10:08:53
 */
 
 package state
 
 import "fmt"
-import . "luago/api"
+import . "lunago/api"
 
 /**
  * TypeName()方法不需要读取任何栈数据，只是把给定的lua类型转换为对应的字符串表示
