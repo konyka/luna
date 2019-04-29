@@ -2092,7 +2092,15 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         LUA_OPBNOT        // ~
     )
 
-    
+    Compare(idx1, idx2 int, op CompareOp) bool：
+        lua api只给 == 、< 、<=分配了运算码。把这三个运算码常量定义在consts.go中：
+
+        /* comparison functions */
+        const (
+            LUA_OPEQ = iota // ==
+            LUA_OPLT        // <
+            LUA_OPLE        // <=
+        )
 
 
 

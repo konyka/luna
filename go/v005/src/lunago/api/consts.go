@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:09:33
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 13:26:55
+* @Last Modified time: 2019-04-29 13:32:53
 */
 
 package api
@@ -39,7 +39,12 @@ const (
 	LUA_OPBNOT        // ~
 )
 
-
+/* comparison functions const */
+const (
+	LUA_OPEQ = iota // ==
+	LUA_OPLT        // <
+	LUA_OPLE        // <=
+)
 
 
 
