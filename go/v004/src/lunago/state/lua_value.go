@@ -2,12 +2,14 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 08:41:17
+* @Last Modified time: 2019-04-29 10:39:59
 */
 
 package state
 
-type luaState interface{}
+import . "lunago/api"
+
+type luaValue interface{}
 
 func typeOf(val luaValue) LuaType {
 	switch val.(type) {
