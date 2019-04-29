@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 14:29:21
+* @Last Modified time: 2019-04-29 14:36:36
 */
 
 
@@ -63,7 +63,10 @@ var operators = []operator{
 }
 
 /**
- * [func [-(2|1), +1, e]]
+ * [func [-(2|1), +1, e]
+ * 该函数根据情况从lua栈中pop一个或者两个操作数，然后按照索引取出相应的operator实例，
+ * 最后调用_arith() 进行计算。如果计算结果不是nil，则表示操作数（或者可以转换为）运算符规定的类型，
+ * 将计算结果push到lua栈即可，否则调用panic()终止程序的执行。]
  * @Author   konyka
  * @DateTime 2019-04-29T14:28:40+0800
  * @param    {[type]}                 self *luaState)    Arith(op ArithOp [description]
@@ -86,7 +89,29 @@ func (self *luaState) Arith(op ArithOp) {
     }
 }
 
-
+func _arith(a, b luaValue, op operator) luaValue {
+    if op.floatFunc == nil { // bitwise
+        if x, ok := convertToInteger(a); ok {
+            if y, ok := convertToInteger(b); ok {
+                return op.integerFunc(x, y)
+            }
+        }
+    } else { // arith
+        if op.integerFunc != nil { // add,sub,mul,mod,idiv,unm
+            if x, ok := a.(int64); ok {
+                if y, ok := b.(int64); ok {
+                    return op.integerFunc(x, y)
+                }
+            }
+        }
+        if x, ok := convertToFloat(a); ok {
+            if y, ok := convertToFloat(b); ok {
+                return op.floatFunc(x, y)
+            }
+        }
+    }
+    return nil
+}
 
 
 
