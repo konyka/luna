@@ -2638,7 +2638,17 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
 
         loadbool指令可以单独使用 也可以和比较指令结合。
 
-        
+         func loadBool(i Instruction, vm LuaVM) {
+            a, b, c := i.ABC()
+            a += 1
+
+            vm.PushBoolean(b != 0)
+            vm.Replace(a)
+
+            if c != 0 {
+                vm.AddPC(1)
+            }
+        }       
 
 
 
