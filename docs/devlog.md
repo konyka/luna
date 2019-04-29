@@ -1726,7 +1726,68 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     func (self *luaState) IsThread(idx int) bool {
         return self.Type(idx) == LUA_TTHREAD
     }
-    单元测试
+    单元测试main.go
+
+    package main
+
+    import "fmt"
+    import . "lunago/api"
+    import "lunago/state"
+    import _ "lunago/binchunk"
+
+
+    func main() {
+        ls := state.New()
+        ls.PushBoolean(true)
+        printStack(ls)
+        ls.PushInteger(10)
+        printStack(ls)
+        ls.PushNil()
+        printStack(ls)
+        ls.PushString("hello")
+        printStack(ls)
+        ls.PushValue(-4)
+        printStack(ls)
+        ls.Replace(3)
+        printStack(ls)
+        ls.SetTop(6)
+        printStack(ls)
+        ls.Remove(-3)
+        printStack(ls)
+        ls.SetTop(-5)
+        printStack(ls)
+
+    }
+    func printStack(ls LuaState) {
+        top := ls.GetTop()
+        for i := 1; i <= top; i++ {
+            t := ls.Type(i)
+            switch t {
+            case LUA_TBOOLEAN:
+                fmt.Printf("[%t]", ls.ToBoolean(i))
+            case LUA_TNUMBER:
+                fmt.Printf("[%g]", ls.ToNumber(i))
+            case LUA_TSTRING:
+                fmt.Printf("[%q]", ls.ToString(i))
+            default: // other values
+                fmt.Printf("[%s]", ls.TypeName(t))
+            }
+        }
+        fmt.Println()
+    }
+
+    输出结果如下所示：
+
+    $ go run main.go 
+    [true]
+    [true][10]
+    [true][10][nil]
+    [true][10][nil]["hello"]
+    [true][10][nil]["hello"][true]
+    [true][10][true]["hello"]
+    [true][10][true]["hello"][nil][nil]
+    [true][10][true][nil][nil]
+    [true]
 
 
 
