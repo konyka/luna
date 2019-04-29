@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 11:26:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 11:53:06
+* @Last Modified time: 2019-04-29 11:56:32
 */
 
 package number
@@ -48,6 +48,7 @@ func FMod(a, b float64) float64 {
 
 /**
  * << 左移
+ * 因为go里面的位移运算符右边的操作时只能是无符号整数，因此在第一个分支里面对位移的数进行了类型转换。
  */
 func ShiftLeft(a, n int64) int64 {
     if n >= 0 {
@@ -57,8 +58,16 @@ func ShiftLeft(a, n int64) int64 {
     }
 }
 
-
-
+/**
+ * >> 右移
+ */
+func ShiftRight(a, n int64) int64 {
+    if n >= 0 {
+        return int64(uint64(a) >> uint64(n))
+    } else {
+        return ShiftLeft(a, -n)
+    }
+}
 
 
 
