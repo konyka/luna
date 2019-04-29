@@ -1829,7 +1829,25 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
 
     取模函数可以使用整除函数实现
 
+    /**
+     * a % b == a - ((a // b) * b)
+     */
+    func IMod(a, b int64) int64 {
+        return a - IFloorDiv(a, b)*b
+    }
     
+    /**
+     * a % b == a - ((a // b) * b)
+     */
+    func FMod(a, b float64) float64 {
+        if a > 0 && math.IsInf(b, 1) || a < 0 && math.IsInf(b, -1) {
+            return a
+        }
+        if a > 0 && math.IsInf(b, -1) || a < 0 && math.IsInf(b, 1) {
+            return b
+        }
+        return a - math.Floor(a/b)*b
+    }
 
 
 
