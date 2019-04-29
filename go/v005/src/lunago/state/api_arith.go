@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 14:08:26
+* @Last Modified time: 2019-04-29 14:14:14
 */
 
 
@@ -41,8 +41,26 @@ type operator struct {
     integerFunc func(int64, int64) int64
     floatFunc   func(float64, float64) float64
 }
-
-
+/**
+ * [operators 定义一个slice，里面是各种运算，需要注意的是，要和前面定义的lua运算码常量的顺序要一致]
+ * @type {Array}
+ */
+var operators = []operator{
+    operator{iadd, fadd},
+    operator{isub, fsub},
+    operator{imul, fmul},
+    operator{imod, fmod},
+    operator{nil, pow},
+    operator{nil, div},
+    operator{iidiv, fidiv},
+    operator{band, nil},
+    operator{bor, nil},
+    operator{bxor, nil},
+    operator{shl, nil},
+    operator{shr, nil},
+    operator{iunm, funm},
+    operator{bnot, nil},
+}
 
 
 
