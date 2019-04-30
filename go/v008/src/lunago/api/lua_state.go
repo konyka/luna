@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 11:58:07
+* @Last Modified time: 2019-04-30 18:17:19
 */
 
 
@@ -74,6 +74,9 @@ type LuaState interface {
     SetTable(idx int)
     SetField(idx int, k string)
     SetI(idx int, i int64)
+    /* 'load' and 'call' functions (load and run Lua code) */
+    Load(chunk []byte, chunkName, mode string) int
+    Call(nArgs, nResults int)
 }
 
 

@@ -3627,13 +3627,43 @@ table相关的指令
 
     修改PC（）| AddPC（）|Fetch()|GetConst()|
 
+    func (self *luaState) PC() int {
+        return self.stack.pc
+    }
+
+    func (self *luaState) AddPC(n int) {
+        self.stack.pc += n
+    }
+
+    func (self *luaState) Fetch() uint32 {
+        i := self.stack.closure.proto.Code[self.stack.pc]
+        self.stack.pc++
+        return i
+    }
+
+    func (self *luaState) GetConst(idx int) {
+        c := self.stack.closure.proto.Constants[idx]
+        self.stack.push(c)
+    }
 
 
+ 函数调用api
+
+ lua解释器执行之前，需要先把脚本组装到一个main函数中，然后把main函数编译为函数原型，最后交给lua虚拟机执行。函数原型相当于类，作用就是实例化出真正可执行的函数，即闭包。
 
 
+ lua api提供了load（）函数，用来将二进制chunk加载为闭包，并放到栈顶。至于闭包的执行，
+ 则由Call（）负责。
 
+ 实现load（）方法
+ 修改文件api/lua_state.go，给接口增加上面提到的方法Load（） \ Call()
 
-
+type LuaState interface {
+...
+    Load(chunk []byte, chunkName, mode string) int
+    Call(nArgs, nResults int)
+...
+}
 
 
 
