@@ -3282,9 +3282,22 @@ luaTable。
         return self.getTable(t, k)
     }
 
+    还可以使用GetTable（）方法实现GetField（）方法：
 
+      func (self *luaState) GetField(idx int, k string) LuaType {
+        self.PushString(k)
+        return self.getTable(idx)
+    }  
 
+    只不过第一种方法更加高效。
 
+    5、GetI（）
+    和GetField（）方法类似，只不过由参数传入的key是数字，而非字符串，这个方法是专门给数组准备的，用来根据索引获取数组的元素，执行后，相应的数组元素被push到栈顶。
+
+    func (self *luaState) GetI(idx int, i int64) LuaType {
+        t := self.stack.get(idx)
+        return self.getTable(t, i)
+    }  
 
 
 

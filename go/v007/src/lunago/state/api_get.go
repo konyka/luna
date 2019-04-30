@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:24:35
+* @Last Modified time: 2019-04-30 12:31:48
 */
 
 package state
@@ -70,7 +70,13 @@ func (self *luaState) GetField(idx int, k string) LuaType {
     return self.getTable(t, k)
 }
 
-
+/**
+ * GetI（）这个方法是专门给数组准备的，用来根据索引获取数组的元素，执行后，相应的数组元素被push到栈顶。
+ */
+func (self *luaState) GetI(idx int, i int64) LuaType {
+    t := self.stack.get(idx)
+    return self.getTable(t, i)
+}
 
 
 
