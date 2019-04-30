@@ -3559,10 +3559,22 @@ table相关的指令
 
     在里面定义closure结构体：
 
+    package state
+
+    import "lunago/binchunk"
+
+    type closure struct {
+        proto *binchunk.Prototype
+    }
+
+    现在目前只有一个字段，存放函数原型，以后慢慢扩展。在里面定义用于创建lua闭包的函数：
+
+    func newLuaClosure(proto *binchunk.Prototype) *closure {
+        return &closure{proto: proto}
+    }
+
+    结构closure的实例或者指针对应lua语言的函数类型，修改typeOf函数，添加对函数类型的支持：
     
-
-
-
 
 
 
