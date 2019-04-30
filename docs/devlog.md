@@ -3350,13 +3350,23 @@ Set方法
     }
 
 
+table相关的指令
 
+    newtable：创建空表。
+    gettable根据key从表里面取值。
+    settable根据key往表里面写入值。
+    setlist按照索引批量更新数组元素。
 
+    把它们放到文件vm/inst_table.go中：
 
+    1、newtable
+    newtable指令(iABC模式)创建空表，并将其放到指定的寄存器。寄存器索引由操作数A指定，表的初始数组容量和哈希表容量分别由操作数B、C指定。
 
+    R（A）：= {} (size= B,C)
 
+    lua代码中的每条表构造器语句都会产生一条newtable指令。该指令可以通过CreateTable（）函数实现：
 
-
+    
 
 
 
