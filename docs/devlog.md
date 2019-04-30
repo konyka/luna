@@ -3845,7 +3845,19 @@ table相关的指令
 
     如果操作数B>0就简单了，需要传递的参数是B -1 个，虚幻调用PushValue（）方法把函数和参数值push到栈顶即可。由于我们给指令预留的栈顶空间是很少的，而传入参数的数量却不确定，所以这里需要调用CheckStack（）方法确保栈顶有足够的空间可以容纳函数和参数值。当B=0的时候，以后在说。
 
-
+    func _popResults(a, c int, vm LuaVM) {
+        if c == 1 {
+            // no results
+        } else if c > 1 {
+            for i := a + c - 2; i >= a; i-- {
+                vm.Replace(i)
+            }
+        } else {
+            // leave results on stack
+            vm.CheckStack(1)
+            vm.PushInteger(int64(a))
+        }
+    }
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 19:26:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 00:18:12
+* @Last Modified time: 2019-05-01 00:20:42
 */
 
 
@@ -66,7 +66,19 @@ func _pushFuncAndArgs(a, b int, vm LuaVM) (nArgs int) {
 }
 
 
-
+func _popResults(a, c int, vm LuaVM) {
+    if c == 1 {
+        // no results
+    } else if c > 1 {
+        for i := a + c - 2; i >= a; i-- {
+            vm.Replace(i)
+        }
+    } else {
+        // leave results on stack
+        vm.CheckStack(1)
+        vm.PushInteger(int64(a))
+    }
+}
 
 
 
