@@ -2,14 +2,14 @@
 * @Author: konyka
 * @Date:   2019-04-30 13:01:31
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 15:27:23
+* @Last Modified time: 2019-04-30 15:45:48
 */
 
 
 package vm
 
 import . "lunago/api"
-import "lunago/number"
+//import "lunago/number"
 
 /* number of list items to accumulate before a SETLIST instruction */
 const LFIELDS_PER_FLUSH = 50
