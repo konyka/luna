@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 10:55:53
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 11:16:41
+* @Last Modified time: 2019-04-30 11:20:18
 */
 
 
@@ -39,6 +39,30 @@ func (self *luaTable) get(key luaValue) luaValue {
     }
     return self._map[key]
 }
+
+
+/**
+ * _floatToInteger()尝试吧服点类型的key转换为整数
+ */
+func _floatToInteger(key luaValue) luaValue {
+    if f, ok := key.(float64); ok {
+        if i, ok := number.FloatToInteger(f); ok {
+            return i
+        }
+    }
+    return key
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
