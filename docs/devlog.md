@@ -3241,9 +3241,13 @@ luaTable。
         self.stack.push(t)
     }
 
+    2、NewTable()
 
+    如果无法预先估计表的用法和容量，可以使用NewTable()创建表。NewTable()只是CreateTable（）的特殊情况。
 
-
+    func (self *luaState) NewTable() {
+        self.CreateTable(0, 0)
+    }
 
 
 

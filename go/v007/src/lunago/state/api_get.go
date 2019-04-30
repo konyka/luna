@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:07:47
+* @Last Modified time: 2019-04-30 12:10:21
 */
 
 package state
@@ -24,6 +24,25 @@ func (self *luaState) CreateTable(nArr, nRec int) {
     t := newLuaTable(nArr, nRec)
     self.stack.push(t)
 }
+
+/**
+ * [func 如果无法预先估计表的用法和容量，
+ * 可以使用NewTable()创建表。NewTable()只是CreateTable（）的特殊情况。]
+ * @Author   konyka
+ * @DateTime 2019-04-30T12:10:01+0800
+ * @param    {[type]}                 self *luaState)    NewTable( [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) NewTable() {
+    self.CreateTable(0, 0)
+}
+
+
+
+
+
+
+
 
 
 
