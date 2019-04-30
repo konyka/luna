@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:16:17
+* @Last Modified time: 2019-04-30 12:19:36
 */
 
 package state
@@ -47,7 +47,20 @@ func (self *luaState) GetTable(idx int) LuaType {
 }
 
 
+ 
+/**
+ * 为了减少重复，把根据key从table里面获取值的逻辑提取为函数getTable(t, k luaValue)：
+ * push(t[k])
+ */
+func (self *luaState) getTable(t, k luaValue) LuaType {
+    if tbl, ok := t.(*luaTable); ok {
+        v := tbl.get(k)
+        self.stack.push(v)
+        return typeOf(v)
+    }
 
+    panic("not a table!") // todo
+}
 
 
 

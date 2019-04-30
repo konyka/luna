@@ -3259,7 +3259,17 @@ luaTable。
         return self.getTable(t, k)
     }
 
+    为了减少重复，把根据key从table里面获取值的逻辑提取为函数getTable(t, k luaValue)：
 
+    func (self *luaState) getTable(t, k luaValue) LuaType {
+        if tbl, ok := t.(*luaTable); ok {
+            v := tbl.get(k)
+            self.stack.push(v)
+            return typeOf(v)
+        }
+
+        panic("not a table!") // todo
+    }
 
 
 
