@@ -3473,10 +3473,42 @@ table相关的指令
 
     }
 
+单元测试
+
+    $ luac -l test.lua 
+
+    main <test.lua:0,0> (14 instructions at 0x7fca4dd00a90)
+    0+ params, 6 slots, 1 upvalue, 2 locals, 9 constants, 0 functions
+        1   [7] NEWTABLE    0 3 0
+        2   [7] LOADK       1 -1    ; "a"
+        3   [7] LOADK       2 -2    ; "b"
+        4   [7] LOADK       3 -3    ; "c"
+        5   [7] SETLIST     0 3 1   ; 1
+        6   [8] SETTABLE    0 -4 -5 ; 2 "B"
+        7   [9] SETTABLE    0 -6 -7 ; "foo" "Bar"
+        8   [10]    GETTABLE    1 0 -8  ; 3
+        9   [10]    GETTABLE    2 0 -4  ; 2
+        10  [10]    GETTABLE    3 0 -9  ; 1
+        11  [10]    GETTABLE    4 0 -6  ; "foo"
+        12  [10]    LEN         5 0
+        13  [10]    CONCAT      1 1 5
+    14  [10]    RETURN      0 1
 
 
-
-
+    $ go run lunago luac.out 
+    [01] NEWTABLE [table][nil][nil][nil][nil][nil]
+    [02] LOADK    [table]["a"][nil][nil][nil][nil]
+    [03] LOADK    [table]["a"]["b"][nil][nil][nil]
+    [04] LOADK    [table]["a"]["b"]["c"][nil][nil]
+    [05] SETLIST  [table]["a"]["b"]["c"][nil][nil]
+    [06] SETTABLE [table]["a"]["b"]["c"][nil][nil]
+    [07] SETTABLE [table]["a"]["b"]["c"][nil][nil]
+    [08] GETTABLE [table]["c"]["b"]["c"][nil][nil]
+    [09] GETTABLE [table]["c"]["B"]["c"][nil][nil]
+    [10] GETTABLE [table]["c"]["B"]["a"][nil][nil]
+    [11] GETTABLE [table]["c"]["B"]["a"]["Bar"][nil]
+    [12] LEN      [table]["c"]["B"]["a"]["Bar"][3]
+    [13] CONCAT   [table]["cBaBar3"]["B"]["a"]["Bar"][3]
 
 
 
