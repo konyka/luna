@@ -3658,15 +3658,36 @@ table相关的指令
  实现load（）方法
  修改文件api/lua_state.go，给接口增加上面提到的方法Load（） \ Call()
 
-type LuaState interface {
-...
-    Load(chunk []byte, chunkName, mode string) int
-    Call(nArgs, nResults int)
-...
-}
+    type LuaState interface {
+    ...
+        Load(chunk []byte, chunkName, mode string) int
+        Call(nArgs, nResults int)
+    ...
+    }
 
+    Load()
 
+    Load()加载chunk，把main函数原型实例化为闭包并push到栈顶。如果加载的是chunk，只需要杜预文件、解析主函数原型、实例化为闭包、push到栈顶；如果加载的是lua脚本，先编译，在继续。
 
+    Load()方法接手三个参数，第一个参数是字节数组，给出了要加载的chunk的数据，第二个参数是字符串，指定了chunk的名称，供加载错误或者调试使用；第三个参数是字符串，指定加载的模式，有“b”、“t”以及“bt”。如果加载的模式是b，那么第一个参数必须是二进制chunk数据，否则会加载失败，如果是“t”，那么第一个蚕食必须是文本chunk数据，否则会加载失败，如果加载模式是“bt”，那么第一个参数可以是二进制或者文本chunk数据，Load（）方法会根据世界的数据格式进行处理。暂时先忽略后两个参数，值加载二进制chunk数据，一步一步来，
+    一口吃不了一个胖子，以后在完善。
+
+    如果Load（）无法成功加载chunk，需要在栈顶留下一条错误信息。Load（）会返回一个状态码，0表示加载成功，非0表示加载失败，暂时也忽略状态码，先返回0.
+
+    创建文件state/api_call.go
+
+    package state
+
+    import "fmt"
+    import "luago/binchunk"
+    import "luago/vm"
+
+    func (self *luaState) Load(chunk []byte, chunkName, mode string) int {
+        proto := binchunk.Undump(chunk) // todo
+        c := newLuaClosure(proto)
+        self.stack.push(c)
+        return 0
+    }
 
 
 
