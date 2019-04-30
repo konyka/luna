@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 13:20:07
+* @Last Modified time: 2019-04-30 11:58:07
 */
 
 
@@ -64,6 +64,16 @@ type LuaState interface {
     /* miscellaneous functions */
     Len(idx int)
     Concat(n int)
+    /* get functions (Lua -> stack) */
+    NewTable()
+    CreateTable(nArr, nRec int)
+    GetTable(idx int) LuaType
+    GetField(idx int, k string) LuaType
+    GetI(idx int, i int64) LuaType
+    /* set functions (stack -> Lua) */
+    SetTable(idx int)
+    SetField(idx int, k string)
+    SetI(idx int, i int64)
 }
 
 

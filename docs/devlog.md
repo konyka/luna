@@ -3213,7 +3213,21 @@ luaTable。
     }
 
 
+表相关api
 
+因为表的实现完全属于lua解释器的内部细节，因此lua api并没有吧表直接暴露给用户，
+而是提供了一系列创建、和操作表的方法。修改api/lua_state.go，给接口LuaState添加8个方法：
+
+    /* get functions (Lua -> stack) */
+    NewTable()
+    CreateTable(nArr, nRec int)
+    GetTable(idx int) LuaType
+    GetField(idx int, k string) LuaType
+    GetI(idx int, i int64) LuaType
+    /* set functions (stack -> Lua) */
+    SetTable(idx int)
+    SetField(idx int, k string)
+    SetI(idx int, i int64)
 
 
 
