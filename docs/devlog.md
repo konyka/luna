@@ -3613,10 +3613,16 @@ table相关的指令
 
 
     使用单向链表实现函数的调用栈，头部是栈顶，尾部是栈底。向栈顶push一个调用帧相当于在链表的头部插入一个节点，并让这个节点成为新的头部。
+
+    func (self *luaState) popLuaStack() {
+        stack := self.stack
+        self.stack = stack.prev
+        stack.prev = nil
+    }
+
+    从栈顶弹出一个调用帧只需要从链表的头部删除一个节点即可。
+
     
-
-
-
 
 
 

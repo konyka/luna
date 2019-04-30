@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:24:28
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 17:51:40
+* @Last Modified time: 2019-04-30 17:56:18
 */
 
 
@@ -37,7 +37,11 @@ func (self *luaState) pushLuaStack(stack *luaStack) {
     self.stack = stack
 }
 
-
+func (self *luaState) popLuaStack() {
+    stack := self.stack
+    self.stack = stack.prev
+    stack.prev = nil
+}
 
 
 
