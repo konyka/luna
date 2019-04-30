@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:24:28
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 17:49:26
+* @Last Modified time: 2019-04-30 17:51:40
 */
 
 
@@ -30,6 +30,11 @@ func New(stackSize int, proto *binchunk.Prototype) *luaState {
        // proto: proto,
        // pc:    0,
     }
+}
+
+func (self *luaState) pushLuaStack(stack *luaStack) {
+    stack.prev = self.stack
+    self.stack = stack
 }
 
 

@@ -3604,10 +3604,16 @@ table相关的指令
         }
     }
 
+    这样结构体luaState就可以从充当调用栈了。增加操作栈的方法：
+
+    func (self *luaState) pushLuaStack(stack *luaStack) {
+        stack.prev = self.stack
+        self.stack = stack
+    }
 
 
-
-
+    使用单向链表实现函数的调用栈，头部是栈顶，尾部是栈底。向栈顶push一个调用帧相当于在链表的头部插入一个节点，并让这个节点成为新的头部。
+    
 
 
 
