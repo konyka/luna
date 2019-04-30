@@ -3159,7 +3159,13 @@ luaTable。
 
     如果值不是nil，就把键值对写到哈希表，否则把key从哈希表中删除，来节约空间。因为在穿件talbe的时候并不一定创建了哈希表部分，因此第一次写入的时候，需要创建哈希表。
 
-
+    func (self *luaTable) _shrinkArray() {
+        for i := len(self.arr) - 1; i >= 0; i-- {
+            if self.arr[i] == nil {
+                self.arr = self.arr[0:i]
+            }
+        }
+    }
 
 
 
