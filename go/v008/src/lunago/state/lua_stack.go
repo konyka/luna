@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 17:07:16
+* @Last Modified time: 2019-04-30 19:11:39
 */
 
 package state
@@ -132,5 +132,15 @@ func (self *luaStack) reverse(from, to int) {
 	}
 }
 
+/**
+ * popN(n int)从栈顶一次性弹出多个值。
+ */
+func (self *luaStack) popN(n int) []luaValue {
+	vals := make([]luaValue, n)
+	for i := n - 1; i >= 0; i-- {
+		vals[i] = self.pop()
+	}
+	return vals
+}
 
 

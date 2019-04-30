@@ -3755,19 +3755,30 @@ table相关的指令
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    state/lua_stack.go添加函数
     
+    popN(n int)从栈顶一次性弹出多个值。
+
+    func (self *luaStack) popN(n int) []luaValue {
+        vals := make([]luaValue, n)
+        for i := n - 1; i >= 0; i-- {
+            vals[i] = self.pop()
+        }
+        return vals
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
