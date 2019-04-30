@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 15:24:47
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 15:31:01
+* @Last Modified time: 2019-04-30 11:52:08
 */
 
 package state
@@ -19,6 +19,8 @@ func (self *luaState) Len(idx int) {
 
     if s, ok := val.(string); ok {
         self.stack.push(int64(len(s)))
+    } else if t, ok := val.(*luaTable); ok {
+        self.stack.push(int64(t.len()))
     } else {
         panic("length error!")
     }
