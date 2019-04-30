@@ -3702,12 +3702,72 @@ table相关的指令
                 c.proto.LineDefined, c.proto.LastLineDefined)
             self.callLuaClosure(nArgs, nResults, c)
         } else {
-            panic("not function!")
+            panic("not a function!")
+        }
+    }
+
+    先按照索引找到要调用的值，然后判断是不是lua函数，如果是打印调试信息，通过callLuaClosure（）调用该函数，否则调用panic报错。
+
+
+    func (self *luaState) callLuaClosure(nArgs, nResults int, c *closure) {
+        nRegs := int(c.proto.MaxStackSize)
+        nParams := int(c.proto.NumParams)
+        isVararg := c.proto.IsVararg == 1
+
+        // create new lua stack
+        newStack := newLuaStack(nRegs + 20)
+        newStack.closure = c
+
+        // pass args, pop func
+        funcAndArgs := self.stack.popN(nArgs + 1)
+        newStack.pushN(funcAndArgs[1:], nParams)
+        newStack.top = nRegs
+        if nArgs > nParams && isVararg {
+            newStack.varargs = funcAndArgs[nParams+1:]
+        }
+
+        // run closure
+        self.pushLuaStack(newStack)
+        self.runLuaClosure()
+        self.popLuaStack()
+
+        // return results
+        if nResults != 0 {
+            results := newStack.popN(newStack.top - nRegs)
+            self.stack.check(len(results))
+            self.stack.pushN(results, nResults)
+        }
+    }
+
+    先从函数原型拿到编译器准备好的各种信息：执行函数需要的寄存器数量、定义函数时声明的固定参数数量，以及是不是vararg函数。然后根据寄存器的数量（适当的扩大，因为要给指令水岸函数预留少量的栈空间）创建一个新的调用帧，并把闭包和调用帧联系起来。
+
+    新的调用帧创建好以后，调用当前帧的PopN（）函数把函数和参数值一次性从栈顶弹出，然后调用pushN（）按照固定参数数量传入参数。固定参数传递完以后，需要修改新帧的栈顶指针，让它指向最后一个寄存器。如果被调函数数vararg函数，并且传入参数的数量多于固定参数数量，还需要把vararg参数记录下来，并保存到调用帧中。
+
+    把心的调用帧push到调用栈顶，让其成为当前帧，然后调用runLuaClosure（）执行被调函数的指令。执行完毕后，心调用帧的使命就结束了，把它从调用栈顶弹出，这样主调帧就又成了当前帧。被调函数运行完以后，返回值会留在被调帧的栈顶---寄存器之上。需要把全部的返回值从被调帧的栈顶弹出，然后根据期望的返回值数量对退少补，push到当前帧的栈顶，这样函数调用才完事。
+
+    func (self *luaState) runLuaClosure() {
+        for {
+            inst := vm.Instruction(self.Fetch())
+            inst.Execute(self)
+            if inst.Opcode() == vm.OP_RETURN {
+                break
+            }
         }
     }
 
 
 
+
+
+
+
+
+
+
+
+
+
+    
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 18:51:23
+* @Last Modified time: 2019-04-30 19:08:37
 */
 
 package state
@@ -40,11 +40,51 @@ func (self *luaState) Call(nArgs, nResults int) {
             c.proto.LineDefined, c.proto.LastLineDefined)
         self.callLuaClosure(nArgs, nResults, c)
     } else {
-        panic("not function!")
+        panic("not a function!")
+    }
+}
+
+func (self *luaState) callLuaClosure(nArgs, nResults int, c *closure) {
+    nRegs := int(c.proto.MaxStackSize)
+    nParams := int(c.proto.NumParams)
+    isVararg := c.proto.IsVararg == 1
+
+    // create new lua stack
+    newStack := newLuaStack(nRegs + 20)
+    newStack.closure = c
+
+    // pass args, pop func
+    funcAndArgs := self.stack.popN(nArgs + 1)
+    newStack.pushN(funcAndArgs[1:], nParams)
+    newStack.top = nRegs
+    if nArgs > nParams && isVararg {
+        newStack.varargs = funcAndArgs[nParams+1:]
+    }
+
+    // run closure
+    self.pushLuaStack(newStack)
+    self.runLuaClosure()
+    self.popLuaStack()
+
+    // return results
+    if nResults != 0 {
+        results := newStack.popN(newStack.top - nRegs)
+        self.stack.check(len(results))
+        self.stack.pushN(results, nResults)
     }
 }
 
 
+
+func (self *luaState) runLuaClosure() {
+    for {
+        inst := vm.Instruction(self.Fetch())
+        inst.Execute(self)
+        if inst.Opcode() == vm.OP_RETURN {
+            break
+        }
+    }
+}
 
 
 
