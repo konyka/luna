@@ -3404,6 +3404,21 @@ table相关的指令
         vm.Replace(a)
 }
 
+    settable
+    settable指令（iABC 模式）根据key向表面面赋值。其中表位于寄存器中，索引由操作数A指定；key 、value柯恩呢该位于寄存器中，也可能在常量表中，索引分别由操作数BC指定。
+
+    R(A)[RK(B)] := RK(C)
+
+    该指令对应lua代码里面的表索引赋值操作，该指令可以借助SetTable函数实现：
+
+    func setTable(i Instruction, vm LuaVM) {
+        a, b, c := i.ABC()
+        a += 1
+
+        vm.GetRK(b)
+        vm.GetRK(c)
+        vm.SetTable(a)
+    }
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 13:01:31
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 13:49:45
+* @Last Modified time: 2019-04-30 14:04:53
 */
 
 
@@ -52,5 +52,21 @@ func getTable(i Instruction, vm LuaVM) {
     vm.Replace(a)
 }
 
+/**
+ * [setTable R(A)[RK(B)] := RK(C)
+ * settable指令（iABC 模式）根据key向表面面赋值。其中表位于寄存器中，
+ * 索引由操作数A指定；key 、value柯恩呢该位于寄存器中，也可能在常量表中，索引分别由操作数BC指定。]
+ * @Author   konyka
+ * @DateTime 2019-04-30T14:04:13+0800
+ * @param    {[type]}                 i  Instruction [description]
+ * @param    {[type]}                 vm LuaVM       [description]
+ */
+func setTable(i Instruction, vm LuaVM) {
+    a, b, c := i.ABC()
+    a += 1
 
+    vm.GetRK(b)
+    vm.GetRK(c)
+    vm.SetTable(a)
+}
 
