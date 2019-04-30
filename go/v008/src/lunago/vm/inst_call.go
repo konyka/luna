@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 19:26:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 00:09:59
+* @Last Modified time: 2019-05-01 00:18:12
 */
 
 
@@ -51,6 +51,20 @@ func call(i Instruction, vm LuaVM) {
     vm.Call(nArgs, c-1)
     _popResults(a, c, vm)
 }
+
+func _pushFuncAndArgs(a, b int, vm LuaVM) (nArgs int) {
+    if b >= 1 {
+        vm.CheckStack(b)
+        for i := a; i < a+b; i++ {
+            vm.PushValue(i)
+        }
+        return b - 1
+    } else {
+        _fixStack(a, vm)
+        return vm.GetTop() - vm.RegisterCount() - 1
+    }
+}
+
 
 
 

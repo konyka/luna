@@ -3816,10 +3816,34 @@ table相关的指令
 
     call指令对应lua脚本连的函数调用语句或者表达式。
 
-    
+    func call(i Instruction, vm LuaVM) {
+        a, b, c := i.ABC()
+        a += 1
+
+        // println(":::"+ vm.StackToString())
+        nArgs := _pushFuncAndArgs(a, b, vm)
+        vm.Call(nArgs, c-1)
+        _popResults(a, c, vm)
+    }
 
 
+    call指令可以额借助call方法实现。先调用_pushFuncAndArgs()函数把被调函数和参数值push到栈顶，然后让call（）方法去处理函数调用的逻辑，call（）方法结束之后，函数返回值已经在栈顶，调用_popResults()函数把这个些返回值移动到适当的寄存器中就可以了。
 
+    func _pushFuncAndArgs(a, b int, vm LuaVM) (nArgs int) {
+        if b >= 1 {
+            vm.CheckStack(b)
+            for i := a; i < a+b; i++ {
+                vm.PushValue(i)
+            }
+            return b - 1
+        } else {
+            _fixStack(a, vm)
+            return vm.GetTop() - vm.RegisterCount() - 1
+        }
+    }
+
+
+    如果操作数B>0就简单了，需要传递的参数是B -1 个，虚幻调用PushValue（）方法把函数和参数值push到栈顶即可。由于我们给指令预留的栈顶空间是很少的，而传入参数的数量却不确定，所以这里需要调用CheckStack（）方法确保栈顶有足够的空间可以容纳函数和参数值。当B=0的时候，以后在说。
 
 
 
