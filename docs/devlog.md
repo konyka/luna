@@ -3183,8 +3183,20 @@ luaTable。
 
     由于set（）方法已经数组部分和哈希表部分进行了动态的调整，因此len（）方法就容易实现了：
 
-    
+    func (self *luaTable) len() int {
+        return len(self.arr)
+    }
 
+    修改lua_value.go中的代码typeOf(）：
+
+    func typeOf(val luaValue) LuaType {
+        switch val.(type) {
+        ......
+        case *luaTable:
+            return LUA_TTABLE
+        ......
+        }
+    }
 
 
 

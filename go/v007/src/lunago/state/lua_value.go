@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 15:48:56
+* @Last Modified time: 2019-04-30 11:48:05
 */
 
 package state
@@ -22,6 +22,8 @@ func typeOf(val luaValue) LuaType {
 		return LUA_TNUMBER
 	case string:
 		return LUA_TSTRING
+	case *luaTable:
+		return LUA_TTABLE
 	default:
 		panic("todo!")
 	}
