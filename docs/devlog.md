@@ -3299,12 +3299,20 @@ luaTable。
         return self.getTable(t, i)
     }  
 
+Set方法
+    
+    state/api_set.go
 
+    1、SetTable()
 
+    SetTable()把键值对写入表。其中key和value从栈中弹出，表则位于指定的索引处。
 
-
-
-
+    func (self *luaState) SetTable(idx int) {
+        t := self.stack.get(idx)
+        v := self.stack.pop()
+        k := self.stack.pop()
+        self.setTable(t, k, v)
+    }
 
 
 
