@@ -2947,14 +2947,28 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         action   func(i Instruction, vm api.LuaVM) //存放指令的实现函数。
     }
 
-    给opcode字典添加了字段action，用来存放指令的实现函数。修改opcodes变量的初始化代码，给前面的指令添加上action。
+    给opcode字典添加了字段action，用来存放指令的实现函数。继续修改vm/opcodes.go中的的代码，
+    修改opcodes变量的初始化代码，给前面的指令添加上action。
+
+    修改vm/instruction.go中的代码，给Instruction类型增加一个Execute（）函数：
+
+    package vm
+
+    import "lunago/api" //新增加的
+
+    。。。。
+
+    func (self Instruction) Execute(vm api.LuaVM) {
+        action := opcodes[self.Opcode()].action
+        if action != nil {
+            action(self, vm)
+        } else {
+            panic(self.OpName())
+        }
+    }
 
 
-
-
-
-
-
+    在指令表的辅助下，指令的分发变得异常简单，Execute（）先从指令里面提取操作码，然后根据操作码从指令表中查找对应的指令实现方法，最后调用指令实现方法执行指令。
 
 
 

@@ -2,10 +2,12 @@
 * @Author: konyka
 * @Date:   2019-04-27 16:27:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 17:00:55
+* @Last Modified time: 2019-04-30 09:32:37
 */
 
 package vm
+
+import "lunago/api"
 
 const MAXARG_Bx = 1<<18 - 1       // 2 ^ 18- 1 = 262143
 const MAXARG_sBx = MAXARG_Bx >> 1 // (2 ^ 18 -1 ) / 2 = 131071
@@ -79,7 +81,14 @@ func (self Instruction) CMode() byte {
 }
 
 
-
+func (self Instruction) Execute(vm api.LuaVM) {
+    action := opcodes[self.Opcode()].action
+    if action != nil {
+        action(self, vm)
+    } else {
+        panic(self.OpName())
+    }
+}
 
 
 
