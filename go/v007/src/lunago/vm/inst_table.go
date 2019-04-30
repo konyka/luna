@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 13:01:31
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 15:23:25
+* @Last Modified time: 2019-04-30 15:27:23
 */
 
 
@@ -11,6 +11,8 @@ package vm
 import . "lunago/api"
 import "lunago/number"
 
+/* number of list items to accumulate before a SETLIST instruction */
+const LFIELDS_PER_FLUSH = 50
 
 /**
  * [newTable newtable指令(iABC模式)创建空表，并将其放到指定的寄存器。
