@@ -3316,11 +3316,27 @@ Set方法
 
     同样，也把写表的逻辑提取成setTable(）方法：
 
-    
 
+    func (self *luaState) setTable(t, k, v luaValue) {
+        if tbl, ok := t.(*luaTable); ok {
+            tbl.put(k, v)
+            return
+        }
 
+        panic("not a table!")
+    }
 
+    如果位于指定索引处的值不是表，就调用panic报错。
 
+    2、SetField（）
+
+    SetField（）和SetTable()类似，只不过key不是从栈顶弹出的任意值，而是由参数传入的字符串。用于给记录的字段赋值。执行后，value从栈顶弹出，并被赋值给记录的相应字段。
+
+     func (self *luaState) SetField(idx int, k string) {
+        t := self.stack.get(idx)
+        v := self.stack.pop()
+        self.setTable(t, k, v)
+    }   
 
 
 

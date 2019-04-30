@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:39:45
+* @Last Modified time: 2019-04-30 12:45:53
 */
 
 package state
@@ -38,7 +38,19 @@ func (self *luaState) setTable(t, k, v luaValue) {
     panic("not a table!")
 }
 
-
+/**
+ * [func SetField（）和SetTable()类似，只不过key不是从栈顶弹出的任意值，而是由参数传入的字符串。
+ * 用于给记录的字段赋值。执行后，value从栈顶弹出，并被赋值给记录的相应字段。]
+ * @Author   konyka
+ * @DateTime 2019-04-30T12:45:30+0800
+ * @param    {[type]}                 self *luaState)    SetField(idx int, k string [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) SetField(idx int, k string) {
+    t := self.stack.get(idx)
+    v := self.stack.pop()
+    self.setTable(t, k, v)
+}
 
 
 
