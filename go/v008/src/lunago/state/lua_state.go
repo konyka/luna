@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:24:28
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 17:39:03
+* @Last Modified time: 2019-04-30 17:49:26
 */
 
 
@@ -15,8 +15,8 @@ import "lunago/binchunk"
  */
 type luaState struct {
     stack *luaStack
-    proto *binchunk.Prototype //保存函数原型
-    pc    int //程序计数器
+//    proto *binchunk.Prototype //保存函数原型
+//    pc    int //程序计数器
 }
 
 /**
@@ -27,8 +27,8 @@ type luaState struct {
 func New(stackSize int, proto *binchunk.Prototype) *luaState {
     return &luaState{
         stack: newLuaStack(stackSize),
-        proto: proto,
-        pc:    0,
+       // proto: proto,
+       // pc:    0,
     }
 }
 

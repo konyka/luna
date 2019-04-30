@@ -3586,9 +3586,23 @@ table相关的指令
     }
 
 
+   varargs 字段用于实现变长参数机制。prev字段是让调用帧成为链表的节点。
+   
+   调用栈的实现
 
+    结构体luaStack保存了函数的执行状态。清除luaState里面的无用数据。
 
+    package state
 
+    type luaState struct {
+        stack *luaStack
+    }
+
+    func New() *luaState {
+        return &luaState{
+            stack: newLuaStack(20),
+        }
+    }
 
 
 
