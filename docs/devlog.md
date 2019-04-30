@@ -2970,13 +2970,76 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
 
     在指令表的辅助下，指令的分发变得异常简单，Execute（）先从指令里面提取操作码，然后根据操作码从指令表中查找对应的指令实现方法，最后调用指令实现方法执行指令。
 
+单元测试
+    修改main函数
+
+    package main
+
+    import "fmt"
+    import "io/ioutil"
+    import "os"
+    import . "lunago/api"
+    import "lunago/state"
+    import "lunago/binchunk"
+    import . "lunago/vm"
+
+    func main() {
+        if len(os.Args) > 1 {
+            data, err := ioutil.ReadFile(os.Args[1])
+            if err != nil {
+                panic(err)
+            }
+
+            proto := binchunk.Undump(data)
+            luaMain(proto)
+        }
+    }
 
 
+    func luaMain(proto *binchunk.Prototype) {
+        nRegs := int(proto.MaxStackSize)
+        ls := state.New(nRegs+8, proto)
+        ls.SetTop(nRegs)
+        for {
+            pc := ls.PC()
+            inst := Instruction(ls.Fetch())
+            if inst.Opcode() != OP_RETURN {
+                inst.Execute(ls)
 
+                fmt.Printf("[%02d] %s ", pc+1, inst.OpName())
+                printStack(ls)
+            } else {
+                break
+            }
+        }
+    }
 
+    可以从main函数原型中获取到运行该函数所需的寄存器数量，因为指令实现也需要少量的占空间，所以时间创建的Lua栈容量要比寄存器数量稍大一些。luaState结构体实例创建好了以后，调用SetTop（）方法在栈里面预留出寄存器的空间，剩余的占空间留给指令的实现函数使用，剩下的代码就是指令循环了：取出指令，递增pc，执行指令、打印指令和栈信息，知道遇到返回指令为止。
 
+    有了lua虚拟机，准备一个测试脚本sum.lua
+    反编译一下，看看都生成了什么指令
 
+    $ luac -l sum.lua 
 
+    main <sum.lua:0,0> (11 instructions at 0x7fba9dd00070)
+    0+ params, 6 slots, 1 upvalue, 5 locals, 4 constants, 0 functions
+        1   [7] LOADK       0 -1    ; 0
+        2   [9] LOADK       1 -2    ; 1
+        3   [9] LOADK       2 -3    ; 100
+        4   [9] LOADK       3 -2    ; 1
+        5   [9] FORPREP     1 4 ; to 10
+        6   [10]    MOD         5 4 -4  ; - 2
+        7   [10]    EQ          0 5 -1  ; - 0
+        8   [10]    JMP         0 1 ; to 10
+        9   [11]    ADD         0 0 4
+        10  [9] FORLOOP     1 -5    ; to 6
+        11  [13]    RETURN      0 1
+
+    除了return指令，其他的都实现好了。因为遇到return就结束循环，因此暂时没什么问题。后续在完善。
+    
+ ================
+ 
+        
 
 
 
