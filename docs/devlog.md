@@ -3271,8 +3271,16 @@ luaTable。
         panic("not a table!") // todo
     }
 
+    如果位于指定索引处的值不是table，就暂时调用panic，以后在完善。
 
+    4、GetField（）
 
+    GetField（）和 GetTable（） 类似，只不过key不是从栈顶pop的任意值，而是用参数传入的字符串。GetField（）用来从记录中获取字段。
+
+    func (self *luaState) GetField(idx int, k string) LuaType {
+        t := self.stack.get(idx)
+        return self.getTable(t, k)
+    }
 
 
 

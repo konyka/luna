@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:19:36
+* @Last Modified time: 2019-04-30 12:24:35
 */
 
 package state
@@ -62,6 +62,13 @@ func (self *luaState) getTable(t, k luaValue) LuaType {
     panic("not a table!") // todo
 }
 
+/**
+ * GetField（）用来从记录中获取字段。
+ */
+func (self *luaState) GetField(idx int, k string) LuaType {
+    t := self.stack.get(idx)
+    return self.getTable(t, k)
+}
 
 
 
