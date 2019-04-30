@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:45:53
+* @Last Modified time: 2019-04-30 12:55:48
 */
 
 package state
@@ -52,7 +52,19 @@ func (self *luaState) SetField(idx int, k string) {
     self.setTable(t, k, v)
 }
 
-
+/**
+ * [func SetI() 和SetField（）类似，只不过由参数传入的key是数组，而非字符串，用于按照索引修改数组的元素。
+ *  执行之后，值从栈顶弹出，并被写到数组中。]
+ * @Author   konyka
+ * @DateTime 2019-04-30T12:55:27+0800
+ * @param    {[type]}                 self *luaState)    SetI(idx int, i int64 [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) SetI(idx int, i int64) {
+    t := self.stack.get(idx)
+    v := self.stack.pop()
+    self.setTable(t, i, v)
+}
 
 
 

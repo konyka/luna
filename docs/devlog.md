@@ -3338,7 +3338,16 @@ Set方法
         self.setTable(t, k, v)
     }   
 
+    3、SetI()
 
+    SetI() 和SetField（）类似，只不过由参数传入的key是数组，而非字符串，用于按照索引修改数组的元素。
+    执行之后，值从栈顶弹出，并被写到数组中。
+
+    func (self *luaState) SetI(idx int, i int64) {
+        t := self.stack.get(idx)
+        v := self.stack.pop()
+        self.setTable(t, i, v)
+    }
 
 
 
