@@ -3756,7 +3756,7 @@ table相关的指令
     }
 
     state/lua_stack.go添加函数
-    
+
     popN(n int)从栈顶一次性弹出多个值。
 
     func (self *luaStack) popN(n int) []luaValue {
@@ -3768,9 +3768,22 @@ table相关的指令
     }
 
 
+    pushN()：向栈顶push多个值（多退少补）
 
+    func (self *luaStack) pushN(vals []luaValue, n int) {
+        nVals := len(vals)
+        if n < 0 {
+            n = nVals
+        }
 
-
+        for i := 0; i < n; i++ {
+            if i < nVals {
+                self.push(vals[i])
+            } else {
+                self.push(nil)
+            }
+        }
+    }
 
 
 

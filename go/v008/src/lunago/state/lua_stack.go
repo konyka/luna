@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 19:11:39
+* @Last Modified time: 2019-04-30 19:14:23
 */
 
 package state
@@ -143,4 +143,24 @@ func (self *luaStack) popN(n int) []luaValue {
 	return vals
 }
 
+/**
+ * [func pushN()：向栈顶push多个值（多退少补）]
+ * @Author   konyka
+ * @DateTime 2019-04-30T19:14:15+0800
+ * @param    {[type]}                 self *luaStack)    pushN(vals []luaValue, n int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaStack) pushN(vals []luaValue, n int) {
+	nVals := len(vals)
+	if n < 0 {
+		n = nVals
+	}
 
+	for i := 0; i < n; i++ {
+		if i < nVals {
+			self.push(vals[i])
+		} else {
+			self.push(nil)
+		}
+	}
+}
