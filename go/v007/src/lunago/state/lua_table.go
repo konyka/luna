@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 10:55:53
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 11:35:09
+* @Last Modified time: 2019-04-30 11:36:27
 */
 
 
@@ -113,7 +113,23 @@ func (self *luaTable) _shrinkArray() {
     }
 }
 
-
+/**
+ * [func _expandArray()动态扩展数组]
+ * @Author   konyka
+ * @DateTime 2019-04-30T11:36:12+0800
+ * @param    {[type]}                 self *luaTable)    _expandArray( [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaTable) _expandArray() {
+    for idx := int64(len(self.arr)) + 1; true; idx++ {
+        if val, found := self._map[idx]; found {
+            delete(self._map, idx)
+            self.arr = append(self.arr, val)
+        } else {
+            break
+        }
+    }
+}
 
 
 
