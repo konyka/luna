@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 10:55:53
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 11:20:18
+* @Last Modified time: 2019-04-30 11:26:18
 */
 
 
@@ -53,7 +53,49 @@ func _floatToInteger(key luaValue) luaValue {
     return key
 }
 
+/**
+ * [func  put()方法向表里保存键值对。]
+ * @Author   konyka
+ * @DateTime 2019-04-30T11:26:14+0800
+ * @param    {[type]}                 self *luaTable)    put(key, val luaValue [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaTable) put(key, val luaValue) {
+    if key == nil {
+        panic("table index is nil!")
+    }
+    if f, ok := key.(float64); ok && math.IsNaN(f) {
+        panic("table index is NaN!")
+    }
 
+    key = _floatToInteger(key)
+    if idx, ok := key.(int64); ok && idx >= 1 {
+        arrLen := int64(len(self.arr))
+        if idx <= arrLen {
+            self.arr[idx-1] = val
+            if idx == arrLen && val == nil {
+                self._shrinkArray()
+            }
+            return
+        }
+        if idx == arrLen+1 {
+            delete(self._map, key)
+            if val != nil {
+                self.arr = append(self.arr, val)
+                self._expandArray()
+            }
+            return
+        }
+    }
+    if val != nil {
+        if self._map == nil {
+            self._map = make(map[luaValue]luaValue, 8)
+        }
+        self._map[key] = val
+    } else {
+        delete(self._map, key)
+    }
+}
 
 
 

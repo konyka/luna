@@ -3106,11 +3106,58 @@ luaTable。
 
     _floatToInteger()尝试吧服点类型的key转换为整数：
 
-    
+    func _floatToInteger(key luaValue) luaValue {
+        if f, ok := key.(float64); ok {
+            if i, ok := number.FloatToInteger(f); ok {
+                return i
+            }
+        }
+        return key
+    }
 
+    put()方法向表里保存键值对。
 
+    func (self *luaTable) put(key, val luaValue) {
+        if key == nil {
+            panic("table index is nil!")
+        }
+        if f, ok := key.(float64); ok && math.IsNaN(f) {
+            panic("table index is NaN!")
+        }
 
+        key = _floatToInteger(key)
+        if idx, ok := key.(int64); ok && idx >= 1 {
+            arrLen := int64(len(self.arr))
+            if idx <= arrLen {
+                self.arr[idx-1] = val
+                if idx == arrLen && val == nil {
+                    self._shrinkArray()
+                }
+                return
+            }
+            if idx == arrLen+1 {
+                delete(self._map, key)
+                if val != nil {
+                    self.arr = append(self.arr, val)
+                    self._expandArray()
+                }
+                return
+            }
+        }
+        if val != nil {
+            if self._map == nil {
+                self._map = make(map[luaValue]luaValue, 8)
+            }
+            self._map[key] = val
+        } else {
+            delete(self._map, key)
+        }
+    }
 
+    先判断key是否是nil或者NaN，如果是则调用panic（），否则上市把key转换为整数。
+    如果key是整数，或者已经被转换为整数，且在数组索引范围之内，直接按照索引修改数组元素就可以了。向数组中放入nil值会产生hole，如果hole在数组末尾的话，则调用_shrinkArray()把尾部的hole全部删除。如果key是整数，并且刚刚超出数组索引的范围，并且值不是nil，就把值追加到数组的末尾，然后调用_expandArray()动态扩展数组。
+
+    如果值不是nil，就把键值对写到哈希表，否则把key从哈希表中删除，来节约空间。因为在穿件talbe的时候并不一定创建了哈希表部分，因此第一次写入的时候，需要创建哈希表。
 
 
 
