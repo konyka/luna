@@ -3168,11 +3168,22 @@ luaTable。
     }
 
 
+    func (self *luaTable) _expandArray() {
+        for idx := int64(len(self.arr)) + 1; true; idx++ {
+            if val, found := self._map[idx]; found {
+                delete(self._map, idx)
+                self.arr = append(self.arr, val)
+            } else {
+                break
+            }
+        }
+    }
 
+    _expandArray()在数组部分动态扩展以后，吧原本保存在哈希表中的某些值也挪到数组中。
 
+    由于set（）方法已经数组部分和哈希表部分进行了动态的调整，因此len（）方法就容易实现了：
 
-
-
+    
 
 
 

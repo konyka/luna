@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 10:55:53
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 11:36:27
+* @Last Modified time: 2019-04-30 11:40:09
 */
 
 
@@ -114,7 +114,8 @@ func (self *luaTable) _shrinkArray() {
 }
 
 /**
- * [func _expandArray()动态扩展数组]
+ * [func _expandArray()动态扩展数组
+ * _expandArray()在数组部分动态扩展以后，吧原本保存在哈希表中的某些值也挪到数组中。]
  * @Author   konyka
  * @DateTime 2019-04-30T11:36:12+0800
  * @param    {[type]}                 self *luaTable)    _expandArray( [description]
@@ -131,6 +132,12 @@ func (self *luaTable) _expandArray() {
     }
 }
 
+/**
+ * 获取长度
+ */
+func (self *luaTable) len() int {
+    return len(self.arr)
+}
 
 
 
