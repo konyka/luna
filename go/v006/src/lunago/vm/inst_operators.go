@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 20:32:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 08:31:56
+* @Last Modified time: 2019-04-30 08:39:17
 */
 
 package vm
@@ -197,4 +197,31 @@ func testSet(i Instruction, vm LuaVM) {
         vm.AddPC(1)
     }
 }
+
+
+/**
+ * [test if not (R(A) <=> C) then pc++]
+ * test指令（iABC模式），判断寄存器A（索引由操作数A指定）中的值转换为布尔值后
+ * 是否和操作数C表示的布尔值一致，
+ * 如果一致，则跳过下一条指令。test指令不使用操作数B，也不会改变寄存器的状态。
+ *
+ * 
+ * @Author   konyka
+ * @DateTime 2019-04-30T08:38:40+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func test(i Instruction, vm LuaVM) {
+    a, _, c := i.ABC()
+    a += 1
+
+    if vm.ToBoolean(a) != (c != 0) {
+        vm.AddPC(1)
+    }
+}
+
+
+
+
 

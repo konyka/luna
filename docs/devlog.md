@@ -2845,7 +2845,21 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
         }
 
 
+        3、test
+        test指令（iABC模式），判断寄存器A（索引由操作数A指定）中的值转换为布尔值后是否和操作数C表示的布尔值一致，如果一致，则跳过下一条指令。test指令不使用操作数B，也不会改变寄存器的状态。
 
+        if not（R（A）<=> C）then pc++
+
+        test是testset的特殊形式
+
+        func test(i Instruction, vm LuaVM) {
+            a, _, c := i.ABC()
+            a += 1
+
+            if vm.ToBoolean(a) != (c != 0) {
+                vm.AddPC(1)
+            }
+        
 
 
 
