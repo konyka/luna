@@ -3573,9 +3573,17 @@ table相关的指令
         return &closure{proto: proto}
     }
 
-    结构closure的实例或者指针对应lua语言的函数类型，修改typeOf函数，添加对函数类型的支持：
-    
+    结构closure的实例或者指针对应lua语言的函数类型，
+    state/lua_value.go修改typeOf函数，添加对函数类型的支持：
 
+    func typeOf(val luaValue) LuaType {
+        switch val.(type) {
+        ......
+        case *closure:
+            return LUA_TFUNCTION
+        ......
+        }
+    }
 
 
 
