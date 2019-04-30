@@ -2,11 +2,12 @@
 * @Author: konyka
 * @Date:   2019-04-27 15:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 16:20:19
+* @Last Modified time: 2019-04-30 09:22:31
 */
  
 package vm
 
+import "lunago/api"
 
 /* OpMode */
 /* basic instruction format */
@@ -86,6 +87,7 @@ type opcode struct {
 	argCMode byte // C arg mode
 	opMode   byte // op mode
 	name     string
+	action   func(i Instruction, vm api.LuaVM) // store Instruction function
 }
 
 var opcodes = []opcode{

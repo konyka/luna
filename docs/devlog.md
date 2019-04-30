@@ -2936,9 +2936,18 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
 
 
 
+指令的分发
+    前面提到过，可以使用一个巨大的switch-case语句进行指令的分发Dispatch。因为我们已经定义好了一个指令表，因此只要对它稍加扩展就可以通过查表的方式进行指令的分发。修改vm/opcodes.go中的结构体opcode：
 
+    增加
+    import "lunago/api"
 
+    type opcode struct {
+        ....//增加如下字段
+        action   func(i Instruction, vm api.LuaVM) //存放指令的实现函数。
+    }
 
+    给opcode字典添加了字段action，用来存放指令的实现函数。修改opcodes变量的初始化代码，给前面的指令添加上action。
 
 
 
