@@ -3456,9 +3456,22 @@ table相关的指令
     LFIELDS_PER_FLUSH 常量表示每个批次处理的数组元素数量，定义之：
 
 
-    实现了这5条指令以后，还需要把它们注册到指令表中。opcodes.go，修改opcodes的初始化代码。
+    实现了这5条指令以后，还需要把它们注册到指令表中。vm/opcodes.go，修改opcodes的初始化代码。
 
+    var opcodes = []opcode{
+    /*     T  A    B       C     mode         name       action */
+    // R(A) := R(B)[RK(C)]
+    opcode{0, 1, OpArgR, OpArgK, IABC , "GETTABLE", getTable}, 
+    // R(A)[RK(B)] := RK(C)
+    opcode{0, 0, OpArgK, OpArgK, IABC , "SETTABLE", setTable}, 
+    // R(A) := {} (size = B,C)
+    opcode{0, 1, OpArgU, OpArgU, IABC , "NEWTABLE", newTable}, 
+    // R(A)[(C-1)*FPF+i] := R(A+i), 1 <= i <= B
+    opcode{0, 0, OpArgU, OpArgU, IABC , "SETLIST ", setList},  
     
+    .............
+
+    }
 
 
 
