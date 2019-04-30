@@ -2804,13 +2804,45 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     先调用GetRK（）把两个要比较的值push到栈顶，然后调用Compare（）执行比较运算，如果比较结果和操作数A一致，就把pc++。因为Compare（）方法并没有把栈顶的值弹出，因此我们需要自己调用Pop（）清理栈顶。
 
 
+    func eq(i Instruction, vm LuaVM) { _compare(i, vm, LUA_OPEQ) } // ==
+    func lt(i Instruction, vm LuaVM) { _compare(i, vm, LUA_OPLT) } // <
+    func le(i Instruction, vm LuaVM) { _compare(i, vm, LUA_OPLE) } // <=
 
+    逻辑运算指令
 
+    对应lua中的逻辑运算符
 
+    1、not
+        not指令（iABC模式）进行的操作和一元算术运算符指令类似，对应lua中的逻辑非运算符
+        R（A）：= not R（B）
 
+        func not(i Instruction, vm LuaVM) {
+            a, b, _ := i.ABC()
+            a += 1
+            b += 1
 
+            vm.PushBoolean(!vm.ToBoolean(b))
+            vm.Replace(a)
+        }
 
+    2、testset
+        testset指令（iABC 模式），破案段寄存器B（索引由操作数B指定）中的值转换为布尔值之后，是否和操作数C表示的布尔值一致，如果一样，则将寄存器B中的值符知道寄存器A中，索引由操作数A指定，否则跳过下一条指令。
 
+        if（R（B）布尔比较 C ） then R（A）：= R（B）else pc++
+
+        该指令对应lua语言中的逻辑与和逻辑或运算符
+
+        func testSet(i Instruction, vm LuaVM) {
+            a, b, c := i.ABC()
+            a += 1
+            b += 1
+
+            if vm.ToBoolean(b) == (c != 0) {
+                vm.Copy(b, a)
+            } else {
+                vm.AddPC(1)
+            }
+        }
 
 
 

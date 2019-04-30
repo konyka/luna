@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 20:32:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 08:17:58
+* @Last Modified time: 2019-04-30 08:31:56
 */
 
 package vm
@@ -147,9 +147,54 @@ func _compare(i Instruction, vm LuaVM, op CompareOp) {
     vm.Pop(2)
 }
 
+/* compare op*/
+
+func eq(i Instruction, vm LuaVM) { _compare(i, vm, LUA_OPEQ) } // ==
+func lt(i Instruction, vm LuaVM) { _compare(i, vm, LUA_OPLT) } // <
+func le(i Instruction, vm LuaVM) { _compare(i, vm, LUA_OPLE) } // <=
+
+/* logical */
+
+// R(A) := not R(B)
+/**
+ * [not R(A) := not R(B)]
+ * @Author   konyka
+ * @DateTime 2019-04-30T08:22:34+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func not(i Instruction, vm LuaVM) {
+    a, b, _ := i.ABC()
+    a += 1
+    b += 1
+
+    vm.PushBoolean(!vm.ToBoolean(b))
+    vm.Replace(a)
+}
 
 
+/**
+ * [testSet if (R(B) <=> C) then R(A) := R(B) else pc++]
+ *testset指令（iABC 模式），破案段寄存器B（索引由操作数B指定）中的值转换为布尔值之后，
+ *是否和操作数C表示的布尔值一致，
+ *如果一样，则将寄存器B中的值符知道寄存器A中，索引由操作数A指定，否则跳过下一条指令。
+ *
+ * @Author   konyka
+ * @DateTime 2019-04-30T08:31:06+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func testSet(i Instruction, vm LuaVM) {
+    a, b, c := i.ABC()
+    a += 1
+    b += 1
 
-
-
+    if vm.ToBoolean(b) == (c != 0) {
+        vm.Copy(b, a)
+    } else {
+        vm.AddPC(1)
+    }
+}
 
