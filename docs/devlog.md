@@ -2777,10 +2777,31 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
             vm.Replace(a)
         }
 
+    在实现前面的指令时，最多只是往栈顶push了一两个值，所以我们可以在创建Lua栈的时候把容量设置的稍大一些，这样在push少量的值之前，就不需要检查栈的剩余空间了。但是concat指令则有所不同，因为进行拼接的值的数量不是固定的，所以在吧这些值push到栈顶之前，必须调用CheckStack（）确保还有足够的空间可以容纳这些值，否则可能会导致溢出。
 
 
+    比较指令
+    比较指令（iABC 模式），比较寄存器或者常量表里面的两个值（索引分别由操作数B、C指定），
+    如果比较结果和操作数A（转换为布尔值）匹配，则跳过下一条指令。比较指令不会改变寄存器的状态。
 
+    if（RK（B）op RK（C）～= A）then pc++
 
+    比较指令对应lua语言里面的比较运算符，当用于赋值的时候，需要和loadbool指令搭配使用。
+
+    在inst_operators.go文件中定义函数：
+
+    func _compare(i Instruction, vm LuaVM, op CompareOp) {
+        a, b, c := i.ABC()
+
+        vm.GetRK(b)
+        vm.GetRK(c)
+        if vm.Compare(-2, -1, op) != (a != 0) {
+            vm.AddPC(1)
+        }
+        vm.Pop(2)
+    }
+
+    先调用GetRK（）把两个要比较的值push到栈顶，然后调用Compare（）执行比较运算，如果比较结果和操作数A一致，就把pc++。因为Compare（）方法并没有把栈顶的值弹出，因此我们需要自己调用Pop（）清理栈顶。
 
 
 

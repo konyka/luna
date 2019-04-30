@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 20:32:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 22:44:48
+* @Last Modified time: 2019-04-30 08:17:58
 */
 
 package vm
@@ -94,7 +94,12 @@ func length(i Instruction, vm LuaVM) {
 
 /**
  * [concat R(A) := R(B).. ... ..R(C)
- * cancat(iABC 模式)，将连续的n个寄存器（起止索引分别由操作数B、C指定）里的值拼接，将结果放到另一个寄存器中（索引由操作数A指定）]
+ * cancat(iABC 模式)，将连续的n个寄存器（起止索引分别由操作数B、C指定）里的值拼接，
+ * 将结果放到另一个寄存器中（索引由操作数A指定）
+ * 在实现前面的指令时，最多只是往栈顶push了一两个值，所以我们可以在创建Lua栈的时候把容量设置的稍大一些，
+ * 这样在push少量的值之前，就不需要检查栈的剩余空间了。
+ * 但是concat指令则有所不同，因为进行拼接的值的数量不是固定的，所以在吧这些值push到栈顶之前，
+ * 必须调用CheckStack（）确保还有足够的空间可以容纳这些值，否则可能会导致溢出]
  * @Author   konyka
  * @DateTime 2019-04-29T22:44:01+0800
  * @param    {[type]}                 i  Instruction   [description]
@@ -115,5 +120,36 @@ func concat(i Instruction, vm LuaVM) {
     vm.Concat(n)
     vm.Replace(a)
 }
+
+
+/**
+ * [_compare if ((RK(B) op RK(C)) ~= A) then pc++
+ * 
+ * 比较指令（iABC 模式），比较寄存器或者常量表里面的两个值（索引分别由操作数B、C指定），
+ * 如果比较结果和操作数A（转换为布尔值）匹配，则跳过下一条指令。比较指令不会改变寄存器的状态。
+ * 
+ * if（RK（B）op RK（C）～= A）then pc++]
+ * @Author   konyka
+ * @DateTime 2019-04-30T08:10:33+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @param    {[type]}                 op CompareOp     [description]
+ * @return   {[type]}                    [description]
+ */
+func _compare(i Instruction, vm LuaVM, op CompareOp) {
+    a, b, c := i.ABC()
+
+    vm.GetRK(b)
+    vm.GetRK(c)
+    if vm.Compare(-2, -1, op) != (a != 0) {
+        vm.AddPC(1)
+    }
+    vm.Pop(2)
+}
+
+
+
+
+
 
 
