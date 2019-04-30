@@ -3314,7 +3314,9 @@ Set方法
         self.setTable(t, k, v)
     }
 
+    同样，也把写表的逻辑提取成setTable(）方法：
 
+    
 
 
 
