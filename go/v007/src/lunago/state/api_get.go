@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:10:21
+* @Last Modified time: 2019-04-30 12:16:17
 */
 
 package state
@@ -37,7 +37,14 @@ func (self *luaState) NewTable() {
     self.CreateTable(0, 0)
 }
 
-
+/**
+ * 根据key（从栈顶弹出）从表（索引由参数指定）里面取值，然后把值push到栈顶，并返回值的类型
+ */
+func (self *luaState) GetTable(idx int) LuaType {
+    t := self.stack.get(idx)
+    k := self.stack.pop()
+    return self.getTable(t, k)
+}
 
 
 

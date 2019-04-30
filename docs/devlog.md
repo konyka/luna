@@ -3249,9 +3249,15 @@ luaTable。
         self.CreateTable(0, 0)
     }
 
+    3、GetTable（）
 
+    GetTable（） 根据key（从栈顶弹出）从表（索引由参数指定）里面取值，然后把值push到栈顶，并返回值的类型。  
 
-
+    func (self *luaState) GetTable(idx int) LuaType {
+        t := self.stack.get(idx)
+        k := self.stack.pop()
+        return self.getTable(t, k)
+    }
 
 
 
