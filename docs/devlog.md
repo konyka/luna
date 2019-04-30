@@ -3786,8 +3786,26 @@ table相关的指令
     }
 
 
+    函数调用指令的实现
+    closure\call\return\vararg\tailcall\self
+
+    vm/inst_call.go实现上面的方法：
 
 
+    closure指令（iBx模式）把当前lua函数的子函数原型实例化为闭包，放到由操作数A指定的寄存器中，子函数原型来自当前函数原型的子函数原型列表，索引由操作数Bx指定
+
+    R(A) := closure(KPROTO[Bx])
+
+    closure 指令对应lua脚本里面的函数定义语句或者表达式。
+
+
+    func closure(i Instruction, vm LuaVM) {
+        a, bx := i.ABx()
+        a += 1
+
+        vm.LoadProto(bx)
+        vm.Replace(a)
+    }
 
 
 
