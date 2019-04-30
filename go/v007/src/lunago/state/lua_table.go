@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 10:55:53
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 11:07:50
+* @Last Modified time: 2019-04-30 11:16:41
 */
 
 
@@ -27,7 +27,18 @@ func newLuaTable(nArr, nRec int) *luaTable {
     return t
 }
 
-
+/**
+ * get（）方法根据key从表里面查找值。
+ */
+func (self *luaTable) get(key luaValue) luaValue {
+    key = _floatToInteger(key)
+    if idx, ok := key.(int64); ok {
+        if idx >= 1 && idx <= int64(len(self.arr)) {
+            return self.arr[idx-1]
+        }
+    }
+    return self._map[key]
+}
 
 
 
