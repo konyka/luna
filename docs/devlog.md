@@ -2884,12 +2884,11 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     还有一点需要解释的是，“<?=”,当step是正数的时候，含义为“<=”，也就是说继续循环的条件是index<=limit;当step是负数的时候，含义是“>=”，循环继续的条件就是index>=limit。
 
     具体实现：vm/inst_for.go
-    
+
     package vm
 
     import . "lunago/api"
 
-    // R(A)-=R(A+2); pc+=sBx
     func forPrep(i Instruction, vm LuaVM) {
         a, sBx := i.AsBx()
         a += 1
@@ -2915,6 +2914,25 @@ lua的指令，根据其作用，大致可以分为：常量加载指令、运�
     }
 
 
+    func forLoop(i Instruction, vm LuaVM) {
+        a, sBx := i.AsBx()
+        a += 1
+
+        // R(A)+=R(A+2);
+        vm.PushValue(a + 2)
+        vm.PushValue(a)
+        vm.Arith(LUA_OPADD)
+        vm.Replace(a)
+
+        isPositiveStep := vm.ToNumber(a+2) >= 0
+        if isPositiveStep && vm.Compare(a, a+1, LUA_OPLE) ||
+            !isPositiveStep && vm.Compare(a+1, a, LUA_OPLE) {
+
+            // pc+=sBx; R(A+3)=R(A)
+            vm.AddPC(sBx)
+            vm.Copy(a, a+3)
+        }
+    }
 
 
 
