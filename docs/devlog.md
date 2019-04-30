@@ -3366,12 +3366,43 @@ table相关的指令
 
     lua代码中的每条表构造器语句都会产生一条newtable指令。该指令可以通过CreateTable（）函数实现：
 
-    
+
+    func newTable(i Instruction, vm LuaVM) {
+        a, b, c := i.ABC()
+        a += 1
+
+        vm.CreateTable(Fb2int(b), Fb2int(c))
+        vm.Replace(a)
+    }
 
 
+    y因为newtable指令是iABC模式，操作数BC只有9个bit，所以当作无符号整数的话，最大不能超过512。前面说过，因为表构造器方便实用，所以lua也经常被用来描述数据，比如json数据，如果有很大的数据需要写成表构造器，但是表的初始容量又不够大，就容易导致表被频繁扩容，从而影响数据的加载效率。
+
+    为了解决这个问题，newtable指令的BC操作数使用了中叫做浮点字节的编码（floating point byte）方式。
+    这种编码方式和浮点数的编码方式类似，只是仅仅用一个字节，具体来说，如果把某个字节用2进制写成eeeexxx，那么当eeee == 0时，该字节表示的整数就是xxx，否则该字节表示的整数就是（1xxx）*2^(eeee -1).
+
+    lua官方实现中有现成的服点字节编码、解码函数。我们把它们拿过来，转换成go的函数，保存在vm/fpb.go中
+
+    2、gettable（）   
+
+    gettable（iABC模式）指令根据key从表中取值，并放到目标寄存器中。其中表位于寄存器中，索引有操作数B指定；key可能位于寄存器中，也可能在常量表中，索引由操作数C指定；目标寄存器的索引则由操作数A指定。
+
+    R(A) := R(B)[RK(C)]
+
+    该指令对应lua代码中的表索引取值操作。
+
+    该这令可以借助GetTable（）实现：
 
 
+    func getTable(i Instruction, vm LuaVM) {
+        a, b, c := i.ABC()
+        a += 1
+        b += 1
 
+        vm.GetRK(c)
+        vm.GetTable(b)
+        vm.Replace(a)
+}
 
 
 

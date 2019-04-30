@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 13:01:31
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 13:30:13
+* @Last Modified time: 2019-04-30 13:49:45
 */
 
 
@@ -30,7 +30,27 @@ func newTable(i Instruction, vm LuaVM) {
     vm.Replace(a)
 }
 
+// R(A) := R(B)[RK(C)]
+/**
+ * [getTable gettable（iABC模式）指令根据key从表中取值，并放到目标寄存器中。
+ * 其中表位于寄存器中，索引有操作数B指定；
+ * key可能位于寄存器中，也可能在常量表中，索引由操作数C指定；
+ * 目标寄存器的索引则由操作数A指定。]
+ * @Author   konyka
+ * @DateTime 2019-04-30T13:49:20+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func getTable(i Instruction, vm LuaVM) {
+    a, b, c := i.ABC()
+    a += 1
+    b += 1
 
+    vm.GetRK(c)
+    vm.GetTable(b)
+    vm.Replace(a)
+}
 
 
 
