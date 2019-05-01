@@ -4595,10 +4595,13 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         upvals []*upvalue
     }
 
+    需要注意的是，对于某个Upvalue来说，对它的任何改动，都必须反映在其他该Upvalue可见的地方。另外，当嵌套函数执行的时候，外围函数的局部变量有可能已经退出作用域了。为了应对这种情况，需要增加一个间接层，使用Upvalue结构体来封装Upvalue。
 
+    在closure。go文件中定义这个结构体
 
-
-
+    type upvalue struct {
+        val *luaValue
+    }
 
 
 
