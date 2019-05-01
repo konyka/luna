@@ -4058,10 +4058,38 @@ table相关的指令
     都处理好了以后，调用SetTop让栈顶恢复原始状态。
 
 
+单元测试
+
+    之前，因为还没有办法加载以及调用lua函数，只能把main函数指令的执行过程编码在luaMain（）中。现在既然又了load和call函数，luamain就可以不使用了。
+
+    修改main。go测试
+
+    package main
+
+    import "io/ioutil"
+    import "os"
+    import "luago/state"
+
+    func main() {
+        if len(os.Args) > 1 {
+            data, err := ioutil.ReadFile(os.Args[1])
+            if err != nil {
+                panic(err)
+            }
+
+            ls := state.New()
+            ls.Load(data, os.Args[1], "b")
+            ls.Call(0, 0)
+        }
+    }
 
 
+    4个步骤：
+    1、读取chunk 2、创建luaState实例 
+    3、调用Load（）把main函数加载到栈顶 
+    4、调用Call（）运行nain函数，没有给它传递任何参数，也不需要什么返回值。
 
-
+    
 
 
 
