@@ -3965,7 +3965,7 @@ table相关的指令
 
      R(A+1) := R(B); R(A) := R(B)[RK(C)]
 
-     
+
     func self(i Instruction, vm LuaVM) {
         a, b, c := i.ABC()
         a += 1
@@ -3977,7 +3977,7 @@ table相关的指令
         vm.Replace(a)
     }
 
-
+    注册上面的方法分到vm/opcodes.go 的 opcodes中
 
 
 
