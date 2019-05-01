@@ -2,10 +2,15 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:09:33
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 13:32:53
+* @Last Modified time: 2019-05-01 16:14:58
 */
 
 package api
+
+const LUA_MINSTACK = 20
+const LUAI_MAXSTACK = 1000000
+const LUA_REGISTRYINDEX = -LUAI_MAXSTACK - 1000
+const LUA_RIDX_GLOBALS int64 = 2
 
 /* basic types */
 const (

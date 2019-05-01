@@ -4265,11 +4265,19 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         return ls
     }
 
+    先创建注册表，然后预先在里面放置一个全局环境。全局环境也是一个普通的lua表，所有的lua全局变量都放在这里。
 
-    
+    创建好注册表以后，用它创建luaState结构体实例，然后往里面push一个空的lua栈（调用帧），之前，在创建lua栈的时候，吧预留的空间写成了20，这是一种很不好的做法，因此引入了一个常量LUA_MINSTACK.
 
+    加入其他的常量
+    api/consts.go
 
+    const LUA_MINSTACK = 20
+    const LUAI_MAXSTACK = 1000000
+    const LUA_REGISTRYINDEX = -LUAI_MAXSTACK - 1000
+    const LUA_RIDX_GLOBALS int64 = 2
 
+    LUA_RIDX_GLOBALS用于定义全局环境在注册表里面的索引。
 
 
 
