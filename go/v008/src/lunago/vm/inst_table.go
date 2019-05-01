@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 13:01:31
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 15:45:48
+* @Last Modified time: 2019-05-01 12:14:53
 */
 
 
@@ -103,12 +103,29 @@ func setList(i Instruction, vm LuaVM) {
         c = Instruction(vm.Fetch()).Ax()
     }
 
+    bIsZero := b == 0
+    if bIsZero {
+        b = int(vm.ToInteger(-1)) - a - 1
+        vm.Pop(1)
+    }
+
     vm.CheckStack(1)
     idx := int64(c * LFIELDS_PER_FLUSH)
     for j := 1; j <= b; j++ {
         idx++
         vm.PushValue(a + j)
         vm.SetI(a, idx)
+    }
+
+    if bIsZero {
+        for j := vm.RegisterCount() + 1; j <= vm.GetTop(); j++ {
+            idx++
+            vm.PushValue(j)
+            vm.SetI(a, idx)
+        }
+
+        // clear stack
+        vm.SetTop(vm.RegisterCount())
     }
 }
 

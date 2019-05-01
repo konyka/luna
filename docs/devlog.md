@@ -4019,11 +4019,43 @@ table相关的指令
     }
 
 
+    setlist加强
 
+    之前的 setlist，忽略了B=0的情况，当表构造器的最后一个元素是函数调用或者 vararg 表达式的时候，lua会把它们所产生的所有制都收集起来，供 setlist 使用
 
+    修改setList()函数，处理操作数 B = 0 的情况
+    vm/inst_table.go
 
+    func setList(i Instruction, vm LuaVM) {
 
+        ......
+        bIsZero := b == 0
+        if bIsZero {
+            b = int(vm.ToInteger(-1)) - a - 1
+            vm.Pop(1)
+        }
+        .....
+    }
 
+    记录下这种情况，然后适当的调整B操作数，先按照正常的逻辑处理寄存器中的值，寄存器处理完毕以后，在处理栈顶的值
+
+  func setList(i Instruction, vm LuaVM) {
+
+        ......
+            if bIsZero {
+            for j := vm.RegisterCount() + 1; j <= vm.GetTop(); j++ {
+                idx++
+                vm.PushValue(j)
+                vm.SetI(a, idx)
+            }
+
+            // clear stack
+            vm.SetTop(vm.RegisterCount())
+        }
+        .....
+    }
+  
+    都处理好了以后，调用SetTop让栈顶恢复原始状态。
 
 
 
