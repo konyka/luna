@@ -4394,7 +4394,20 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
     }
 
 
+    2、GetGlobal(name string) LuaType
 
+    由于全局环境主要是用来实现Lua全局变量的，所以里面的key基本上都是字符串。全局环境主要是当作记录来使用。为了便于操作，lua pai提供了GetGlobal，可以把全局环境中的某个字段(名字由参数指定)push栈顶。
+    state/api_get.go
+
+    func (self *luaState) GetGlobal(name string) LuaType {
+        t := self.registry.get(LUA_RIDX_GLOBALS)
+        return self.getTable(t, name)
+    }
+
+
+    
+        SetGlobal(name string)
+        Register(name string, f GoFunction)
 
 
 

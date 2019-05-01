@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:31:48
+* @Last Modified time: 2019-05-01 17:39:09
 */
 
 package state
@@ -78,7 +78,10 @@ func (self *luaState) GetI(idx int, i int64) LuaType {
     return self.getTable(t, i)
 }
 
-
+func (self *luaState) GetGlobal(name string) LuaType {
+    t := self.registry.get(LUA_RIDX_GLOBALS)
+    return self.getTable(t, name)
+}
 
 
 

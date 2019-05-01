@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 17:28:08
+* @Last Modified time: 2019-05-01 17:36:58
 */
 
 package state
@@ -84,6 +84,7 @@ func (self *luaState) PushGlobalTable() {
     global := self.registry.get(LUA_RIDX_GLOBALS)
     self.stack.push(global)
 }
+
 
 
 
