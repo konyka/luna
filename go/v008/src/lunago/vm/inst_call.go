@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 19:26:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 09:31:45
+* @Last Modified time: 2019-05-01 10:07:08
 */
 
 
@@ -134,5 +134,31 @@ func vararg(i Instruction, vm LuaVM) {
         _popResults(a, b, vm)
     }
 }
+
+
+
+/**
+ * [tailCall return R(A)(R(A+1), ... ,R(A+B-1))]
+ * @Author   konyka
+ * @DateTime 2019-05-01T10:06:56+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func tailCall(i Instruction, vm LuaVM) {
+    a, b, _ := i.ABC()
+    a += 1
+
+    // todo: optimize tail call!
+    c := 0
+    nArgs := _pushFuncAndArgs(a, b, vm)
+    vm.Call(nArgs, c-1)
+    _popResults(a, c, vm)
+}
+
+
+
+
+
 
 

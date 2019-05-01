@@ -3935,6 +3935,28 @@ table相关的指令
     }
 
 
+    如果操作数B>1,表示把 b -1个vararg参数复制到寄存器；否则只能=0，表示把全部vararg参数复制到寄存器。对于这两种情况，统一调用loadVararg()把vararg参数push到栈顶，剩下的工作交给_popResults()函数即可。loadVararg()方法需要在LuaVM接口中定义 todo
+
+    tailcall
+
+    函数调用一般通过调用栈来实现，使用这种方法，每调用一个函数都会产生一个调用帧。如果方法调用层次很深，特别是递归调用的时候，就容易导致调用栈的溢出。有什么办法，既能发挥递归调用的便捷，又能避免调用栈的溢出呢？？？？答案就是尾递归优化，利用这种技术，被调函数就可以重用主调函数的调用帧，因此可以有效缓解调用栈溢出的问题，不过尾递归优化仅仅适用于一些特定的情况，也不是很通用。
+
+    return会被lua编译器编译为tailcall（iABC 模式）
+
+     return R(A)(R(A+1), ... ,R(A+B-1))
+
+     
+    func tailCall(i Instruction, vm LuaVM) {
+        a, b, _ := i.ABC()
+        a += 1
+
+        // todo: optimize tail call!
+        c := 0
+        nArgs := _pushFuncAndArgs(a, b, vm)
+        vm.Call(nArgs, c-1)
+        _popResults(a, c, vm)
+    }
+
 
 
 
