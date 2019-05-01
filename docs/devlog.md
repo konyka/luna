@@ -3843,7 +3843,7 @@ table相关的指令
     }
 
 
-    如果操作数B>0就简单了，需要传递的参数是B -1 个，虚幻调用PushValue（）方法把函数和参数值push到栈顶即可。由于我们给指令预留的栈顶空间是很少的，而传入参数的数量却不确定，所以这里需要调用CheckStack（）方法确保栈顶有足够的空间可以容纳函数和参数值。当B=0的时候，以后在说。
+    如果操作数B>0就简单了，需要传递的参数是B -1 个，循环调用PushValue（）方法把函数和参数值push到栈顶即可。由于我们给指令预留的栈顶空间是很少的，而传入参数的数量却不确定，所以这里需要调用CheckStack（）方法确保栈顶有足够的空间可以容纳函数和参数值。当B=0的时候，以后在说。
 
     func _popResults(a, c int, vm LuaVM) {
         if c == 1 {
@@ -3860,13 +3860,32 @@ table相关的指令
     }
 
 
+    如果操作数C>1,则返回值数量是C-1，循环调用Replace（）方法把栈顶返回值移动到相应的寄存器就可以了；
+    如果操作数C=1，则返回值数量是0，不需要任何处理；如果C=0，那么需要把被调函数的返回值全部返回。对于最后这种情况，干脆就把这些返回值线留在栈顶，反正后面也是要把它们在push到栈顶的。先在栈顶push一个整数值，用来标记这些返回值原本是要移动到哪些寄存器中。
 
+    更新_pushFuncAndArgs
 
+    } else {//参数 B 等于 0 的情况
+        _fixStack(a, vm)
+        return vm.GetTop() - vm.RegisterCount() - 1
+    }
 
+    因为return指令也会有类似的情况，所以需要把相应的逻辑取到函数_fixStack()里，RegisterCount()方法返回当前函数的寄存器数量，需要在LuaVM接口中定义。
 
+    func _fixStack(a int, vm LuaVM) {
+        x := int(vm.ToInteger(-1))
+        vm.Pop(1)
 
+        vm.CheckStack(x - a)
+        for i := a; i < x; i++ {
+            vm.PushValue(i)
+        }
+        vm.Rotate(vm.RegisterCount()+1, x-a)
+    }
 
+    因为后半部分草数值已经在栈顶了，所以值需要把函数和前半部分参数值push到栈顶，然后旋转栈顶即可。
 
+    
 
 
 

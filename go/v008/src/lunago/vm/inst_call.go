@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 19:26:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 00:20:42
+* @Last Modified time: 2019-05-01 08:55:24
 */
 
 
@@ -59,7 +59,7 @@ func _pushFuncAndArgs(a, b int, vm LuaVM) (nArgs int) {
             vm.PushValue(i)
         }
         return b - 1
-    } else {
+    } else {//参数 B 等于 0 的情况
         _fixStack(a, vm)
         return vm.GetTop() - vm.RegisterCount() - 1
     }
@@ -81,7 +81,16 @@ func _popResults(a, c int, vm LuaVM) {
 }
 
 
+func _fixStack(a int, vm LuaVM) {
+    x := int(vm.ToInteger(-1))
+    vm.Pop(1)
 
+    vm.CheckStack(x - a)
+    for i := a; i < x; i++ {
+        vm.PushValue(i)
+    }
+    vm.Rotate(vm.RegisterCount()+1, x-a)
+}
 
 
 
