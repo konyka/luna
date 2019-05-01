@@ -4330,7 +4330,17 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
 
     注册表伪索引属于有效索引，所以直接返回true。
 
+    func (self *luaStack) get(idx int) luaValue {
+        if idx == LUA_REGISTRYINDEX {
+            return self.state.registry
+        }
 
+        absIdx := self.absIndex(idx)
+        if absIdx > 0 && absIdx <= self.top {
+            return self.slots[absIdx-1]
+        }
+        return nil
+    }
 
 
 
