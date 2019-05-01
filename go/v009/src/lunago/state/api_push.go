@@ -2,10 +2,12 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 17:36:58
+* @Last Modified time: 2019-05-01 21:20:51
 */
 
 package state
+
+import . "lunago/api"
 
 /**
  * [push nil to stack top]

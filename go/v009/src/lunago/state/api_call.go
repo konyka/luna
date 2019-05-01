@@ -2,14 +2,15 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 15:52:55
+* @Last Modified time: 2019-05-01 21:17:11
 */
 
 package state
 
-import "fmt"
 import "lunago/binchunk"
 import "lunago/vm"
+import . "lunago/api"
+
 
 /**
  * 加载chunk
@@ -52,7 +53,7 @@ func (self *luaState) callLuaClosure(nArgs, nResults int, c *closure) {
     isVararg := c.proto.IsVararg == 1
 
     // create new lua stack
-    newStack := newLuaStack(nRegs + 20)
+    newStack := newLuaStack(nRegs+LUA_MINSTACK, self)
     newStack.closure = c
 
     // pass args, pop func

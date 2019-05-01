@@ -2,10 +2,12 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 18:19:49
+* @Last Modified time: 2019-05-01 21:25:40
 */
 
 package state
+
+import . "lunago/api"
 
 /**
  * [func SetTable()把键值对写入表。其中key和value从栈中弹出，表则位于指定的索引处。]

@@ -4467,15 +4467,51 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         ...
     }
 
+单元测试
+
+增加了对供函数的支持，是时候写一个go函数了。
+
+    添加两个import
+
+    import "fmt"
+    import . "luago/api"
+
+    定义函数print
+
+    func print(ls LuaState) int {
+        nArgs := ls.GetTop()
+        for i := 1; i <= nArgs; i++ {
+            if ls.IsBoolean(i) {
+                fmt.Printf("%t", ls.ToBoolean(i))
+            } else if ls.IsString(i) {
+                fmt.Print(ls.ToString(i))
+            } else {
+                fmt.Print(ls.TypeName(ls.Type(i)))
+            }
+            if i < nArgs {
+                fmt.Print("\t")
+            }
+        }
+        fmt.Println()
+        return 0
+    }
 
 
+    由于Lua的print（）函数可以接收任意数量的参数，因此要做的第一件事情就是调用GetTop方法，看看栈里面有多少个值，换句话说，就是看看go函数接收到了多少个参数，接着取出这些参数，然后根据类型打印到控制台，饼子啊每两个值之间打印一个tab。lua的print不会返回任何值，所以打印完信息就没事了，也不用往栈里面push任何值，直接返回0就可以了。
 
+    将go的print注册到lua里面：
 
+    添加一行
+    func main() {
+        ....
+        ls.Register("print", print)
+        ....
 
+    }
 
+    创建好luaState实例以后，调用Register方法把刚才实现的print注册到全局环境。
 
-
-
+    
 
 
 
