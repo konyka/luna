@@ -3911,6 +3911,29 @@ table相关的指令
         }
     }
 
+    需要把返回值push到栈顶，如果操作数B=1，则不需要返回任何值；
+    如果操作数B>1,则需要返回B -1 个值，这些值已经在寄存器里面了，循环调用PushValue()复制到栈顶即可。
+    如果操作数B=0，则一部分返回值已经在栈顶了，调用_fixStack()函数吧另一部分也push到栈顶即可。
+
+    vararg
+
+    vararg指令(iABC 模式)把传递给当前函数的变长参数加载到连续的多个寄存器中，其中第一个寄存器的索引由
+    操作数A指定，寄存器数量由操作数B指定，操作数C没有使用。
+
+    R(A), R(A+1), ..., R(A+B-2) = vararg
+
+    对应lua脚本中的vararg表达式，由于编译器生成的main函数也是vararg函数，所以也可以在里面使用vararg表达式。从效果来看，vararg表达式和函数调用很像。在vararg函数内部，凡事能用函数调用表达式的地方，也能用vararg表达式 。如果把vararg表达式当作函数调用，其返回值就是变长参数，要进行多退少补。正因为如此，就可以重复使用call指定的部分代码来实现vararg指令。
+
+    func vararg(i Instruction, vm LuaVM) {
+        a, b, _ := i.ABC()
+        a += 1
+
+        if b != 1 { // b==0 or b>1
+            vm.LoadVararg(b - 1)
+            _popResults(a, b, vm)
+        }
+    }
+
 
 
 

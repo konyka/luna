@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 19:26:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 09:05:10
+* @Last Modified time: 2019-05-01 09:31:45
 */
 
 
@@ -117,6 +117,22 @@ func _return(i Instruction, vm LuaVM) {
     }
 }
 
+/**
+ * [vararg R(A), R(A+1), ..., R(A+B-2) = vararg]
+ * @Author   konyka
+ * @DateTime 2019-05-01T09:31:40+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func vararg(i Instruction, vm LuaVM) {
+    a, b, _ := i.ABC()
+    a += 1
 
+    if b != 1 { // b==0 or b>1
+        vm.LoadVararg(b - 1)
+        _popResults(a, b, vm)
+    }
+}
 
 
