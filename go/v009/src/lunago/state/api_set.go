@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 17:47:08
+* @Last Modified time: 2019-05-01 18:19:49
 */
 
 package state
@@ -79,8 +79,17 @@ func (self *luaState) SetGlobal(name string) {
     self.setTable(t, name, v)
 }
 
-
-
+/**
+ * [ 用于给全局环境注册go函数值，仅仅用于操作全局环境，字段名以及go函数从参数传入，不改变lua栈的状态。 ]
+ * @Author   konyka
+ * @DateTime 2019-05-01T18:19:35+0800
+ * @param    {[type]}                 self *luaState)    Register(name string, f GoFunction [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) Register(name string, f GoFunction) {
+    self.PushGoFunction(f)
+    self.SetGlobal(name)
+}
 
 
 

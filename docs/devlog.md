@@ -4422,11 +4422,14 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         self.setTable(t, name, v)
     }
 
-        Register(name string, f GoFunction)
+     4、Register(name string, f GoFunction)
 
+     用于给全局环境注册go函数值，仅仅用于操作全局环境，字段名以及go函数从参数传入，不改变lua栈的状态。
 
-
-
+     func (self *luaState) Register(name string, f GoFunction) {
+        self.PushGoFunction(f)
+        self.SetGlobal(name)
+    }
 
 
 
