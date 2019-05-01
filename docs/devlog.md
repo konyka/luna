@@ -4191,10 +4191,26 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
     先根据索引拿到值，看是否是闭包，如果是，直接返回goFunc字段的值（对于go
     闭包，该自动断就是期望的返回值，对于lua闭包，该字段为nil），否则返回nil。
 
+  调用go函数
+  state/api_call.go 
+  修改里面的Call
+
+  func (self *luaState) Call(nArgs, nResults int) {
+        val := self.stack.get(-(nArgs + 1))
+        if c, ok := val.(*closure); ok {
+            if c.proto != nil {
+                self.callLuaClosure(nArgs, nResults, c)
+            } else {
+                self.callGoClosure(nArgs, nResults, c)
+            }
+        } else {
+            panic("not function!")
+        }
+    }
+
+    主要改动在外层if中，根据proto判断要调用的是lua闭包还是go闭包，如果是lua闭包，交给allLuaClosure处理；如果是go闭包，交给callGoClosure处理。
+
     
-
-
-
 
 
 

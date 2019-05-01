@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 12:32:03
+* @Last Modified time: 2019-05-01 15:49:12
 */
 
 package state
@@ -36,11 +36,13 @@ func (self *luaState) Load(chunk []byte, chunkName, mode string) int {
 func (self *luaState) Call(nArgs, nResults int) {
     val := self.stack.get(-(nArgs + 1))
     if c, ok := val.(*closure); ok {
-        fmt.Printf("call %s<%d,%d>\n", c.proto.Source,
-            c.proto.LineDefined, c.proto.LastLineDefined)
-        self.callLuaClosure(nArgs, nResults, c)
+        if c.proto != nil {
+            self.callLuaClosure(nArgs, nResults, c)
+        } else {
+            self.callGoClosure(nArgs, nResults, c)
+        }
     } else {
-        panic("not a function!")
+        panic("not function!")
     }
 }
 
