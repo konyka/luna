@@ -4457,8 +4457,15 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
     姑且认为这个指令可以额把某个全局变量放到指定的寄存器中即可。
 
     编辑opcodes.go文件，修改指令表，把gettabup指令的实现方法注册进去。
+    vm/opcodes.go
 
-
+    添加
+    var opcodes = []opcode{
+        ....
+    // R(A) := UpValue[B][RK(C)]
+    opcode{0, 1, OpArgU, OpArgK, IABC /* */, "GETTABUP", getTabUp}, 
+        ...
+    }
 
 
 
