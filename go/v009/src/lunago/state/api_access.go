@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 13:12:10
+* @Last Modified time: 2019-05-01 15:41:14
 */
 
 package state
@@ -203,7 +203,16 @@ func (self *luaState) IsThread(idx int) bool {
     return self.Type(idx) == LUA_TTHREAD
 }
 
-
+/**
+ * 判断指定索引处的值是否可以转换为go函数。该方法以栈的索引为参数，返回布尔值，不会改变栈额状态。
+ */
+func (self *luaState) IsGoFunction(idx int) bool {
+    val := self.stack.get(idx)
+    if c, ok := val.(*closure); ok {
+        return c.goFunc != nil
+    }
+    return false
+}
 
 
 

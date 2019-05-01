@@ -4158,6 +4158,19 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
 
 
     2、IsGoFunction(idx int) bool
+
+    判断指定索引处的值是否可以转换为go函数。该方法以栈的索引为参数，返回布尔值，不会改变栈额状态。
+
+    state/api_access.go实现之
+
+    func (self *luaState) IsGoFunction(idx int) bool {
+        val := self.stack.get(idx)
+        if c, ok := val.(*closure); ok {
+            return c.goFunc != nil
+        }
+        return false
+    }
+
     3、ToGoFunction(idx int) GoFunction
 
 
