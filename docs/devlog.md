@@ -4603,9 +4603,15 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         val *luaValue
     }
 
+    修改newLuaClosure函数
 
-
-
+    func newLuaClosure(proto *binchunk.Prototype) *closure {
+        c := &closure{proto: proto}
+        if nUpvals := len(proto.Upvalues); nUpvals > 0 {
+            c.upvals = make([]*upvalue, nUpvals)
+        }
+        return c
+    }
 
 
 
