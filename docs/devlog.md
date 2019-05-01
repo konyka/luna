@@ -4089,22 +4089,50 @@ table相关的指令
     3、调用Load（）把main函数加载到栈顶 
     4、调用Call（）运行nain函数，没有给它传递任何参数，也不需要什么返回值。
 
-    
 
+    go run main.go  luac.out 
+    call @test.lua<0,0>
+    call @test.lua<6,17>
+    panic: GETTABUP
 
+    to do fix
 
+===================
 
+go函数调用
 
+仅仅使用lua函数能够做的事情有限，比如没有拌饭获取当前的时间，没有拌饭读取文件，也没有办法向控制台打印输出。如何在lua语言中调用go编写的函数？？？？
 
+s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相当挑剔的，并不是任何go函数都能使用。在lua看来，go函数和lua函数都是function类型，没办法简单区分一个函数到底是lua函数还是go函数。go函数以后叫做go闭包。
 
+ 、添加go函数类型
 
+ 要想让lua函数调用go编写的函数，需要一种机制，能够给go函数传递参数，并接收go函数的返回值。不过lua只能操作lua栈，咋办？在执行lua函数的时候，lua栈厂荡虚拟寄存器，提供给指令操作。在调用lua函数的时候，lua栈充当栈帧，提供参数和返回值。因此，可以利用lua栈给go函数传递参数和接收返回值。
 
+    go函数约定：接受一个LuaState接口类型的参数，返回一个整数。在go函数执行之前，lua栈里面是传入的参数值，没有别的。当go函数结束以后，吧需要返回的值留在栈顶，饭后返回一个整数表示返回值的个数。由于go函数返回了返回值的数量，因此在执行结束以后，就不用对栈进行清理了，把返回值留在栈顶就可以了。
 
+    api/lua_state.go 添加
 
+    type GoFunction func(LuaState) int
 
+    state/closure.go添加
 
+    import . "luago/api"
 
+    然后给结构体closure添加goFunc字段
 
+    type closure struct {
+        proto *binchunk.Prototype   // lua closure
+        goFunc GoFunction          // go closure
+    }
+
+    使用closure结构体表示lua以及go函数。如果proto不是nil，说明这是lua闭包。同理，goFunc。
+
+    添加创建go闭包的函数
+
+    func newGoClosure(f GoFunction) *closure {
+        return &closure{goFunc: f}
+    }
 
 
 
