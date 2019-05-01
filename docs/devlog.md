@@ -4432,7 +4432,31 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
     }
 
 
+    在Lua里面访问全局环境
+    如何在lua函数里面访问全局变量？
 
+    临时方法
+    vm/inst_upvalue.go，实现gettabup指令
+
+    package vm
+
+    import . "lunago/api"
+
+    // R(A) := UpValue[B][RK(C)]
+    func getTabUp(i Instruction, vm LuaVM) {
+        a, _, c := i.ABC()
+        a += 1
+
+        vm.PushGlobalTable()
+        vm.GetRK(c)
+        vm.GetTable(-2)
+        vm.Replace(a)
+        vm.Pop(1)
+    }
+
+    姑且认为这个指令可以额把某个全局变量放到指定的寄存器中即可。
+
+    编辑opcodes.go文件，修改指令表，把gettabup指令的实现方法注册进去。
 
 
 
