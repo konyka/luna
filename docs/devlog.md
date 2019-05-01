@@ -4319,10 +4319,16 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
 
     如果索引<LUA_REGISTRYINDEX,说明是伪索引，直接返回即可。
 
-    
+    func (self *luaStack) isValid(idx int) bool {
+        if idx == LUA_REGISTRYINDEX {
+            return true
+        }
+        absIdx := self.absIndex(idx)
+        return absIdx > 0 && absIdx <= self.top
+    }
 
 
-
+    注册表伪索引属于有效索引，所以直接返回true。
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 16:40:56
+* @Last Modified time: 2019-05-01 16:42:36
 */
 
 package state
@@ -88,6 +88,9 @@ func (self *luaStack) absIndex(idx int) int {
  * isValid()判断所有是否有效
  */
 func (self *luaStack) isValid(idx int) bool {
+	if idx == LUA_REGISTRYINDEX {
+		return true
+	}
 	absIdx := self.absIndex(idx)
 	return absIdx > 0 && absIdx <= self.top
 }
