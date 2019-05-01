@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 17:46:01
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 10:36:57
+* @Last Modified time: 2019-05-01 10:39:00
 */
 
 
@@ -75,4 +75,17 @@ func (self *luaState) LoadVararg(n int) {
 
     self.stack.check(n)
     self.stack.pushN(self.stack.varargs, n)
+}
+
+/**
+ * [func LoadProto(idx int)  把当前lua函数的子函数的原型 实例化为闭包 ，并push到栈顶]
+ * @Author   konyka
+ * @DateTime 2019-05-01T10:38:43+0800
+ * @param    {[type]}                 self *luaState)    LoadProto(idx int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) LoadProto(idx int) {
+    proto := self.stack.closure.proto.Protos[idx]
+    closure := newLuaClosure(proto)
+    self.stack.push(closure)
 }

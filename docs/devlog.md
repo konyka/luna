@@ -3997,8 +3997,8 @@ table相关的指令
     func (self *luaState) RegisterCount() int {
         return int(self.stack.closure.proto.MaxStackSize)
     }
-        
-    
+
+
     LoadVararg(n int)       //把传递给当前lua函数的变长参数push到栈顶 多退少补
 
     func (self *luaState) LoadVararg(n int) {
@@ -4010,7 +4010,13 @@ table相关的指令
         self.stack.pushN(self.stack.varargs, n)
     }
 
+    LoadProto(idx int)      //把当前lua函数的子函数的原型 实例化为闭包 ，并push到栈顶
 
+    func (self *luaState) LoadProto(idx int) {
+        proto := self.stack.closure.proto.Protos[idx]
+        closure := newLuaClosure(proto)
+        self.stack.push(closure)
+    }
 
 
 
