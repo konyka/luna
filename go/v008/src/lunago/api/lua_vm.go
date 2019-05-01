@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 16:42:33
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 10:26:59
+* @Last Modified time: 2019-05-01 10:31:08
 */
 
 package api
@@ -14,9 +14,9 @@ type LuaVM interface {
     Fetch() uint32        //取出当前的指令，将PC指向下一条指令
     GetConst(idx int)     //将指定的常量push到栈顶
     GetRK(rk int)         //将指定的常量或者栈值push到栈顶
-    RegisterCount() int     //计数器
-    LoadVararg(n int)       //加载vararg
-    LoadProto(idx int)      //加载原型
+    RegisterCount() int     //当前lua函数所操作的寄存器计数器
+    LoadVararg(n int)       //把传递给当前lua函数的变长参数push到栈顶 多退少补
+    LoadProto(idx int)      //把当前lua函数的子函数的原型 实例化为闭包 ，并push到栈顶
 }
 
 

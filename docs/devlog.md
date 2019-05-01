@@ -3979,9 +3979,18 @@ table相关的指令
 
     注册上面的方法分到vm/opcodes.go 的 opcodes中
 
+    扩展LuaVM接口
 
+    api/lua_vm.go 扩展LuaVM接口，添加方法
 
+    type LuaVM interface {
+        ......
+        RegisterCount() int     //当前lua函数所操作的寄存器计数器
+        LoadVararg(n int)       //把传递给当前lua函数的变长参数push到栈顶 多退少补
+        LoadProto(idx int)      //把当前lua函数的子函数的原型 实例化为闭包 ，并push到栈顶
+    }
 
+    
 
 
 
