@@ -4387,7 +4387,11 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         self.stack.push(global)
     }
 
+    还可以痛殴注册表伪索引来访问注册表，从中提取全局环境，比如
 
+    func (self *luaState) PushGlobalTable(){
+        self.GetI(LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS)
+    }
 
 
 

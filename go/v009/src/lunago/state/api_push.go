@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 17:26:38
+* @Last Modified time: 2019-05-01 17:28:08
 */
 
 package state
@@ -73,6 +73,13 @@ func (self *luaState) PushGoFunction(f GoFunction) {
     self.stack.push(newGoClosure(f))
 }
 
+/**
+ * [func 把全局环境push到栈顶]
+ * @Author   konyka
+ * @DateTime 2019-05-01T17:28:05+0800
+ * @param    {[type]}                 self *luaState)    PushGlobalTable( [description]
+ * @return   {[type]}                      [description]
+ */
 func (self *luaState) PushGlobalTable() {
     global := self.registry.get(LUA_RIDX_GLOBALS)
     self.stack.push(global)
