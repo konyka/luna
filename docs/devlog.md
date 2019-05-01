@@ -3990,10 +3990,14 @@ table相关的指令
         LoadProto(idx int)      //把当前lua函数的子函数的原型 实例化为闭包 ，并push到栈顶
     }
 
+    在state/api_vm.go中实现上面的方法
     
+    RegisterCount() int     //当前lua函数所操作的寄存器计数器   
 
-
-
+    func (self *luaState) RegisterCount() int {
+        return int(self.stack.closure.proto.MaxStackSize)
+    }
+        
 
 
 

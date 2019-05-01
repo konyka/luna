@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 17:46:01
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 18:09:39
+* @Last Modified time: 2019-05-01 10:35:46
 */
 
 
@@ -54,6 +54,11 @@ func (self *luaState) GetRK(rk int) {
     }
 }
 
-
+/**
+ *  RegisterCount() 当前lua函数所操作的寄存器计数器
+ */
+func (self *luaState) RegisterCount() int {
+    return int(self.stack.closure.proto.MaxStackSize)
+}
 
 
