@@ -3998,10 +3998,17 @@ table相关的指令
         return int(self.stack.closure.proto.MaxStackSize)
     }
         
+    
+    LoadVararg(n int)       //把传递给当前lua函数的变长参数push到栈顶 多退少补
 
+    func (self *luaState) LoadVararg(n int) {
+        if n < 0 {
+            n = len(self.stack.varargs)
+        }
 
-
-
+        self.stack.check(n)
+        self.stack.pushN(self.stack.varargs, n)
+    }
 
 
 

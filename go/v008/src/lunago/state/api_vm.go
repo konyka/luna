@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 17:46:01
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 10:35:46
+* @Last Modified time: 2019-05-01 10:36:57
 */
 
 
@@ -61,4 +61,18 @@ func (self *luaState) RegisterCount() int {
     return int(self.stack.closure.proto.MaxStackSize)
 }
 
+/**
+ * [func 把传递给当前lua函数的变长参数push到栈顶 多退少补]
+ * @Author   konyka
+ * @DateTime 2019-05-01T10:36:48+0800
+ * @param    {[type]}                 self *luaState)    LoadVararg(n int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) LoadVararg(n int) {
+    if n < 0 {
+        n = len(self.stack.varargs)
+    }
 
+    self.stack.check(n)
+    self.stack.pushN(self.stack.varargs, n)
+}
