@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 17:12:09
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 22:55:25
+* @Last Modified time: 2019-05-01 22:59:14
 */
 
 
@@ -34,9 +34,11 @@ func newLuaClosure(proto *binchunk.Prototype) *closure {
 /**
  * 创建go闭包的函数
  */
-func newGoClosure(f GoFunction) *closure {
-    return &closure{goFunc: f}
+func newGoClosure(f GoFunction, nUpvals int) *closure {
+    c := &closure{goFunc: f}
+    if nUpvals > 0 {
+        c.upvals = make([]*upvalue, nUpvals)
+    }
+    return c
 }
-
-
 

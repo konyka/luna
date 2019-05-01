@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 21:20:51
+* @Last Modified time: 2019-05-01 23:01:54
 */
 
 package state
@@ -72,7 +72,7 @@ func (self *luaState) PushString(s string) {
  * @return   {[type]}                      [description]
  */
 func (self *luaState) PushGoFunction(f GoFunction) {
-    self.stack.push(newGoClosure(f))
+    self.stack.push(newGoClosure(f, 0))
 }
 
 /**

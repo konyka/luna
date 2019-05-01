@@ -4613,14 +4613,23 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         return c
     }
 
+    lua闭包捕获的Upvalue数量以ing由编译器计算好了，在创建Lua闭包的时候，预先分配好空间即可。初始化Upvalue则由Lua API负责。不仅lua闭包可以捕获Upvalue，go闭包也可以捕获Upvalue。与lua闭包不同的是，需要在创建go闭包的时候，明确指定Upvalue的数量。
 
+    修改newGoClosure（）函数
 
+    func newGoClosure(f GoFunction, nUpvals int) *closure {
+        c := &closure{goFunc: f}
+        if nUpvals > 0 {
+            c.upvals = make([]*upvalue, nUpvals)
+        }
+        return c
+    }
 
+    由于给newGoClosure函数增加了一个参数，所以破坏了PushGoFunction（）的实现代码，因此修改这个方法，api_push.go
 
-
-
-
-
+    func (self *luaState) PushGoFunction(f GoFunction) {
+        self.stack.push(newGoClosure(f, 0))
+    }
 
 
 
