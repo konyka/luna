@@ -4342,9 +4342,25 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         return nil
     }
 
+    如果索引是注册表伪索引，直接返回注册表。
 
+    func (self *luaStack) set(idx int, val luaValue) {
+        if idx == LUA_REGISTRYINDEX {
+            self.state.registry = val.(*luaTable)
+            return
+        }
 
+        absIdx := self.absIndex(idx)
+        if absIdx > 0 && absIdx <= self.top {
+            self.slots[absIdx-1] = val
+            return
+        }
+        panic("invalid index!")
+    }
 
+    如果索引是注册表伪索引，直接修改注册表。这里并没有检查传入的值是不是真的lua表，所以如果传入的是其他类型的值可能会导致注册表变成nil。
+
+    
 
 
 

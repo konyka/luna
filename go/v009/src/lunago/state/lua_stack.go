@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 16:43:53
+* @Last Modified time: 2019-05-01 16:45:02
 */
 
 package state
@@ -118,6 +118,11 @@ func (self *luaStack) get(idx int) luaValue {
  * @return   {[type]}                      [description]
  */
 func (self *luaStack) set(idx int, val luaValue) {
+	if idx == LUA_REGISTRYINDEX {
+		self.state.registry = val.(*luaTable)
+		return
+	}
+
 	absIdx := self.absIndex(idx)
 	if absIdx > 0 && absIdx <= self.top {
 		self.slots[absIdx-1] = val
