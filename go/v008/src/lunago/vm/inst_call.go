@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 19:26:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 10:07:08
+* @Last Modified time: 2019-05-01 10:14:37
 */
 
 
@@ -156,7 +156,25 @@ func tailCall(i Instruction, vm LuaVM) {
     _popResults(a, c, vm)
 }
 
+// R(A+1) := R(B); R(A) := R(B)[RK(C)]
+/**
+ * [self R(A+1) := R(B); R(A) := R(B)[RK(C)]]
+ * @Author   konyka
+ * @DateTime 2019-05-01T10:14:31+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func self(i Instruction, vm LuaVM) {
+    a, b, c := i.ABC()
+    a += 1
+    b += 1
 
+    vm.Copy(b, a+1)
+    vm.GetRK(c)
+    vm.GetTable(b)
+    vm.Replace(a)
+}
 
 
 

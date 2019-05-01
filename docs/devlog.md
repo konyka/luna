@@ -3945,7 +3945,7 @@ table相关的指令
 
      return R(A)(R(A+1), ... ,R(A+B-1))
 
-     
+
     func tailCall(i Instruction, vm LuaVM) {
         a, b, _ := i.ABC()
         a += 1
@@ -3957,9 +3957,25 @@ table相关的指令
         _popResults(a, c, vm)
     }
 
+    self
+    lua不是面向对象的语言，不过提供了一些语法和底层的支持，利用这些，可以够再出一套面向对象的体系。self
+    指令主要用来优化方法调用语法糖。
 
+    self指令（iABC模式），把对此昂和方法复制到相邻的两个目标寄存器中。对象在寄存器中，索引由操作数B指定。方法名在常量表中，索引由操作数C指定。目标寄存器的索引由操作数A指定
 
+     R(A+1) := R(B); R(A) := R(B)[RK(C)]
 
+     
+    func self(i Instruction, vm LuaVM) {
+        a, b, c := i.ABC()
+        a += 1
+        b += 1
+
+        vm.Copy(b, a+1)
+        vm.GetRK(c)
+        vm.GetTable(b)
+        vm.Replace(a)
+    }
 
 
 
