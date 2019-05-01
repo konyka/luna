@@ -4147,8 +4147,18 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         ToGoFunction(idx int) GoFunction
     }
 
+    1、PushGoFunction(f GoFunction)
+
+    接受一个go函数参数，把它转换为go闭包，然后push到栈顶。
+    state/api_push.go实现之
+
+    func (self *luaState) PushGoFunction(f GoFunction) {
+        self.stack.push(newGoClosure(f))
+    }
 
 
+    2、IsGoFunction(idx int) bool
+    3、ToGoFunction(idx int) GoFunction
 
 
 

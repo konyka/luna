@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 22:36:31
+* @Last Modified time: 2019-05-01 15:36:57
 */
 
 package state
@@ -62,6 +62,16 @@ func (self *luaState) PushString(s string) {
     self.stack.push(s)
 }
 
+/**
+ * [func 接受一个go函数参数，把它转换为go闭包，然后push到栈顶。]
+ * @Author   konyka
+ * @DateTime 2019-05-01T15:36:48+0800
+ * @param    {[type]}                 self *luaState)    PushGoFunction(f GoFunction [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) PushGoFunction(f GoFunction) {
+    self.stack.push(newGoClosure(f))
+}
 
 
 
