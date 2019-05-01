@@ -4210,8 +4210,34 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
 
     主要改动在外层if中，根据proto判断要调用的是lua闭包还是go闭包，如果是lua闭包，交给allLuaClosure处理；如果是go闭包，交给callGoClosure处理。
 
-    
+    func (self *luaState) callGoClosure(nArgs, nResults int, c *closure) {
+        // create new lua stack
+        newStack := newLuaStack(nArgs+LUA_MINSTACK, self)
+        newStack.closure = c
 
+        // pass args, pop func
+        if nArgs > 0 {
+            args := self.stack.popN(nArgs)
+            newStack.pushN(args, nArgs)
+        }
+        self.stack.pop()
+
+        // run closure
+        self.pushLuaStack(newStack)
+        r := c.goFunc(self)
+        self.popLuaStack()
+
+        // return results
+        if nResults != 0 {
+            results := newStack.popN(r)
+            self.stack.check(len(results))
+            self.stack.pushN(results, nResults)
+        }
+    }
+
+    先创建心的调用帧，然后把参数值从主调帧弹出，push到被调帧。go闭包直接从主调帧里面弹出，扔掉即可。参数传递完毕以后，把被调帧push到条用栈，让它成为当前帧，然后直接执行go函数。执行完毕以后，把被调帧从调用栈pop，这样主调帧就有成了当前帧。最后（如果有必要），还需要把返回值从被调帧里面弹出，push到主调帧（多退少补）。
+
+    
 
 
 

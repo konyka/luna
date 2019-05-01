@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 15:49:12
+* @Last Modified time: 2019-05-01 15:52:55
 */
 
 package state
@@ -88,6 +88,31 @@ func (self *luaState) runLuaClosure() {
     }
 }
 
+
+func (self *luaState) callGoClosure(nArgs, nResults int, c *closure) {
+    // create new lua stack
+    newStack := newLuaStack(nArgs+LUA_MINSTACK, self)
+    newStack.closure = c
+
+    // pass args, pop func
+    if nArgs > 0 {
+        args := self.stack.popN(nArgs)
+        newStack.pushN(args, nArgs)
+    }
+    self.stack.pop()
+
+    // run closure
+    self.pushLuaStack(newStack)
+    r := c.goFunc(self)
+    self.popLuaStack()
+
+    // return results
+    if nResults != 0 {
+        results := newStack.popN(r)
+        self.stack.check(len(results))
+        self.stack.pushN(results, nResults)
+    }
+}
 
 
 
