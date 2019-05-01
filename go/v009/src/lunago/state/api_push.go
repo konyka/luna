@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 15:36:57
+* @Last Modified time: 2019-05-01 17:26:38
 */
 
 package state
@@ -73,7 +73,10 @@ func (self *luaState) PushGoFunction(f GoFunction) {
     self.stack.push(newGoClosure(f))
 }
 
-
+func (self *luaState) PushGlobalTable() {
+    global := self.registry.get(LUA_RIDX_GLOBALS)
+    self.stack.push(global)
+}
 
 
 
