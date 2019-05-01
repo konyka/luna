@@ -4404,9 +4404,24 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         return self.getTable(t, name)
     }
 
+    也可以使用PushGlobalTable()以及GetField（）实现
 
-    
-        SetGlobal(name string)
+     func (self *luaState) GetGlobal(name string) LuaType {
+        self.PushGlobalTable()
+        return self.GetField(t, name)
+    }
+
+     3、SetGlobal(name string)
+
+     往全局环境里面写入一个值，其中的字段名由参数指定，值从栈顶弹出。
+    state/api_set.go
+
+    func (self *luaState) SetGlobal(name string) {
+        t := self.registry.get(LUA_RIDX_GLOBALS)
+        v := self.stack.pop()
+        self.setTable(t, name, v)
+    }
+
         Register(name string, f GoFunction)
 
 

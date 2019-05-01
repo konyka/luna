@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 12:55:48
+* @Last Modified time: 2019-05-01 17:47:08
 */
 
 package state
@@ -66,7 +66,18 @@ func (self *luaState) SetI(idx int, i int64) {
     self.setTable(t, i, v)
 }
 
-
+/**
+ * [func 往全局环境里面写入一个值，其中的字段名由参数指定，值从栈顶弹出。]
+ * @Author   konyka
+ * @DateTime 2019-05-01T17:47:03+0800
+ * @param    {[type]}                 self *luaState)    SetGlobal(name string [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) SetGlobal(name string) {
+    t := self.registry.get(LUA_RIDX_GLOBALS)
+    v := self.stack.pop()
+    self.setTable(t, name, v)
+}
 
 
 
