@@ -4298,7 +4298,7 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
 
     让luaStack引用luaState，这样就可以间接访问注册表了。
     修改newluaStack，给state赋值
-    
+
     func newLuaStack(size int, state *luaState) *luaStack {
         return &luaStack{
             slots: make([]luaValue, size),
@@ -4307,9 +4307,19 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         }
     }
 
+    继续修改luaStack结构体的其他方法，让它们支持注册表伪索引。
+
+    func (self *luaStack) absIndex(idx int) int {
+        if idx >= 0 || idx <= LUA_REGISTRYINDEX {
+            return idx
+        }
+        return idx + self.top + 1
+    }
 
 
+    如果索引<LUA_REGISTRYINDEX,说明是伪索引，直接返回即可。
 
+    
 
 
 

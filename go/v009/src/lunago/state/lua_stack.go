@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 16:37:27
+* @Last Modified time: 2019-05-01 16:40:56
 */
 
 package state
@@ -77,11 +77,12 @@ func (self *luaStack) pop() luaValue {
  * absIndex()方法吧索引切换成绝对索引--并没有考虑索引是否有效
  */
 func (self *luaStack) absIndex(idx int) int {
-	if idx >= 0 {
+	if idx >= 0 || idx <= LUA_REGISTRYINDEX {
 		return idx
 	}
 	return idx + self.top + 1
 }
+
 
 /**
  * isValid()判断所有是否有效
