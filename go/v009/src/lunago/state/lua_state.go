@@ -2,11 +2,13 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:24:28
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 12:51:46
+* @Last Modified time: 2019-05-01 16:05:31
 */
 
 
 package state
+
+import . "lunago/api"
 
 //import "lunago/binchunk"
 /**
@@ -14,6 +16,7 @@ package state
  * 
  */
 type luaState struct {
+    registry *luaTable
     stack *luaStack
 //    proto *binchunk.Prototype //保存函数原型
 //    pc    int //程序计数器
