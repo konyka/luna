@@ -4288,9 +4288,24 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
     为了支持注册表的伪索引，需要从luaStack里面访问注册表。state/lua_stack.go
     添加luastack结构体字段
 
+    type luaStack struct {
+        ......
+        state   *luaState
+        ......
+
+    }
+
+
+    让luaStack引用luaState，这样就可以间接访问注册表了。
+    修改newluaStack，给state赋值
     
-
-
+    func newLuaStack(size int, state *luaState) *luaStack {
+        return &luaStack{
+            slots: make([]luaValue, size),
+            top:   0,
+            state: state,
+        }
+    }
 
 
 

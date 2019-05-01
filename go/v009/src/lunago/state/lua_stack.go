@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 16:34:54
+* @Last Modified time: 2019-05-01 16:37:27
 */
 
 package state
@@ -23,10 +23,11 @@ type luaStack struct {
 /**
  * 创建指定容量的栈
  */
-func newLuaStack(size int) *luaStack {
+func newLuaStack(size int, state *luaState) *luaStack {
 	return &luaStack{
 		slots: make([]luaValue, size),
 		top:   0,
+		state: state,
 	}
 }
 
