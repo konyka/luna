@@ -4254,10 +4254,19 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         stack *luaStack
     }
 
-    由于注册表是全局的，每个lua解释器实例都有自己的注册表，因此将其放在lusState结构体里比较合适。
+    由于注册表是全局的，每个lua解释器实例都有自己的注册表，因此将其放在lusState结构体里比较合适。需要在创建luaState实例的时候初始化注册表，修改New函数
+
+    func New() *luaState {
+        registry := newLuaTable(0, 0)
+        registry.put(LUA_RIDX_GLOBALS, newLuaTable(0, 0))
+
+        ls := &luaState{registry: registry}
+        ls.pushLuaStack(newLuaStack(LUA_MINSTACK, ls))
+        return ls
+    }
 
 
-
+    
 
 
 
