@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 19:26:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 08:55:24
+* @Last Modified time: 2019-05-01 09:05:10
 */
 
 
@@ -92,7 +92,30 @@ func _fixStack(a int, vm LuaVM) {
     vm.Rotate(vm.RegisterCount()+1, x-a)
 }
 
+/**
+ * [_return return R(A), ... ,R(A+B-2)]
+ * @Author   konyka
+ * @DateTime 2019-05-01T09:05:00+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func _return(i Instruction, vm LuaVM) {
+    a, b, _ := i.ABC()
+    a += 1
 
+    if b == 1 {
+        // no return values
+    } else if b > 1 {
+        // b-1 return values
+        vm.CheckStack(b - 1)
+        for i := a; i <= a+b-2; i++ {
+            vm.PushValue(i)
+        }
+    } else {
+        _fixStack(a, vm)
+    }
+}
 
 
 

@@ -3885,10 +3885,31 @@ table相关的指令
 
     因为后半部分草数值已经在栈顶了，所以值需要把函数和前半部分参数值push到栈顶，然后旋转栈顶即可。
 
-    
+    return
+
+    return指令（iABC 参数）把存放爱连续多个寄存器里面的值返回给主调函数。其中第一个寄存器的索引由操作数A指定，寄存器的数量由操作数B指定，操作数C没有使用。
+
+    return R(A), ... ,R(A+B-2)
 
 
+    return指令对应lua脚本里面的return语句
 
+    func _return(i Instruction, vm LuaVM) {
+        a, b, _ := i.ABC()
+        a += 1
+
+        if b == 1 {
+            // no return values
+        } else if b > 1 {
+            // b-1 return values
+            vm.CheckStack(b - 1)
+            for i := a; i <= a+b-2; i++ {
+                vm.PushValue(i)
+            }
+        } else {
+            _fixStack(a, vm)
+        }
+    }
 
 
 
