@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 14:55:24
+* @Last Modified time: 2019-05-01 15:31:34
 */
 
 
@@ -79,6 +79,10 @@ type LuaState interface {
     /* 'load' and 'call' functions (load and run Lua code) */
     Load(chunk []byte, chunkName, mode string) int
     Call(nArgs, nResults int)
+
+    PushGoFunction(f GoFunction)
+    IsGoFunction(idx int) bool
+    ToGoFunction(idx int) GoFunction
 }
 
 

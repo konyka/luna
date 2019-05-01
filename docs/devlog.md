@@ -4134,9 +4134,18 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         return &closure{goFunc: f}
     }
 
+    扩展lua api
 
+    go函数要进入lua栈，变成go闭包才能被lua所使用。lua api提供了PushGoFuncion(),作用就是把go函数转换为go闭包，并放到栈顶。另一方面，lua api提供了IsGoFunction 和 ToGoFunction函数，可以把栈里面的go闭包在转换为go函数返回给用户。
 
+    api/lua_state.go，给LuaState添加3方法
 
+    type LuaState interface {
+        .....
+        PushGoFunction(f GoFunction)
+        IsGoFunction(idx int) bool
+        ToGoFunction(idx int) GoFunction
+    }
 
 
 
