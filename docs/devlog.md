@@ -4360,7 +4360,22 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
 
     如果索引是注册表伪索引，直接修改注册表。这里并没有检查传入的值是不是真的lua表，所以如果传入的是其他类型的值可能会导致注册表变成nil。
 
-    
+    全局环境
+
+    lua全局变量是保存在全局环境里面，而全局环境也只是保存在注册表中的一个普通表。扩展lua api，增加对全局环境的操作。
+
+    使用api操作全局环境
+
+    lua api提供了四个方法，用来操作全局环境。api/lua_state.go，给接口LuaState增加方法
+
+    type LuaState interface {
+        ......
+        
+        PushGlobalTable()
+        GetGlobal(name string) LuaType
+        SetGlobal(name string)
+        Register(name string, f GoFunction)
+    }
 
 
 

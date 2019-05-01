@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 15:31:34
+* @Last Modified time: 2019-05-01 16:55:46
 */
 
 
@@ -83,6 +83,11 @@ type LuaState interface {
     PushGoFunction(f GoFunction)
     IsGoFunction(idx int) bool
     ToGoFunction(idx int) GoFunction
+
+    PushGlobalTable()
+    GetGlobal(name string) LuaType
+    SetGlobal(name string)
+    Register(name string, f GoFunction)
 }
 
 
