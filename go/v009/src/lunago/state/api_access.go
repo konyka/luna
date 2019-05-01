@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 15:41:14
+* @Last Modified time: 2019-05-01 15:45:16
 */
 
 package state
@@ -214,7 +214,17 @@ func (self *luaState) IsGoFunction(idx int) bool {
     return false
 }
 
-
+/**
+ * 把指定索引处的值转换为go函数并返回。
+ * 如果值无法转换为go函数，返回nil。该方法以栈索引为参数，不改变栈状态。
+ */
+func (self *luaState) ToGoFunction(idx int) GoFunction {
+    val := self.stack.get(idx)
+    if c, ok := val.(*closure); ok {
+        return c.goFunc
+    }
+    return nil
+}
 
 
 

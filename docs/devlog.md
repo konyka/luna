@@ -4171,14 +4171,27 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         return false
     }
 
+    先根据索引拿到值，然后看它是否是闭包，如果是，进一步看它是不是go闭包，只有go闭包菜可以转换为go函数。
+
     3、ToGoFunction(idx int) GoFunction
 
+    把指定索引处的值转换为go函数并返回。如果值无法转换为go函数，返回nil。该方法以栈索引为参数，不改变栈状态。
+
+    state/api_access.go
+
+    func (self *luaState) ToGoFunction(idx int) GoFunction {
+        val := self.stack.get(idx)
+        if c, ok := val.(*closure); ok {
+            return c.goFunc
+        }
+        return nil
+    }
 
 
+    先根据索引拿到值，看是否是闭包，如果是，直接返回goFunc字段的值（对于go
+    闭包，该自动断就是期望的返回值，对于lua闭包，该字段为nil），否则返回nil。
 
-
-
-
+    
 
 
 
