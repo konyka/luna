@@ -2,14 +2,14 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 19:08:37
+* @Last Modified time: 2019-05-01 12:32:03
 */
 
 package state
 
 import "fmt"
-import "luago/binchunk"
-import "luago/vm"
+import "lunago/binchunk"
+import "lunago/vm"
 
 /**
  * 加载chunk
