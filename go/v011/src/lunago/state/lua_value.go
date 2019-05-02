@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 17:28:30
+* @Last Modified time: 2019-05-02 13:20:34
 */
 
 package state
@@ -103,6 +103,26 @@ func _stringToInteger(s string) (int64, bool) {
 	}
 	return 0, false
 }
+/* metatable */
+
+/**
+ * [setMetatable setMetatable 用来给值关联元表 ]
+ * @Author   konyka
+ * @DateTime 2019-05-02T13:20:03+0800
+ * @param    {[type]}                 val luaValue  [description]
+ * @param    {[type]}                 mt  *luaTable [description]
+ * @param    {[type]}                 ls  *luaState [description]
+ */
+func setMetatable(val luaValue, mt *luaTable, ls *luaState) {
+	if t, ok := val.(*luaTable); ok {
+		t.metatable = mt
+		return
+	}
+	key := fmt.Sprintf("_MT%d", typeOf(val))
+	ls.registry.put(key, mt)
+}
+
+
 
 
 
