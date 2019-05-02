@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 14:58:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 14:32:49
+* @Last Modified time: 2019-05-02 14:36:24
 */
 
 
@@ -112,7 +112,7 @@ func _lt(a, b luaValue, ls *luaState) bool {
 /**
  * <=
  */
-func _le(a, b luaValue) bool {
+func _le(a, b luaValue, ls *luaState) bool {
     switch x := a.(type) {
     case string:
         if y, ok := b.(string); ok {
@@ -133,7 +133,14 @@ func _le(a, b luaValue) bool {
             return x <= float64(y)
         }
     }
-    panic("comparison error!")
+
+    if result, ok := callMetamethod(a, b, "__le", ls); ok {
+        return convertToBoolean(result)
+    } else if result, ok := callMetamethod(b, a, "__lt", ls); ok {
+        return !convertToBoolean(result)
+    } else {
+        panic("comparison error!")
+    }
 }
 
 
