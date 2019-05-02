@@ -4922,7 +4922,7 @@ Upvalue相关的指令
     }
 
 
-    处于开始状态的Upvalue引用了还在寄存器中的值，把这些lua值从寄存器里面复制出来，然后更新Upvalue，这样就将其更改为闭合状态了。修改opcodes。go中的指令表，注册上面的函数。
+    处于开始状态的Upvalue引用了还在寄存器中的值，把这些lua值从寄存器里面复制出来，然后更新Upvalue，这样就将其更改为闭合状态了。
 
     var opcodes = []opcode{
         /*     T  A    B       C     mode         name       action */
@@ -4986,7 +4986,7 @@ Upvalue相关的指令
     2
 
 
-    
+
 
 
 
