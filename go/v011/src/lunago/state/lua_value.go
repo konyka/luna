@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 13:43:06
+* @Last Modified time: 2019-05-02 13:52:06
 */
 
 package state
@@ -134,6 +134,16 @@ func getMetatable(val luaValue, ls *luaState) *luaTable {
 	return nil
 }
 
+/**
+ * [callMetamethod callMetamethod方法负责查找并调用元方法 ]
+ * @Author   konyka
+ * @DateTime 2019-05-02T13:44:18+0800
+ * @param    {[type]}                 a      [description]
+ * @param    {[type]}                 b      luaValue      [description]
+ * @param    {[type]}                 mmName string        [description]
+ * @param    {[type]}                 ls     *luaState)    (luaValue,    bool [description]
+ * @return   {[type]}                        [description]
+ */
 func callMetamethod(a, b luaValue, mmName string, ls *luaState) (luaValue, bool) {
 	var mm luaValue
 	if mm = getMetafield(a, mmName, ls); mm == nil {
@@ -149,3 +159,12 @@ func callMetamethod(a, b luaValue, mmName string, ls *luaState) (luaValue, bool)
 	ls.Call(2, 1)
 	return ls.stack.pop(), true
 }
+
+
+func getMetafield(val luaValue, fieldName string, ls *luaState) luaValue {
+	if mt := getMetatable(val, ls); mt != nil {
+		return mt.get(fieldName)
+	}
+	return nil
+}
+
