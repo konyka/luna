@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 18:41:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 18:52:58
+* @Last Modified time: 2019-05-02 10:29:26
 */
 
 
@@ -42,7 +42,7 @@ func jmp(i Instruction, vm LuaVM) {
 
     vm.AddPC(sBx)
     if a != 0 {
-        panic("todo: jmp!")
+        vm.CloseUpvalues(a)
     }
 }
 
