@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 17:39:09
+* @Last Modified time: 2019-05-02 14:49:13
 */
 
 package state
@@ -43,7 +43,7 @@ func (self *luaState) NewTable() {
 func (self *luaState) GetTable(idx int) LuaType {
     t := self.stack.get(idx)
     k := self.stack.pop()
-    return self.getTable(t, k)
+    return self.getTable(t, k, false)
 }
 
 
