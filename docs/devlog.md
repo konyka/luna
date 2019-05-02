@@ -5550,68 +5550,115 @@ Upvalue相关的指令
 
 ====================
 
+迭代器
+
+    lua语言支持两种形式的for循环：数值for 以及通用for。数值for循环用于在两个数值范围内按照一定的的step进行迭代；通用for循环常用于对表进行迭代。不过通用for循环之所以“通用”，就在于它并不仅仅适用于表，实际上，通用for循环可以对任何迭代器进行迭代。
+
+    迭代器介绍
+    为了对集合或者容器进行遍历，迭代器需要保存一些内部状态。在Lua中，是用函数来表示迭代器，内部状态可以使用闭包捕获。
+
+    看一个对数组进行迭代的例子
+
+    function ipairs(t)
+        local i = 0
+        return function()
+            i = i + 1
+            if t[i] == nil then
+                return nil, nil
+            else
+                return i, t[i]
+            end
+        end
+    end
 
 
+    可以把上面的ipairs（）看作一个工厂，函数每次调用都会返回一个数组迭代器。迭代器从外部捕获了t 、i这两个变量（Upvalue），把它们作为内部状态，用于控制迭代，并痛殴第一个返回值（是不是nil）通知使用者迭代是否结束。如何创建迭代器，并利用它对数组进行遍历。
+
+    t = {10, 20, 30}
+
+    iter = ipairs(t)
+    while true do
+        local i, v = iter()
+        if i == nil then
+            break
+        end
+        print(i, v)
+    end
+
+    ----------------
+    t = {10, 20, 30}
+
+    for i, v in ipairs(t) do
+        print(i, v)
+    end
+
+    上面是给数组（序列）创建迭代器，如何给关联数组创建迭代器？由于关联数组没有办法通过递增下标的方式迭代，所以lua标准库提供了next（）创建关联数组的迭代器。next（）接收两个参数---表和key，返回两个值---下一个键值对。如果传递给next（）的key是nil，表示迭代开始；如果next（）返回的kye是nil，表示迭代结束。
+
+    function pairs(t)
+        local k, v
+        return function()
+            k, v = next(t, k)
+            return k, v
+        end
+    end
+
+    t = {a=10, b=20, c=30}
+
+    for k, v in pairs(t) do
+        prinf(k,  v)
+    end
+
+    通用的for循环语句的一般形式：
+
+    for var1,....,varn in explist do block end
+
+    等价于下面的代码：
+
+    do
+        local _f, _s, var = explist
+        while true do
+            local var1,..., varn = _f(_s, _var)
+            if var1 == nil then break end
+            _var = var1
+            block
+        end
+    end
 
 
+    其中_f _s _var是通用for循环内部使用的，由explist求值得到（多重赋值、多退少补），_f是迭代器函数，_s是一个不变量，_var是控制变量。对比前面的pairs：_f<>next(),_s<>表,_var<>用于存放key。因此，虽然可用闭包保存迭代器内部状态，不过通用for可以帮我们保存一些状态，这样很多时候就可以免去闭包创建的烦恼。知道了这个，就可以直接使用next（）对表进行遍历
 
+       t = {a=10, b=20, c=30} 
 
+       for k, v in next, t, nil do
+        print(k, v)
+       end 
 
+    在LUa虚拟机级别，有两个专门的指令用于实现for-in，tforcall\tforloop。
 
+    next（）
 
+    伪代码实现：
 
+    function next(table, key)
+        if key == nil then
+            nextKey = table.firstKey()
+        else
+            nextKey = table.nextKey(key)
+        end
+        if nextKey ~= nil then
+            return nextKey, table[nextKey]
+        else
+            return nil
+    end
 
+    Lua api提供了next（）方法，可以用来实现标准库里面的next（）函数。不过要实现api级别的Next（），必须要得到表结构体的内部支持。修改luaTable结构体，让其支持key的遍历；然后实现api层面的Next（）方法；之后实现标准库层面的next（）。
 
+    修改luaTable结构体
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    type luaTable struct {
+        。。。。。。
+        keys      map[luaValue]luaValue // used by next()
+    }
 
 
 
