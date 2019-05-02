@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 16:49:07
+* @Last Modified time: 2019-05-02 19:19:54
 */
 
 package state
@@ -132,4 +132,9 @@ func (self *luaState) SetMetatable(idx int) {
     }
 }
 
-
+func (self *luaState) RawSet(idx int) {
+    t := self.stack.get(idx)
+    v := self.stack.pop()
+    k := self.stack.pop()
+    self.setTable(t, k, v, true)
+}
