@@ -4727,11 +4727,22 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         return LUA_REGISTRYINDEX - i
     }
 
+    就像注册表伪索引一样，还需要修改luaStack结构体的isValid（）、get（）、set（）方法，让它们支持Upvalue伪索引。
 
+    state/lua_stack.go，修改方法isValid
 
-
-
-
+    func (self *luaStack) isValid(idx int) bool {
+        if idx < LUA_REGISTRYINDEX { /* upvalues */
+            uvIdx := LUA_REGISTRYINDEX - idx - 1
+            c := self.closure
+            return c != nil && uvIdx < len(c.upvals)
+        }
+        if idx == LUA_REGISTRYINDEX {
+            return true
+        }
+        absIdx := self.absIndex(idx)
+        return absIdx > 0 && absIdx <= self.top
+    }
 
 
 
