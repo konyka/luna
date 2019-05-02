@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 17:46:01
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 08:24:51
+* @Last Modified time: 2019-05-02 10:39:07
 */
 
 
@@ -109,3 +109,12 @@ func (self *luaState) LoadProto(idx int) {
     }
 }
 
+func (self *luaState) CloseUpvalues(a int) {
+    for i, openuv := range self.stack.openuvs {
+        if i >= a-1 {
+            val := *openuv.val
+            openuv.val = &val
+            delete(self.stack.openuvs, i)
+        }
+    }
+}
