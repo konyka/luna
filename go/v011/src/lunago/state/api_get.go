@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 19:15:17
+* @Last Modified time: 2019-05-02 19:18:05
 */
 
 package state
@@ -116,9 +116,8 @@ func (self *luaState) GetMetatable(idx int) bool {
     }
 }
 
-func (self *luaState) RawSet(idx int) {
+func (self *luaState) RawGet(idx int) LuaType {
     t := self.stack.get(idx)
-    v := self.stack.pop()
     k := self.stack.pop()
-    self.setTable(t, k, v, true)
+    return self.getTable(t, k, true)
 }
