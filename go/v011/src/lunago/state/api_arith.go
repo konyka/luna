@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 15:46:00
+* @Last Modified time: 2019-05-02 13:32:52
 */
 
 
@@ -38,6 +38,7 @@ var (
 
 
 type operator struct {
+    metamethod  string
     integerFunc func(int64, int64) int64
     floatFunc   func(float64, float64) float64
 }
