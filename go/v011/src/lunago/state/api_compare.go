@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 14:58:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 14:36:24
+* @Last Modified time: 2019-05-02 14:39:55
 */
 
 
@@ -22,11 +22,11 @@ func (self *luaState) Compare(idx1, idx2 int, op CompareOp) bool {
     b := self.stack.get(idx2)
     switch op {
     case LUA_OPEQ:
-        return _eq(a, b)
+        return _eq(a, b, self)
     case LUA_OPLT:
-        return _lt(a, b)
+        return _lt(a, b, self)
     case LUA_OPLE:
-        return _le(a, b)
+        return _le(a, b, self)
     default:
         panic("invalid compare op!")
     }
