@@ -4707,9 +4707,16 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
     这个函数和PushGoFunction差不多，把go函数转换成go闭包push到栈顶，区别是PushGoClosure先从栈顶弹出n个lua值，这些值会成为go闭包的Upvalue。
 
 
+    state/api_push.go 实现PushGoClosure
 
-
-
+    func (self *luaState) PushGoClosure(f GoFunction, n int) {
+        closure := newGoClosure(f, n)
+        for i := n; i > 0; i-- {
+            val := self.stack.pop()
+            closure.upvals[i-1] = &upvalue{&val}
+        }
+        self.stack.push(closure)
+    }
 
 
 

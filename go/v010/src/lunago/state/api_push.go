@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 23:13:58
+* @Last Modified time: 2019-05-02 08:53:06
 */
 
 package state
@@ -87,7 +87,22 @@ func (self *luaState) PushGlobalTable() {
     self.stack.push(global)
 }
 
-
+/**
+ * [func 这个函数和PushGoFunction差不多，把go函数转换成go闭包push到栈顶，
+ * 区别是PushGoClosure先从栈顶弹出n个lua值，这些值会成为go闭包的Upvalue。]
+ * @Author   konyka
+ * @DateTime 2019-05-02T08:52:43+0800
+ * @param    {[type]}                 self *luaState)    PushGoClosure(f GoFunction, n int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) PushGoClosure(f GoFunction, n int) {
+    closure := newGoClosure(f, n)
+    for i := n; i > 0; i-- {
+        val := self.stack.pop()
+        closure.upvals[i-1] = &upvalue{&val}
+    }
+    self.stack.push(closure)
+}
 
 
 

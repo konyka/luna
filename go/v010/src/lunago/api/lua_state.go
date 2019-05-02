@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 16:55:46
+* @Last Modified time: 2019-05-02 08:51:54
 */
 
 
@@ -81,6 +81,7 @@ type LuaState interface {
     Call(nArgs, nResults int)
 
     PushGoFunction(f GoFunction)
+    PushGoClosure(f GoFunction, n int)
     IsGoFunction(idx int) bool
     ToGoFunction(idx int) GoFunction
 
