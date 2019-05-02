@@ -5464,15 +5464,24 @@ Upvalue相关的指令
         RawSetI(idx int, i int64)
     }
 
+    GetMetatable(idx int)  SetMetatable(idx int)用于操作元表，其他的方法和不带Raw前缀的版本基本一样，指示不会去尝试查找以及调用元方法。
 
+    GetMetatable()
 
+    GetMetatable()，查看置顶索引处的值是不是有元表，如果有，则把元表push到栈顶并返回true；否则栈的状态不会改变，返回false。
 
+    state/api_get.go中实现
 
+   func (self *luaState) GetMetatable(idx int) bool {
+        val := self.stack.get(idx)
 
-
-
-
-
+        if mt := getMetatable(val, self); mt != nil {
+            self.stack.push(mt)
+            return true
+        } else {
+            return false
+        }
+    } 
 
 
 

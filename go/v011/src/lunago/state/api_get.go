@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 15:32:28
+* @Last Modified time: 2019-05-02 16:28:36
 */
 
 package state
@@ -101,6 +101,15 @@ func (self *luaState) GetGlobal(name string) LuaType {
     return self.getTable(t, name)
 }
 
+func (self *luaState) GetMetatable(idx int) bool {
+    val := self.stack.get(idx)
 
+    if mt := getMetatable(val, self); mt != nil {
+        self.stack.push(mt)
+        return true
+    } else {
+        return false
+    }
+}
 
 
