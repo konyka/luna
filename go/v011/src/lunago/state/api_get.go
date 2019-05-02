@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 19:18:05
+* @Last Modified time: 2019-05-02 19:22:50
 */
 
 package state
@@ -120,4 +120,9 @@ func (self *luaState) RawGet(idx int) LuaType {
     t := self.stack.get(idx)
     k := self.stack.pop()
     return self.getTable(t, k, true)
+}
+
+func (self *luaState) RawGetI(idx int, i int64) LuaType {
+    t := self.stack.get(idx)
+    return self.getTable(t, i, true)
 }
