@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 13:32:52
+* @Last Modified time: 2019-05-02 13:34:35
 */
 
 
@@ -47,21 +47,22 @@ type operator struct {
  * @type {Array}
  */
 var operators = []operator{
-    operator{iadd, fadd},
-    operator{isub, fsub},
-    operator{imul, fmul},
-    operator{imod, fmod},
-    operator{nil, pow},
-    operator{nil, div},
-    operator{iidiv, fidiv},
-    operator{band, nil},
-    operator{bor, nil},
-    operator{bxor, nil},
-    operator{shl, nil},
-    operator{shr, nil},
-    operator{iunm, funm},
-    operator{bnot, nil},
+    operator{"__add", iadd, fadd},
+    operator{"__sub", isub, fsub},
+    operator{"__mul", imul, fmul},
+    operator{"__mod", imod, fmod},
+    operator{"__pow", nil, pow},
+    operator{"__div", nil, div},
+    operator{"__idiv", iidiv, fidiv},
+    operator{"__band", band, nil},
+    operator{"__bor", bor, nil},
+    operator{"__bxor", bxor, nil},
+    operator{"__shl", shl, nil},
+    operator{"__shr", shr, nil},
+    operator{"__unm", iunm, funm},
+    operator{"__bnot", bnot, nil},
 }
+
 
 /**
  * [func [-(2|1), +1, e]
