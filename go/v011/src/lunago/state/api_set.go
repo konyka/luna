@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 16:34:46
+* @Last Modified time: 2019-05-02 16:49:07
 */
 
 package state
@@ -97,7 +97,7 @@ func (self *luaState) SetI(idx int, i int64) {
 func (self *luaState) SetGlobal(name string) {
     t := self.registry.get(LUA_RIDX_GLOBALS)
     v := self.stack.pop()
-    self.setTable(t, name, v)
+    self.setTable(t, name, v, false)
 }
 
 /**
