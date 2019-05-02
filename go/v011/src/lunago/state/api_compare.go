@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 14:58:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-29 15:46:15
+* @Last Modified time: 2019-05-02 14:13:04
 */
 
 
@@ -36,7 +36,7 @@ func (self *luaState) Compare(idx1, idx2 int, op CompareOp) bool {
 /**
  * 用于比较两个值是否相等
  */
-func _eq(a, b luaValue) bool {
+func _eq(a, b luaValue, ls *luaState) bool {
     switch x := a.(type) {
     case nil:
         return b == nil
@@ -64,6 +64,13 @@ func _eq(a, b luaValue) bool {
         default:
             return false
         }
+    case *luaTable:
+        if y, ok := b.(*luaTable); ok && x != y && ls != nil {
+            if result, ok := callMetamethod(x, y, "__eq", ls); ok {
+                return convertToBoolean(result)
+            }
+        }
+        return a == b
     default:
         return a == b
     }
