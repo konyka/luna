@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 08:19:33
+* @Last Modified time: 2019-05-02 16:10:16
 */
 
 package state
@@ -40,7 +40,19 @@ func (self *luaState) Load(chunk []byte, chunkName, mode string) int {
  */
 func (self *luaState) Call(nArgs, nResults int) {
     val := self.stack.get(-(nArgs + 1))
-    if c, ok := val.(*closure); ok {
+
+    c, ok := val.(*closure)
+    if !ok {
+        if mf := getMetafield(val, "__call", self); mf != nil {
+            if c, ok = mf.(*closure); ok {
+                self.stack.push(val)
+                self.Insert(-(nArgs + 2))
+                nArgs += 1
+            }
+        }
+    }
+
+    if ok {
         if c.proto != nil {
             self.callLuaClosure(nArgs, nResults, c)
         } else {

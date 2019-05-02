@@ -5410,26 +5410,59 @@ Upvalue相关的指令
     func (self *luaState) GetTable(idx int) LuaType {
         t := self.stack.get(idx)
         k := self.stack.pop()
-        return self.getTable(t, k, false)
+        return self.getTable(t, k, false)   //需要触发元方法
     }
 
+    函数调用元方法
 
+    当试图调用一个非函数类型的值时，lua会看这个值是否有__call元方法，如果有，lua会以该值作为第一个参数，后跟元方法调用的其他参数，来调用元方法，以元方法返回值为返回值。函数调用是由Api方法Call（）实现的，调整该方法
 
+    state/api_call.go
 
+    func (self *luaState) Call(nArgs, nResults int) {
+        val := self.stack.get(-(nArgs + 1))
 
+        c, ok := val.(*closure)
+        if !ok {
+            if mf := getMetafield(val, "__call", self); mf != nil {
+                if c, ok = mf.(*closure); ok {
+                    self.stack.push(val)
+                    self.Insert(-(nArgs + 2))
+                    nArgs += 1
+                }
+            }
+        }
 
+        if ok {
+            if c.proto != nil {
+                self.callLuaClosure(nArgs, nResults, c)
+            } else {
+                self.callGoClosure(nArgs, nResults, c)
+            }
+        } else {
+            panic("not function!")
+        }
+    }
 
+    如果被调用的值不是函数，就根据前面的规则查找并调用元方法。元表和元方法并非只有lua内部实现可以使用，标准库以及自定义的函数也可以利用元表和元方法
 
+    扩展LuaApi
 
+    api/lua_state.go
 
+    为接口LuaState添加方法
 
-
-
-
-
-
-
-
+    type LuaState interface {
+        。。。。。。
+        GetMetatable(idx int) bool
+        SetMetatable(idx int)
+        RawLen(idx int) uint
+        RawEqual(idx1, idx2 int) bool
+        RawGet(idx int) LuaType
+        RawSet(idx int)
+        RawGetI(idx int, i int64) LuaType
+        RawSetI(idx int, i int64)
+    }
 
 
 

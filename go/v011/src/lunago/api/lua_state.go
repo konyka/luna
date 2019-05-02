@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 09:01:28
+* @Last Modified time: 2019-05-02 16:22:15
 */
 
 
@@ -93,6 +93,15 @@ type LuaState interface {
     GetGlobal(name string) LuaType
     SetGlobal(name string)
     Register(name string, f GoFunction)
+
+    GetMetatable(idx int) bool
+    SetMetatable(idx int)
+    RawLen(idx int) uint
+    RawEqual(idx1, idx2 int) bool
+    RawGet(idx int) LuaType
+    RawSet(idx int)
+    RawGetI(idx int, i int64) LuaType
+    RawSetI(idx int, i int64)
 }
 
 
