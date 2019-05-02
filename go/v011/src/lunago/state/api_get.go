@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 15:04:46
+* @Last Modified time: 2019-05-02 15:32:28
 */
 
 package state
@@ -39,8 +39,19 @@ func (self *luaState) NewTable() {
 
 /**
  * 根据key（从栈顶弹出）从表（索引由参数指定）里面取值，然后把值push到栈顶，并返回值的类型
+ */
+func (self *luaState) GetTable(idx int) LuaType {
+    t := self.stack.get(idx)
+    k := self.stack.pop()
+    return self.getTable(t, k, false)
+}
+
+
+ 
+/**
+ * 为了减少重复，把根据key从table里面获取值的逻辑提取为函数getTable(t, k luaValue)：
  * push(t[k])
- */ 
+ */
 func (self *luaState) getTable(t, k luaValue, raw bool) LuaType {
     if tbl, ok := t.(*luaTable); ok {
         v := tbl.get(k)
@@ -69,28 +80,12 @@ func (self *luaState) getTable(t, k luaValue, raw bool) LuaType {
     panic("index error!")
 }
 
-
- 
-/**
- * 为了减少重复，把根据key从table里面获取值的逻辑提取为函数getTable(t, k luaValue)：
- * push(t[k])
- */
-func (self *luaState) getTable(t, k luaValue) LuaType {
-    if tbl, ok := t.(*luaTable); ok {
-        v := tbl.get(k)
-        self.stack.push(v)
-        return typeOf(v)
-    }
-
-    panic("not a table!") // todo
-}
-
 /**
  * GetField（）用来从记录中获取字段。
  */
 func (self *luaState) GetField(idx int, k string) LuaType {
     t := self.stack.get(idx)
-    return self.getTable(t, k)
+    return self.getTable(t, k, false)
 }
 
 /**
@@ -98,7 +93,7 @@ func (self *luaState) GetField(idx int, k string) LuaType {
  */
 func (self *luaState) GetI(idx int, i int64) LuaType {
     t := self.stack.get(idx)
-    return self.getTable(t, i)
+    return self.getTable(t, i, false)
 }
 
 func (self *luaState) GetGlobal(name string) LuaType {
