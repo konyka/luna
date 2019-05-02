@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 10:55:53
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 13:03:49
+* @Last Modified time: 2019-05-02 15:11:19
 */
 
 
@@ -141,6 +141,9 @@ func (self *luaTable) len() int {
 }
 
 
-
+func (self *luaTable) hasMetafield(fieldName string) bool {
+    return self.metatable != nil &&
+        self.metatable.get(fieldName) != nil
+}
 
 
