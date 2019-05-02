@@ -4821,13 +4821,24 @@ Upvalue相关的指令
     }
 
 
+    由于可以使用伪索引，所以getupval可回忆直接使用copy实现，不过需要注意的是，在lua虚拟机指令的操作数里，Upvalue的索引也是从0开始的，但是在转换成lua栈伪索引时，Upvalue指令从1开始的。
+
+    2、setupval
+
+    setupval指令（iABC），使用寄存器中的值给当前闭包的Upvalue赋值。 其中仅存起索引由操作数A指定，Upvalue索引由操作数B指定，操作数C没有用到。
+
+     UpValue[B] := R(A)
+    
+     如果在函数给Upvalue赋值，lua编译器就会在这些地方生成setupval指令，
 
 
+    func setUpval(i Instruction, vm LuaVM) {
+        a, b, _ := i.ABC()
+        a += 1
+        b += 1
 
-
-
-
-
+        vm.Copy(a, LuaUpvalueIndex(b))
+    }
 
 
 
