@@ -4882,22 +4882,32 @@ Upvalue相关的指令
 
     先通过GetRK（）把key value push到栈顶，然后调用SetTable（）就可以了SetTalbe会把键值对从栈顶弹出，然后根据伪索引吧键值对写道Upvalue。
 
-    
+    jmp
+
+    jmp指令除了可以进行无条件跳转之外，还兼顾着闭合处于开启状态的Upvalue的责任。如果某个快内部定义的局部变量已经被嵌套函数所捕获，那么当这些局部变量退出作用域（也就是结束的）的时候，编译器就会生成一条jmp指令，指示虚拟机闭合相应的Upvalue
+
+    如果jmp指令的sBx操作数是0，所以其实并没有起到任何跳转的作用，真正的用途就是闭合Upvalue。
+
+    vm/inst_misc.go，修改jmp指令的代码
+
+    func jmp(i Instruction, vm LuaVM) {
+        a, sBx := i.AsBx()
+
+        vm.AddPC(sBx)
+        if a != 0 {
+            vm.CloseUpvalues(a)
+        }
+    }
 
 
+    由于lua api并没有提供闭合Upvalue的方法，所以要自己添加，api/lua_vm.go，在接口LuaVM中添加方法
+    CloseUpvalues（）方法
 
-
-
-
-
-
-
-
-
-
-
-
-
+    type LuaVM interface {
+        ....
+        CloseUpvalues(a int)
+        ....
+    }
 
 
 
