@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 14:49:13
+* @Last Modified time: 2019-05-02 15:04:46
 */
 
 package state
@@ -39,11 +39,34 @@ func (self *luaState) NewTable() {
 
 /**
  * 根据key（从栈顶弹出）从表（索引由参数指定）里面取值，然后把值push到栈顶，并返回值的类型
- */
-func (self *luaState) GetTable(idx int) LuaType {
-    t := self.stack.get(idx)
-    k := self.stack.pop()
-    return self.getTable(t, k, false)
+ * push(t[k])
+ */ 
+func (self *luaState) getTable(t, k luaValue, raw bool) LuaType {
+    if tbl, ok := t.(*luaTable); ok {
+        v := tbl.get(k)
+        if raw || v != nil || !tbl.hasMetafield("__index") {
+            self.stack.push(v)
+            return typeOf(v)
+        }
+    }
+
+    if !raw {
+        if mf := getMetafield(t, "__index", self); mf != nil {
+            switch x := mf.(type) {
+            case *luaTable:
+                return self.getTable(x, k, false)
+            case *closure:
+                self.stack.push(mf)
+                self.stack.push(t)
+                self.stack.push(k)
+                self.Call(2, 1)
+                v := self.stack.get(-1)
+                return typeOf(v)
+            }
+        }
+    }
+
+    panic("index error!")
 }
 
 
