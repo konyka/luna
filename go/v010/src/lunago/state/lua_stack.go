@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 21:25:12
+* @Last Modified time: 2019-05-02 08:40:41
 */
 
 package state
@@ -19,7 +19,7 @@ type luaStack struct {
 	closure *closure
 	varargs []luaValue
 	pc      int
-
+	openuvs map[int]*upvalue //key是int类型，存放局部变量的寄存器索引，value是Upvalue指针
 }
 
 /**

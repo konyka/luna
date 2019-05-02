@@ -4657,17 +4657,44 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
 
     因为nil的初始值已经是nil，所以我们只要把第一个Upvalue值设置为全局环境即可，上面的是main函数原型，在加载子函数原型的时候也需要初始化Upvalue。
 
-    
+    state/api_vm.go修改LoadProto（）方法
 
+    func (self *luaState) LoadProto(idx int) {
+        stack := self.stack
+        subProto := stack.closure.proto.Protos[idx]
+        closure := newLuaClosure(subProto)
+        stack.push(closure)
 
+        for i, uvInfo := range subProto.Upvalues {
+            uvIdx := int(uvInfo.Idx)
+            if uvInfo.Instack == 1 {
+                if stack.openuvs == nil {
+                    stack.openuvs = map[int]*upvalue{}
+                }
 
+                if openuv, found := stack.openuvs[uvIdx]; found {
+                    closure.upvals[i] = openuv
+                } else {
+                    closure.upvals[i] = &upvalue{&stack.slots[uvIdx]}
+                    stack.openuvs[uvIdx] = closure.upvals[i]
+                }
+            } else {
+                closure.upvals[i] = stack.closure.upvals[uvIdx]
+            }
+        }
+    }
 
+    需要根据函数原型里面的Upvalue表来初始化闭包的Upvalue值，对于每个Upvalue，又有两种情况需要考虑：如果某个Upvalue捕获的是当前函数的局部变量（Instack == 1），那么只要访问当前函数的局部变量就可以了；如果某个Upvalue捕获的是更外围的函数中的局部变量（Instack == 0），该Upvalue已经被当前函数所捕获，只要把该Upvalue传递给闭包就可以了。
 
+    对于第一种情况，如果Upvalue捕获的外围函数局部变量还在栈上，直接引用即可，称这种Upvalue处于开放open状态；反之，必须把变量的实际值保存在其他的地方，称这种Upvalue处于闭合closed状态。为了能够在合适的时机（比如局部变量退出作用域的时候）把处于开放open状态的Upvalue闭合，需要记录所有暂时还处于开放状态的Upvalue，把这些Upvalue记录在被捕获局部变量所在的栈帧中。
 
+    state/lua_stack.go，给luaStack结构体添加openuvs字段，该字段是map类型，key是int类型，存放局部变量的寄存器索引，value是Upvalue指针
 
-
-
-
+    type luaStack struct {
+        。。。
+    openuvs map[int]*upvalue
+        。。。
+    }
 
 
 

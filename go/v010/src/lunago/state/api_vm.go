@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 17:46:01
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 10:39:00
+* @Last Modified time: 2019-05-02 08:24:51
 */
 
 
@@ -85,7 +85,27 @@ func (self *luaState) LoadVararg(n int) {
  * @return   {[type]}                      [description]
  */
 func (self *luaState) LoadProto(idx int) {
-    proto := self.stack.closure.proto.Protos[idx]
-    closure := newLuaClosure(proto)
-    self.stack.push(closure)
+    stack := self.stack
+    subProto := stack.closure.proto.Protos[idx]
+    closure := newLuaClosure(subProto)
+    stack.push(closure)
+
+    for i, uvInfo := range subProto.Upvalues {
+        uvIdx := int(uvInfo.Idx)
+        if uvInfo.Instack == 1 {
+            if stack.openuvs == nil {
+                stack.openuvs = map[int]*upvalue{}
+            }
+
+            if openuv, found := stack.openuvs[uvIdx]; found {
+                closure.upvals[i] = openuv
+            } else {
+                closure.upvals[i] = &upvalue{&stack.slots[uvIdx]}
+                stack.openuvs[uvIdx] = closure.upvals[i]
+            }
+        } else {
+            closure.upvals[i] = stack.closure.upvals[uvIdx]
+        }
+    }
 }
+
