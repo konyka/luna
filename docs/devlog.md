@@ -4628,26 +4628,36 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
     由于给newGoClosure函数增加了一个参数，所以破坏了PushGoFunction（）的实现代码，因此修改这个方法，api_push.go
 
     func (self *luaState) PushGoFunction(f GoFunction) {
-        self.stack.push(newGoClosure(f, 0))
+        self.stack.push(newGoClosure(f, 0)) //第二个参数传入0
     }
 
 
+    修改api，在创建闭包的时候初始化Upvalue
 
+    Lua 闭包的支持
 
+    Lua函数都是闭包，就连编译器生成的main函数也是闭包，捕获了_ENV这个特殊的Upvalue，这个特殊的Upvalue的初始化是由Api Load（）负责的。具体而言，就是Load（）方法在加载闭包的时候，会看它是否需要Upvalue，如果需要，那么第一个Upvalue(对于main函数来说就是_ENV)会被初始化为全局环境，其他的Upvalue会被初始化为nil。
 
+    修改Load方法
 
+    state/api_call.go 
 
+    添加Upvalue的初始化代码
 
+    func (self *luaState) Load(chunk []byte, chunkName, mode string) int {
+        proto := binchunk.Undump(chunk) // todo
+        c := newLuaClosure(proto)
+        self.stack.push(c)
+        if len(proto.Upvalues) > 0 {    //set _ENV
+            env := self.registry.get(LUA_RIDX_GLOBALS)
+            c.upvals[0] = &upvalue{&env}
+        }
+        return 0
+    }
 
+    因为nil的初始值已经是nil，所以我们只要把第一个Upvalue值设置为全局环境即可，上面的是main函数原型，在加载子函数原型的时候也需要初始化Upvalue。
 
-
-
-
-
-
-
-
-
+    
 
 
 

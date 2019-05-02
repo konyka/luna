@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 21:17:11
+* @Last Modified time: 2019-05-02 08:19:33
 */
 
 package state
@@ -19,6 +19,10 @@ func (self *luaState) Load(chunk []byte, chunkName, mode string) int {
     proto := binchunk.Undump(chunk) // todo
     c := newLuaClosure(proto)
     self.stack.push(c)
+    if len(proto.Upvalues) > 0 {    //set _ENV
+        env := self.registry.get(LUA_RIDX_GLOBALS)
+        c.upvals[0] = &upvalue{&env}
+    }
     return 0
 }
 
