@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 21:25:40
+* @Last Modified time: 2019-05-02 15:19:23
 */
 
 package state
@@ -31,13 +31,32 @@ func (self *luaState) SetTable(idx int) {
  * @param    {[type]}                 self *luaState)    setTable(t, k, v luaValue [description]
  * @return   {[type]}                      [description]
  */
-func (self *luaState) setTable(t, k, v luaValue) {
+func (self *luaState) setTable(t, k, v luaValue, raw bool) {
     if tbl, ok := t.(*luaTable); ok {
-        tbl.put(k, v)
-        return
+        if raw || tbl.get(k) != nil || !tbl.hasMetafield("__newindex") {
+            tbl.put(k, v)
+            return
+        }
     }
 
-    panic("not a table!")
+    if !raw {
+        if mf := getMetafield(t, "__newindex", self); mf != nil {
+            switch x := mf.(type) {
+            case *luaTable:
+                self.setTable(x, k, v, false)
+                return
+            case *closure:
+                self.stack.push(mf)
+                self.stack.push(t)
+                self.stack.push(k)
+                self.stack.push(v)
+                self.Call(3, 0)
+                return
+            }
+        }
+    }
+
+    panic("index error!")
 }
 
 /**
