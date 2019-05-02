@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 09:06:06
+* @Last Modified time: 2019-05-02 09:10:11
 */
 
 package state
@@ -106,6 +106,15 @@ func (self *luaStack) isValid(idx int) bool {
  * get()根据索引从栈里面取值，如果索引无效 返回nil
  */
 func (self *luaStack) get(idx int) luaValue {
+	if idx < LUA_REGISTRYINDEX { /* upvalues */
+		uvIdx := LUA_REGISTRYINDEX - idx - 1
+		c := self.closure
+		if c == nil || uvIdx >= len(c.upvals) {
+			return nil
+		}
+		return *(c.upvals[uvIdx].val)
+	}
+
 	if idx == LUA_REGISTRYINDEX {
 		return self.state.registry
 	}
@@ -125,6 +134,15 @@ func (self *luaStack) get(idx int) luaValue {
  * @return   {[type]}                      [description]
  */
 func (self *luaStack) set(idx int, val luaValue) {
+	if idx < LUA_REGISTRYINDEX { /* upvalues */
+		uvIdx := LUA_REGISTRYINDEX - idx - 1
+		c := self.closure
+		if c != nil && uvIdx < len(c.upvals) {
+			*(c.upvals[uvIdx].val) = val
+		}
+		return
+	}
+
 	if idx == LUA_REGISTRYINDEX {
 		self.state.registry = val.(*luaTable)
 		return

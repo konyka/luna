@@ -4745,31 +4745,80 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
     }
 
 
+    如果索引<注册表索引，说明是Upvalue索引，把它转成真实的索引（从0开始），然后看看它是不是在有效范围内，
 
+    修改get方法
 
+    func (self *luaStack) get(idx int) luaValue {
+        if idx < LUA_REGISTRYINDEX { /* upvalues */
+            uvIdx := LUA_REGISTRYINDEX - idx - 1
+            c := self.closure
+            if c == nil || uvIdx >= len(c.upvals) {
+                return nil
+            }
+            return *(c.upvals[uvIdx].val)
+        }
 
+        if idx == LUA_REGISTRYINDEX {
+            return self.state.registry
+        }
 
+        absIdx := self.absIndex(idx)
+        if absIdx > 0 && absIdx <= self.top {
+            return self.slots[absIdx-1]
+        }
+        return nil
+    }
 
+    如果伪索引无效，直接返回nil，否则返回Upvalue值。修改set方法
 
+    func (self *luaStack) set(idx int, val luaValue) {
+        if idx < LUA_REGISTRYINDEX { /* upvalues */
+            uvIdx := LUA_REGISTRYINDEX - idx - 1
+            c := self.closure
+            if c != nil && uvIdx < len(c.upvals) {
+                *(c.upvals[uvIdx].val) = val
+            }
+            return
+        }
 
+        if idx == LUA_REGISTRYINDEX {
+            self.state.registry = val.(*luaTable)
+            return
+        }
 
+        absIdx := self.absIndex(idx)
+        if absIdx > 0 && absIdx <= self.top {
+            self.slots[absIdx-1] = val
+            return
+        }
+        panic("invalid index!")
+    }
 
+    如果伪索引有效，就修改Upvalue值，否则直接返回。
 
+Upvalue相关的指令
 
+    有5个：getupval、setupval、gettabup、settabup、jmp。
 
+    1、getupval
 
+    getupval(iABC 模式)，把当前闭包的某个Upvale值复制到目标寄存器，其中目标寄存器的索引由操作数A指定，Upvalue索引由操作数B指定，操作数C没有使用。
 
+     R(A) := UpValue[B]
 
+     如果在函数中访问Upvalue值，lua表一起就会在这些地方生成
 
+     1、getupval指令
+     vm/inst_upvalue.go
 
+    func getUpval(i Instruction, vm LuaVM) {
+        a, b, _ := i.ABC()
+        a += 1
+        b += 1
 
-
-
-
-
-
-
-
+        vm.Copy(LuaUpvalueIndex(b), a)
+    }
 
 
 
