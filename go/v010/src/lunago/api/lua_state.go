@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 08:51:54
+* @Last Modified time: 2019-05-02 09:01:28
 */
 
 
@@ -16,6 +16,10 @@ type ArithOp = int
 type CompareOp = int
 
 type GoFunction func(LuaState) int
+
+func LuaUpvalueIndex(i int) int {
+    return LUA_REGISTRYINDEX - i
+}
 
 /**
  * LuaState 接口定义

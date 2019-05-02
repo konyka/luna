@@ -4718,11 +4718,14 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         self.stack.push(closure)
     }
 
+    先创建go闭包，然后从栈顶弹出指定数量的值，让它们变成闭包的Upvalue，最后把闭包push到栈顶。go闭包可以携带Upvalue这没什么问题，可问题是如果访问这些Upvalue？？？lua api并没有提供专门的方法，而是像注册表那样，提供了伪索引。和lua栈索引一样，Upvalue索引也是从1开始递增的。对于任何一个Upvalue索引，用注册表伪索引减去该索引就可以得到对应的Upvalue伪索引，为了便于使用，把这个转换过程分装在函数
+    LuaUpvalueIndex（）里面。
 
+    api/lua_state.go增加这个函数LuaUpvalueIndex（）
 
-
-
-
+    func LuaUpvalueIndex(i int) int {
+        return LUA_REGISTRYINDEX - i
+    }
 
 
 
