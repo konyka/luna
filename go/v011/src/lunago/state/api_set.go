@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 19:19:54
+* @Last Modified time: 2019-05-02 19:21:21
 */
 
 package state
@@ -137,4 +137,10 @@ func (self *luaState) RawSet(idx int) {
     v := self.stack.pop()
     k := self.stack.pop()
     self.setTable(t, k, v, true)
+}
+
+func (self *luaState) RawSetI(idx int, i int64) {
+    t := self.stack.get(idx)
+    v := self.stack.pop()
+    self.setTable(t, i, v, true)
 }
