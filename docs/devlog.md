@@ -5456,12 +5456,12 @@ Upvalue相关的指令
         。。。。。。
         GetMetatable(idx int) bool
         SetMetatable(idx int)
-        RawLen(idx int) uint
-        RawEqual(idx1, idx2 int) bool
-        RawGet(idx int) LuaType
-        RawSet(idx int)
-        RawGetI(idx int, i int64) LuaType
-        RawSetI(idx int, i int64)
+        RawLen(idx int) uint              //state/api_access.go
+        RawEqual(idx1, idx2 int) bool     //state/api_compare.go
+        RawGet(idx int) LuaType           //state/api_get.go
+        RawSet(idx int)                   //state/api_set.go
+        RawGetI(idx int, i int64) LuaType //state/api_get.go
+        RawSetI(idx int, i int64)         //state/api_set.go
     }
 
     GetMetatable(idx int)  SetMetatable(idx int)用于操作元表，其他的方法和不带Raw前缀的版本基本一样，指示不会去尝试查找以及调用元方法。
@@ -5504,16 +5504,51 @@ Upvalue相关的指令
 
 单元测试
 
+    为了测试，实现简化版的
+    func getMetatable(ls LuaState) int {
+        if !ls.GetMetatable(1) {
+            ls.PushNil()
+        }
+        return 1
+    }
 
 
+    通过api GetMetatable（）实现对应的标准库函数，由于getmetatable（）只有一个参数，所以调用GetMetatable（）的时候传入索引1就可以了，如果值有元表，方法结束后，元表已经在栈顶了，否则需要把nil值push到栈顶。最后返回1，把栈顶的值（元表或者nil）返回给Lua函数。
 
+    func setMetatable(ls LuaState) int {
+        ls.SetMetatable(1)
+        return 1
+    }
 
+    将它们注册到全局环境
 
+    func main() {
+        if len(os.Args) > 1 {
+            data, err := ioutil.ReadFile(os.Args[1])
+            if err != nil {
+                panic(err)
+            }
 
+            ls := state.New()
+            ls.Register("print", print)
+            ls.Register("getmetatable", getMetatable)
+            ls.Register("setmetatable", setMetatable)
+            ls.Load(data, os.Args[1], "b")
+            ls.Call(0, 0)
+        }
+    }
 
+        $ go run main.go luac.out 
+        [1, 2]
+        [3, 4]
+        [2, 4]
+        [3, 6]
+        5
+        false
+        true
+        [3, 6]
 
-
-
+====================
 
 
 
