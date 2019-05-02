@@ -4696,14 +4696,15 @@ s虽然lua函数需要go函数弥补自身的不足，不过lua函数也是相�
         。。。
     }
 
+    go闭包支持
 
+    不仅仅是lua函数，go函数也可以捕获Upvalue，
+    api/lua_state.go，给接口LuaState添加PushGoClosure（）方法
+    。。。。
+    PushGoClosure(f GoFunction, n int)
+    。。。
 
-
-
-
-
-
-
+    这个函数和PushGoFunction差不多，把go函数转换成go闭包push到栈顶，区别是PushGoClosure先从栈顶弹出n个lua值，这些值会成为go闭包的Upvalue。
 
 
 
