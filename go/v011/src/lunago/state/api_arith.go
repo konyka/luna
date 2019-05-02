@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 13:40:41
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 13:34:35
+* @Last Modified time: 2019-05-02 13:37:48
 */
 
 
@@ -86,9 +86,16 @@ func (self *luaState) Arith(op ArithOp) {
     operator := operators[op]
     if result := _arith(a, b, operator); result != nil {
         self.stack.push(result)
-    } else {
-        panic("arithmetic error!")
+        return
     }
+
+    mm := operator.metamethod
+    if result, ok := callMetamethod(a, b, mm, self); ok {
+        self.stack.push(result)
+        return
+    }
+
+    panic("arithmetic error!")
 }
 /**
  * 

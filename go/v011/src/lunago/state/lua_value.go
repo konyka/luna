@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 13:26:53
+* @Last Modified time: 2019-05-02 13:43:06
 */
 
 package state
@@ -134,4 +134,18 @@ func getMetatable(val luaValue, ls *luaState) *luaTable {
 	return nil
 }
 
+func callMetamethod(a, b luaValue, mmName string, ls *luaState) (luaValue, bool) {
+	var mm luaValue
+	if mm = getMetafield(a, mmName, ls); mm == nil {
+		if mm = getMetafield(b, mmName, ls); mm == nil {
+			return nil, false
+		}
+	}
 
+	ls.stack.check(4)
+	ls.stack.push(mm)
+	ls.stack.push(a)
+	ls.stack.push(b)
+	ls.Call(2, 1)
+	return ls.stack.pop(), true
+}
