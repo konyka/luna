@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 15:24:47
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 14:03:08
+* @Last Modified time: 2019-05-02 14:06:42
 */
 
 package state
@@ -50,6 +50,13 @@ func (self *luaState) Concat(n int) {
                 self.stack.pop()
                 self.stack.pop()
                 self.stack.push(s1 + s2)
+                continue
+            }
+
+            b := self.stack.pop()
+            a := self.stack.pop()
+            if result, ok := callMetamethod(a, b, "__concat", self); ok {
+                self.stack.push(result)
                 continue
             }
 
