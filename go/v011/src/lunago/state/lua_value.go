@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:15:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 13:20:34
+* @Last Modified time: 2019-05-02 13:26:53
 */
 
 package state
@@ -123,7 +123,15 @@ func setMetatable(val luaValue, mt *luaTable, ls *luaState) {
 }
 
 
-
-
+func getMetatable(val luaValue, ls *luaState) *luaTable {
+	if t, ok := val.(*luaTable); ok {
+		return t.metatable
+	}
+	key := fmt.Sprintf("_MT%d", typeOf(val))
+	if mt := ls.registry.get(key); mt != nil {
+		return mt.(*luaTable)
+	}
+	return nil
+}
 
 
