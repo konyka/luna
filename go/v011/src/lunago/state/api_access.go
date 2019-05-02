@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 15:45:16
+* @Last Modified time: 2019-05-02 17:14:06
 */
 
 package state
@@ -227,7 +227,17 @@ func (self *luaState) ToGoFunction(idx int) GoFunction {
 }
 
 
-
+func (self *luaState) RawLen(idx int) uint {
+    val := self.stack.get(idx)
+    switch x := val.(type) {
+    case string:
+        return uint(len(x))
+    case *luaTable:
+        return uint(x.len())
+    default:
+        return 0
+    }
+}
 
 
 
