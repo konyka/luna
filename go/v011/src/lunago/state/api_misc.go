@@ -2,13 +2,17 @@
 * @Author: konyka
 * @Date:   2019-04-29 15:24:47
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 11:52:08
+* @Last Modified time: 2019-05-02 14:03:08
 */
 
 package state
 
 /**
- * [func description]
+ * [func 对于长度运算（#），lua首先判断值是不是字符串，如果是，结果就是字符串的长度；
+ * 否则检查值是不是有__len方法，
+ * 如果有，则以值为参数调用元方法，
+ * 将元方法返回值作为结果，如果还找不到对应的元方法，但值是表，结果就是表的长度。]
+ * 长度运算时由lua api方法Len()实现的
  * @Author   konyka
  * @DateTime 2019-04-29T15:25:16+0800
  * @param    {[type]}                 self *luaState)    Len(idx int [description]
@@ -19,6 +23,8 @@ func (self *luaState) Len(idx int) {
 
     if s, ok := val.(string); ok {
         self.stack.push(int64(len(s)))
+    } else if result, ok := callMetamethod(val, val, "__len", self); ok {
+        self.stack.push(result)
     } else if t, ok := val.(*luaTable); ok {
         self.stack.push(int64(t.len()))
     } else {
