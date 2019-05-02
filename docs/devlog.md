@@ -4841,23 +4841,48 @@ Upvalue相关的指令
     }
 
 
+    3、gettabup
+
+    如果当前闭包的某个Upvalue是表，则gettabup指令（iABC模式）可以根据key从该表里面取值，然后把value放到目标寄存器中。其中目标寄存器的索引由餐做数A指定，Upvalue的索引由操作数B指定，key（可能在寄存器中，也可能在常量表中）索引由操作数C指定。gettabup相当于getupval 和 gettable两条指令的组合
+
+     R(A) := UpValue[B][RK(C)]
+
+     如果在函数里面按照key从Upvalue表中取值，lua编译器就会在这些地方生成3、gettabup指令
+
+    func getTabUp(i Instruction, vm LuaVM) {
+        a, b, c := i.ABC()
+        a += 1
+        b += 1
+
+        vm.GetRK(c)
+        vm.GetTable(LuaUpvalueIndex(b))
+        vm.Replace(a)
+    }
+
+    先调用GetRK()把keypush到栈顶，然后调用GetTalbe（）从Upvalue中取值（key从栈顶弹出，value被push到栈顶），然后调用Replace（）吧值从栈顶弹出，并放到目标寄存器。
 
 
+    settabup
 
+    如果当前闭包的某个Upvalue是表，则settabup指令（iABC 模式）可以根据key向这个表里面写入值，其中
+    Upvalue的索引由操作数A指定，key 、value可控在寄存器中，也肯跟在常量表中，索引分别操作数B、C指定。
 
+     UpValue[A][RK(B)] := RK(C)
+    
+     如果在函数里面根据key向Upvalue里面写入值，lua编译器就会在这些地方生成 settabup 指令  
 
+    func setTabUp(i Instruction, vm LuaVM) {
+        a, b, c := i.ABC()
+        a += 1
 
+        vm.GetRK(b)
+        vm.GetRK(c)
+        vm.SetTable(LuaUpvalueIndex(a))
+    }
 
+    先通过GetRK（）把key value push到栈顶，然后调用SetTable（）就可以了SetTalbe会把键值对从栈顶弹出，然后根据伪索引吧键值对写道Upvalue。
 
-
-
-
-
-
-
-
-
-
+    
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-01 19:37:07
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 10:02:46
+* @Last Modified time: 2019-05-02 10:16:23
 */
 
 package vm
@@ -46,6 +46,29 @@ func setUpval(i Instruction, vm LuaVM) {
     vm.Copy(a, LuaUpvalueIndex(b))
 }
 
+ 
+/**
+ * [getTabUp R(A) := UpValue[B][RK(C)]]
+ *  如果当前闭包的某个Upvalue是表，则gettabup指令（iABC模式）可以根据key从该表里面取值，
+ *  然后把value放到目标寄存器中。其中目标寄存器的索引由餐做数A指定，
+ *  Upvalue的索引由操作数B指定，key（可能在寄存器中，也可能在常量表中）索引由操作数C指定。
+ * @Author   konyka
+ * @DateTime 2019-05-02T10:07:23+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func getTabUp(i Instruction, vm LuaVM) {
+    a, b, c := i.ABC()
+    a += 1
+    b += 1
+
+    vm.GetRK(c)
+    vm.GetTable(LuaUpvalueIndex(b))
+    vm.Replace(a)
+}
+
+
 /**
  * [getTabUp R(A) := UpValue[B][RK(C)]]
  * @Author   konyka
@@ -65,7 +88,22 @@ func getTabUp(i Instruction, vm LuaVM) {
     vm.Pop(1)
 }
 
+ 
+/**
+ * [setTabUp UpValue[A][RK(B)] := RK(C)]
+ * @Author   konyka
+ * @DateTime 2019-05-02T10:16:16+0800
+ * @param    {[type]}                 i  Instruction [description]
+ * @param    {[type]}                 vm LuaVM       [description]
+ */
+func setTabUp(i Instruction, vm LuaVM) {
+    a, b, c := i.ABC()
+    a += 1
 
+    vm.GetRK(b)
+    vm.GetRK(c)
+    vm.SetTable(LuaUpvalueIndex(a))
+}
 
 
 
