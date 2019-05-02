@@ -5483,15 +5483,26 @@ Upvalue相关的指令
         }
     } 
 
+    SetMetatable()
 
+    SetMetatable,从栈顶弹出一个表，然后把指定索引处值的元表设置为这个表。
 
+    func (self *luaState) SetMetatable(idx int) {
+        val := self.stack.get(idx)
+        mtVal := self.stack.pop()
 
+        if mtVal == nil {
+            setMetatable(val, nil, self)
+        } else if mt, ok := mtVal.(*luaTable); ok {
+            setMetatable(val, mt, self)
+        } else {
+            panic("table expected!") // todo
+        }
+    }
 
+    先把栈顶弹出，如果它是nil，实际效果就是清除元表；如果它是表，就用它设置元表；否则就调用panic报错。
 
-
-
-
-
+单元测试
 
 
 

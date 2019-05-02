@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:01:30
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 16:28:36
+* @Last Modified time: 2019-05-02 16:29:52
 */
 
 package state
@@ -101,6 +101,10 @@ func (self *luaState) GetGlobal(name string) LuaType {
     return self.getTable(t, name)
 }
 
+/**
+ * GetMetatable()，查看置顶索引处的值是不是有元表，
+ * 如果有，则把元表push到栈顶并返回true；否则栈的状态不会改变，返回false
+ */
 func (self *luaState) GetMetatable(idx int) bool {
     val := self.stack.get(idx)
 

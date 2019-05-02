@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 12:34:22
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 15:33:30
+* @Last Modified time: 2019-05-02 16:34:46
 */
 
 package state
@@ -112,6 +112,24 @@ func (self *luaState) Register(name string, f GoFunction) {
     self.SetGlobal(name)
 }
 
+/**
+ * [func SetMetatable,从栈顶弹出一个表，然后把指定索引处值的元表设置为这个表。]
+ * @Author   konyka
+ * @DateTime 2019-05-02T16:34:43+0800
+ * @param    {[type]}                 self *luaState)    SetMetatable(idx int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *luaState) SetMetatable(idx int) {
+    val := self.stack.get(idx)
+    mtVal := self.stack.pop()
 
+    if mtVal == nil {
+        setMetatable(val, nil, self)
+    } else if mt, ok := mtVal.(*luaTable); ok {
+        setMetatable(val, mt, self)
+    } else {
+        panic("table expected!") // todo
+    }
+}
 
 
