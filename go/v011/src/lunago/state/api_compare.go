@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 14:58:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 14:39:55
+* @Last Modified time: 2019-05-02 17:17:20
 */
 
 
@@ -143,4 +143,12 @@ func _le(a, b luaValue, ls *luaState) bool {
     }
 }
 
+func (self *luaState) RawEqual(idx1, idx2 int) bool {
+    if !self.stack.isValid(idx1) || !self.stack.isValid(idx2) {
+        return false
+    }
 
+    a := self.stack.get(idx1)
+    b := self.stack.get(idx2)
+    return _eq(a, b, nil)
+}
