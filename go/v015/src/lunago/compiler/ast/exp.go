@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 19:34:56
+* @Last Modified time: 2019-05-03 19:42:13
 */
 
 package ast
@@ -43,7 +43,14 @@ type NameExp struct {
     Name string
 }
 
-
+/**
+ * unop exp
+ */
+type UnopExp struct {
+    Line int // line of operator
+    Op   int // operator
+    Exp  Exp
+}
 
 
 

@@ -7148,7 +7148,7 @@ Chunk和块
 
     简单表达式
 
-    字面量、vararg、名称表达式的定义st/exp.go
+    字面量、vararg、名称表达式的定义ast/exp.go
 
     type NilExp struct{ Line int }    // nil
     type TrueExp struct{ Line int }   // true
@@ -7175,14 +7175,19 @@ Chunk和块
         Name string
     }
 
-    
+    布尔、nil、vararg表达式只需要记录行号就可以了，为了简化代码生成器，把布尔表达式进一步分成了真假两种。数字字面量表达式除了记录行号，还需要解析并记录数值。同样为了简化代码生成器，把数字直面量表达式又进一步细分为整数和赋电视两种，字符串字面量表达式需要记录行号和字符串自身，名称表达式需要记录行号和名字，也就是标识符。
 
+  运算符表达式  
 
+  分为一元和二元运算符表达式。定义一元运算符表达式
 
+    type UnopExp struct {
+        Line int // line of operator
+        Op   int // operator
+        Exp  Exp
+    }
 
-
-
-
+    记录了表达式以及运算符和运算符所在的行号。
 
 
 
