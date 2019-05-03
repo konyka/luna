@@ -6693,10 +6693,13 @@ Upvalue相关的指令
         panic("unreachable!")
     }
 
+    定义表示数字字面量的正则表达式
 
+    var reNumber = regexp.MustCompile(`^0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]*)?([pP][+\-]?[0-9]+)?|^[0-9]*(\.[0-9]*)?([eE][+\-]?[0-9]+)?`)
 
+    标识符和关键字
 
-
+    
 
 
 

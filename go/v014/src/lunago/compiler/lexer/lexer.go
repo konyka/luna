@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 14:01:03
+* @Last Modified time: 2019-05-03 14:04:27
 */
 
 package lexer
@@ -16,6 +16,8 @@ import "strings"
 var reOpeningLongBracket = regexp.MustCompile(`^\[=*\[`)
 var reNewLine = regexp.MustCompile("\r\n|\n\r|\n|\r")
 var reShortStr = regexp.MustCompile(`(?s)(^'(\\\\|\\'|\\\n|\\z\s*|[^'\n])*')|(^"(\\\\|\\"|\\\n|\\z\s*|[^"\n])*")`)
+var reNumber = regexp.MustCompile(`^0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]*)?([pP][+\-]?[0-9]+)?|^[0-9]*(\.[0-9]*)?([eE][+\-]?[0-9]+)?`)
+
 
 var reDecEscapeSeq = regexp.MustCompile(`^\\[0-9]{1,3}`)
 var reHexEscapeSeq = regexp.MustCompile(`^\\x[0-9a-fA-F]{2}`)
@@ -166,8 +168,16 @@ func (self *Lexer) NextToken() (line, kind int, token string) {
         return self.line, TOKEN_NUMBER, token
     }
 
+    if c == '_' || isLetter(c) {
+        token := self.scanIdentifier()
+        if kind, found := keywords[token]; found {
+            return self.line, kind, token // keyword
+        } else {
+            return self.line, TOKEN_IDENTIFIER, token
+        }
+    }
 
-
+    self.error("unexpected symbol near %q", c)
     return
 }
 
