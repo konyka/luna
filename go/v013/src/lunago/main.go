@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 10:43:45
+* @Last Modified time: 2019-05-03 10:46:07
 */
 package main
 
@@ -104,3 +104,12 @@ func _iPairsAux(ls LuaState) int {
 func error(ls LuaState) int {
     return ls.Error()
 }
+
+func pCall(ls LuaState) int {
+    nArgs := ls.GetTop() - 1
+    status := ls.PCall(nArgs, -1, 0)
+    ls.PushBoolean(status == LUA_OK)
+    ls.Insert(1)
+    return ls.GetTop()
+}
+

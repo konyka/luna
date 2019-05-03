@@ -6014,7 +6014,15 @@ Upvalue相关的指令
         return ls.Error()
     }
 
+    暂时只接收一个参数，所以错误对象已经在栈顶了，这届调用Error（）抛出错误就可以了。
 
+    func pCall(ls LuaState) int {
+        nArgs := ls.GetTop() - 1
+        status := ls.PCall(nArgs, -1, 0)
+        ls.PushBoolean(status == LUA_OK)
+        ls.Insert(1)
+        return ls.GetTop()
+    }
 
 
 
