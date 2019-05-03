@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 19:44:02
+* @Last Modified time: 2019-05-03 19:45:20
 */
 
 package ast
@@ -63,7 +63,10 @@ type BinopExp struct {
 }
 
 
-
+type ConcatExp struct {
+    Line int // line of last ..
+    Exps []Exp
+}
 
 
 

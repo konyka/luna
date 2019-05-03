@@ -7199,9 +7199,12 @@ Chunk和块
         Exp2 Exp
     }
 
-    
+    由于拼接运算符的特殊性，需要单独定义一个结构体  
 
-
+    type ConcatExp struct {
+        Line int // line of last ..
+        Exps []Exp
+}
 
 
 
