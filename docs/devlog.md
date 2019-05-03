@@ -6320,9 +6320,20 @@ Upvalue相关的指令
         self.chunk = self.chunk[n:]
     }
 
+    isWhiteSpace判断自负是不是空白符
 
+    func isWhiteSpace(c byte) bool {
+        switch c {
+        case '\t', '\n', '\v', '\f', '\r', ' ':
+            return true
+        }
+        return false
+    }
 
-
+    判断字符是不是回车或者换行
+    func isNewLine(c byte) bool {
+        return c == '\r' || c == '\n'
+    }
 
 
 

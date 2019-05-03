@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:14:26
+* @Last Modified time: 2019-05-03 13:15:49
 */
 
 package lexer
@@ -89,4 +89,17 @@ func isWhiteSpace(c byte) bool {
     }
     return false
 }
+
+
+/**
+ * isNewLine判断字符是不是回车或者换行
+ */
+func isNewLine(c byte) bool {
+    return c == '\r' || c == '\n'
+}
+
+
+
+
+
 
