@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 18:11:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 18:36:52
+* @Last Modified time: 2019-05-03 18:43:18
 */
 
 package ast
@@ -72,4 +72,26 @@ type ForNumStat struct {
     StepExp   Exp
     Block     *Block
 }
+
+/**
+ * for namelist in explist do block end
+ * namelist ::= Name {‘,’ Name}
+ * explist ::= exp {‘,’ exp}
+ */
+type ForInStat struct {
+    LineOfDo int
+    NameList []string
+    ExpList  []Exp
+    Block    *Block
+}
+
+
+
+
+
+
+
+
+
+
 

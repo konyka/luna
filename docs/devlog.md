@@ -7025,17 +7025,25 @@ Chunk和块
         Block     *Block
     }
 
+    需要把关键字for和do所在行号记录下来，供代码生成阶段使用。
 
 
+5、通用for
 
+    for namelist in explist do block end
+    namelist ::= Name {‘,’ Name}
+    explist ::= exp {‘,’ exp}
 
+    以关键字for开始，然后是逗号分隔的标识符列表，然后是关键字in和逗号分隔的表达式列表，最后是do语句
 
+    定义通用for语句
 
-
-
-
-
-
+    type ForInStat struct {
+        LineOfDo int
+        NameList []string
+        ExpList  []Exp
+        Block    *Block
+    }
 
 
 
