@@ -7045,19 +7045,24 @@ Chunk和块
         Block    *Block
     }
 
+    需要把关键字do所在行号记录下来，供代码生成阶段使用。和if语句类似，把关键字in左边的标识符列表记录在NameList中，右侧的表达式列表记录在ExpList中。不过和if语句不通，标识符和表达式不是一一对应的。
 
+6、局部变量声明    
+    由于lua支持多重赋值，所以声明和赋值语句比较复杂，其中局部变量声明语句用于声明（并初始化）新的局部变量
 
+    local namelist [‘=’ explist]
+    namelist ::= Name {‘,’ Name}
+    explist ::= exp {‘,’ exp}
 
+    局部变量声明语句以关键字local开始，后跟逗号分隔的标识符列表，然后是可选的等号以及逗号分隔的表达式列表。
 
-
-
-
-
-
-
-
-
-
+    定义局部变量的声明语句
+    
+    type LocalVarDeclStat struct {
+        LastLine int
+        NameList []string
+        ExpList  []Exp
+    }
 
 
 

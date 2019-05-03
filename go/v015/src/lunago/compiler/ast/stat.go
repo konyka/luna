@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 18:11:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 18:43:18
+* @Last Modified time: 2019-05-03 18:49:21
 */
 
 package ast
@@ -86,6 +86,16 @@ type ForInStat struct {
 }
 
 
+/**
+ *local namelist [‘=’ explist]
+ * namelist ::= Name {‘,’ Name}
+ * explist ::= exp {‘,’ exp}
+ */
+type LocalVarDeclStat struct {
+    LastLine int
+    NameList []string
+    ExpList  []Exp
+}
 
 
 
