@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 14:32:36
+* @Last Modified time: 2019-05-03 14:34:25
 */
 
 package lexer
@@ -463,3 +463,8 @@ func (self *Lexer) NextTokenOfKind(kind int) (line int, token string) {
 func (self *Lexer) NextIdentifier() (line int, token string) {
     return self.NextTokenOfKind(TOKEN_IDENTIFIER)
 }
+
+func (self *Lexer) Line() int {
+    return self.line
+}
+

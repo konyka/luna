@@ -6787,14 +6787,16 @@ Upvalue相关的指令
     }
 
     NextIdentifier用来提取标识符
-    
+
     func (self *Lexer) NextIdentifier() (line int, token string) {
         return self.NextTokenOfKind(TOKEN_IDENTIFIER)
     }
 
+    Line()返回当前行号
 
-
-
+    func (self *Lexer) Line() int {
+        return self.line
+    }   
 
 
 
