@@ -6776,9 +6776,15 @@ Upvalue相关的指令
     }
 
 
+    给结构体Lexer增加方法NextTokenOfKind
 
-
-
+    func (self *Lexer) NextTokenOfKind(kind int) (line int, token string) {
+        line, _kind, token := self.NextToken()
+        if kind != _kind {
+            self.error("syntax error near '%s'", token)
+        }
+        return line, token
+    }
 
 
 
