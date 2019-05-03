@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:40:25
+* @Last Modified time: 2019-05-03 13:50:25
 */
 
 package lexer
@@ -17,6 +17,9 @@ var reOpeningLongBracket = regexp.MustCompile(`^\[=*\[`)
 var reNewLine = regexp.MustCompile("\r\n|\n\r|\n|\r")
 var reShortStr = regexp.MustCompile(`(?s)(^'(\\\\|\\'|\\\n|\\z\s*|[^'\n])*')|(^"(\\\\|\\"|\\\n|\\z\s*|[^"\n])*")`)
 
+var reDecEscapeSeq = regexp.MustCompile(`^\\[0-9]{1,3}`)
+var reHexEscapeSeq = regexp.MustCompile(`^\\x[0-9a-fA-F]{2}`)
+var reUnicodeEscapeSeq = regexp.MustCompile(`^\\u\{[0-9a-fA-F]+\}`)
 
 type Lexer struct {
     chunk         string // source code
@@ -287,7 +290,100 @@ func (self *Lexer) scanShortString() string {
 }
 
 
+func (self *Lexer) escape(str string) string {
+    var buf bytes.Buffer
 
+    for len(str) > 0 {
+        if str[0] != '\\' {
+            buf.WriteByte(str[0])
+            str = str[1:]
+            continue
+        }
+
+        if len(str) == 1 {
+            self.error("unfinished string")
+        }
+
+        switch str[1] {
+        case 'a':
+            buf.WriteByte('\a')
+            str = str[2:]
+            continue
+        case 'b':
+            buf.WriteByte('\b')
+            str = str[2:]
+            continue
+        case 'f':
+            buf.WriteByte('\f')
+            str = str[2:]
+            continue
+        case 'n', '\n':
+            buf.WriteByte('\n')
+            str = str[2:]
+            continue
+        case 'r':
+            buf.WriteByte('\r')
+            str = str[2:]
+            continue
+        case 't':
+            buf.WriteByte('\t')
+            str = str[2:]
+            continue
+        case 'v':
+            buf.WriteByte('\v')
+            str = str[2:]
+            continue
+        case '"':
+            buf.WriteByte('"')
+            str = str[2:]
+            continue
+        case '\'':
+            buf.WriteByte('\'')
+            str = str[2:]
+            continue
+        case '\\':
+            buf.WriteByte('\\')
+            str = str[2:]
+            continue
+        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9': // \ddd
+            if found := reDecEscapeSeq.FindString(str); found != "" {
+                d, _ := strconv.ParseInt(found[1:], 10, 32)
+                if d <= 0xFF {
+                    buf.WriteByte(byte(d))
+                    str = str[len(found):]
+                    continue
+                }
+                self.error("decimal escape too large near '%s'", found)
+            }
+        case 'x': // \xXX
+            if found := reHexEscapeSeq.FindString(str); found != "" {
+                d, _ := strconv.ParseInt(found[2:], 16, 32)
+                buf.WriteByte(byte(d))
+                str = str[len(found):]
+                continue
+            }
+        case 'u': // \u{XXX}
+            if found := reUnicodeEscapeSeq.FindString(str); found != "" {
+                d, err := strconv.ParseInt(found[3:len(found)-1], 16, 32)
+                if err == nil && d <= 0x10FFFF {
+                    buf.WriteRune(rune(d))
+                    str = str[len(found):]
+                    continue
+                }
+                self.error("UTF-8 value too large near '%s'", found)
+            }
+        case 'z':
+            str = str[2:]
+            for len(str) > 0 && isWhiteSpace(str[0]) { // todo
+                str = str[1:]
+            }
+            continue
+        }
+        self.error("invalid escape sequence near '\\%c'", str[1])
+    }
+
+    return buf.String()
+}
 
 
 
