@@ -6699,12 +6699,23 @@ Upvalue相关的指令
 
     标识符和关键字
 
-    
+    if c == '_' || isLetter(c) {
+        token := self.scanIdentifier()
+        if kind, found := keywords[token]; found {
+            return self.line, kind, token // keyword
+        } else {
+            return self.line, TOKEN_IDENTIFIER, token
+        }
+    }
+
+    self.error("unexpected symbol near %q", c)
 
 
+    如果下一个token是标识符，调用scanIdentifier提取token，取得token以后，根据它是普通的标识符还是关键字，分情况返回。isLetter判断字符是不是字母
 
-
-
+    func isLetter(c byte) bool {
+        return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+    }
 
 
 
