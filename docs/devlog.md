@@ -6776,7 +6776,7 @@ Upvalue相关的指令
     }
 
 
-    给结构体Lexer增加方法NextTokenOfKind
+    给结构体Lexer增加方法NextTokenOfKind，用来提取指令类型的token
 
     func (self *Lexer) NextTokenOfKind(kind int) (line int, token string) {
         line, _kind, token := self.NextToken()
@@ -6786,8 +6786,11 @@ Upvalue相关的指令
         return line, token
     }
 
-
-
+    NextIdentifier用来提取标识符
+    
+    func (self *Lexer) NextIdentifier() (line int, token string) {
+        return self.NextTokenOfKind(TOKEN_IDENTIFIER)
+    }
 
 
 
