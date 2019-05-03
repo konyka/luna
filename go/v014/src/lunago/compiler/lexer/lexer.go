@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:37:48
+* @Last Modified time: 2019-05-03 13:40:25
 */
 
 package lexer
@@ -15,6 +15,7 @@ import "strings"
 
 var reOpeningLongBracket = regexp.MustCompile(`^\[=*\[`)
 var reNewLine = regexp.MustCompile("\r\n|\n\r|\n|\r")
+var reShortStr = regexp.MustCompile(`(?s)(^'(\\\\|\\'|\\\n|\\z\s*|[^'\n])*')|(^"(\\\\|\\"|\\\n|\\z\s*|[^"\n])*")`)
 
 
 type Lexer struct {
