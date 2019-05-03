@@ -7077,53 +7077,67 @@ Chunk和块
 
     赋值语句被等号分成了两部分，左边是逗号分隔的var表达式列表，右边是逗啊后分隔的任意表达式列表。
 
+    定义赋值语句
+
     type AssignStat struct {
         LastLine int
         VarList  []Exp
         ExpList  []Exp
     }
 
+    和局部变量声明语句一样，需要把末尾的行号也记录下来，供代码生成阶段使用。等到左侧的var表达式列表记录在VarList中，右侧的任意表达式列表记录在ExpList中
+
+ 8、非局部函数定义语句   
+    函数定义语句实际上是赋值语句的语法糖。函数定义语句又分为局部函数定义语句和非局部函数定义语句两种。非局部函数的定义：
+
+    function ::= funcname funcbody
+    funcname ::= Name {‘.’ Name} [‘:’ Name]
+    funcbody ::= ‘(’ [parlist] ‘)’ block end
+
+    非局部函数定义语句 以关键值function开始，然后是函数名（并非简单的标识符），然后是被圆括号扩起来的可选参数列表，最后是语句块以及关键字end。
+
+    参数列表的ednf：
+
+    parlist ::= namelist [‘,’ ‘...’] | ‘...’
+    namelist ::= Name {‘,’ Name}
+
+    参数列表可以是逗号分隔的标识符列表，后跟可选的逗号以及vararg符号，或者就单一个vararg符号。
+
+    函数名中的“:”写法，实际上也是lua添加的语法糖，用来模拟面向对象的方法定义。比如以下三天语句在语义上是完全等价的。
+
+    function t.a.b.c:f (params) body end          //方法定义
+    function t.a.b.c.f (self, params) body end     //函数定义
+    t.a.b.c.f = function (self, params) body end   //赋值
+
+    在语法分析阶段，会把被局部函数定义语句的冒号语法糖去掉，并会把它转换为赋值语句，所以不需要给它定义专用的结构体
+
+9、局部函数定义
+
+    和非局部函数定义语句 类似，局部函数定义语句实际上是局部变量声明语句的语法糖
+
+    local function Name funcbody
+
+    局部函数定义语句以关键字local开始，后跟关键字function，然后是标识符。从圆括号开始，剩下的部分和非局部函数定义语句完全一样。
+
+    注意，和非局部函数定义语句略有不同，为了方便递归函数的编写，局部函数定义语句会被转换为局部变量声明和赋值两条语句，比如
+    local function f (params) body end
+    实际上会被转化为下面两条
+    local f; f = function(params) body end
+
+    为了简化代码生成，我们部分地保留了这个语法糖。定义局部函数定义语句
 
 
+    type LocalFuncDefStat struct {
+        Name string
+        Exp  *FuncDefExp
+    }
 
+    Name 对应函数名，Exp对应函数定义表达式
 
+表达式
+    lua有11种表达式，分为5类：字面量表达式、构造器表达式、混算符表达式、vararg表达式以及前缀表达式。字面量表达式包括nil、布尔、数字和字符串表达式。构造器表达式包括表构造器和函数构造器表达式。运算符表达式包括一元和二元运算符表达式。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 18:11:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 18:54:42
+* @Last Modified time: 2019-05-03 19:20:16
 */
 
 package ast
@@ -111,7 +111,14 @@ type AssignStat struct {
     ExpList  []Exp
 }
 
-
+/**
+ * local function Name funcbody
+ *  Name 对应函数名，Exp对应函数定义表达式
+ */
+type LocalFuncDefStat struct {
+    Name string
+    Exp  *FuncDefExp
+}
 
 
 
