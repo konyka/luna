@@ -5730,28 +5730,40 @@ Upvalue相关的指令
         panic("table expected!")
     }
 
+    先根据索引拿到表（如果拿到的不是表，就调用panic报错），然后从栈顶弹出上一个key，解析来使用这个key调用表的nextKey方法，如果方法返回nil，说明遍历已经结束，返回false即可；反之，把下一个键值对push到栈顶，返回true
+
+    实现next（）函数
+
+    修改main。go
+
+    func next(ls LuaState) int {
+        ls.SetTop(2) /* 入股参数2不存在，则设置nil */
+        if ls.Next(1) {
+            return 2
+        } else {
+            ls.PushNil()
+            return 1
+        }
+    }
+
+    因为next()的第二个参数（key）是可选的，所以首先调用SetTop，以便在用户没有提供这个参数的时候给它补上默认值nil。这样就能保证栈里面肯定有两个值，索引1处是表，索引2处是上一个key。然后通过索引1调用Next（），她会把key从栈顶弹出，如果Next（）返回true，说明遍历还没有结束，下一个键值对已经在栈顶了，返回2就可以。，反之，遍历已经结束，需要自己向栈顶push nil，然后返回1
 
 
+    通用for循环指令
 
+    通用for循环也是利用tforcal tforloop这两个指令实现的
 
+    其中tforcall（iABC 模式）伪代码：
 
+    R（A+3），... ,R(A+2+C) := R(A)(R(A+1), R(A+2))
 
+    tforloop(iAsBx模式)
 
+    if R（A+1）~= nil then {
+        R(A)=R(A+1);pc += sBx
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 

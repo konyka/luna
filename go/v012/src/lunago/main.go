@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 16:41:39
+* @Last Modified time: 2019-05-03 08:34:07
 */
 package main
 
@@ -61,3 +61,15 @@ func setMetatable(ls LuaState) int {
     ls.SetMetatable(1)
     return 1
 }
+
+func next(ls LuaState) int {
+    ls.SetTop(2) /* create a 2nd argument if there isn't one */
+    if ls.Next(1) {
+        return 2
+    } else {
+        ls.PushNil()
+        return 1
+    }
+}
+
+
