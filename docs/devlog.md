@@ -6910,21 +6910,41 @@ Chunk和块
         RetExps  []Exp
     }
 
+  因为chunk实际上等同于代码块，因此只定义了Block结构体。Block结构体仅仅包含了以后要处理的必要信息，包括语句序列、返回语句里面的表达式序列等，至于关键字、分号、逗号等信息全部丢弃，这就是将其称为ast的原因。
+  LastLine：记录了代码块的末尾行号，在代码生成阶段需要使用这个信息。
 
 
+  语句
+  在命令式编程语言中，语句statement是最基本的执行单位，表达式expression则是构成语句的元素之一。玉玦和表达式主要区别在于：语句只能执行，不能用于求值，而表达式值你能用于求值，不用单独执行
+
+  lua中，函数调用既可以是表达式，也可以是语句。lua有15种语句，下面是lua语句的EBNF表述
+  http://www.lua.org/manual/5.3/manual.html#9
+
+  stat ::=  ‘;’ | 
+         varlist ‘=’ explist | 
+         functioncall | 
+         label | 
+         break | 
+         goto Name | 
+         do block end | 
+         while exp do block end | 
+         repeat block until exp | 
+         if exp then block {elseif exp then block} [else block] end | 
+         for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end | 
+         for namelist in explist do block end | 
+         function funcname funcbody | 
+         local function Name funcbody | 
+         local namelist [‘=’ explist] 
+
+  lua语句大致可以分为控制语句、声明和赋值语句、以及其他语句三种。声明和赋值语句用于声明局部变量、给变量赋值或者向表里面写入值，包括局部变量声明语句、赋值语句、局部函数定义语句和非局部函数定义语句。控制语句用于改变执行流程，包括while、repeat、if、for、break、label、goto。其他语句包括空语句、do、函数调用。
+
+  compiler/ast/stat.go
+  定义接口Stat
+
+    package ast
 
 
-
-
-
-
-
-
-
-
-
-
-
+    type Stat interface{}
 
 
 
