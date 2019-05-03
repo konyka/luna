@@ -6758,9 +6758,22 @@ Upvalue相关的指令
     }
 
 
+    通过字段nextTokenLine判断缓存里面是否有下一个token信息，如果有，直接返回token的类型就可以；反之，调用NextToken提取下一个token并缓存。
 
+    修改NextToken方法，如果发现缓存里面有下一个token信息，就直接从缓存里面读取，然后清空缓存
 
+    func (self *Lexer) NextToken() (line, kind int, token string) {
+        if self.nextTokenLine > 0 {
+            line = self.nextTokenLine
+            kind = self.nextTokenKind
+            token = self.nextToken
+            self.line = self.nextTokenLine
+            self.nextTokenLine = 0
+            return
+        }
+        ......
 
+    }
 
 
 

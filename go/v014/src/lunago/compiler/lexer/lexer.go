@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 14:25:05
+* @Last Modified time: 2019-05-03 14:29:07
 */
 
 package lexer
@@ -37,6 +37,14 @@ func NewLexer(chunk, chunkName string) *Lexer {
 }
 
 func (self *Lexer) NextToken() (line, kind int, token string) {
+    if self.nextTokenLine > 0 {
+        line = self.nextTokenLine
+        kind = self.nextTokenKind
+        token = self.nextToken
+        self.line = self.nextTokenLine
+        self.nextTokenLine = 0
+        return
+    }
 
     self.skipWhiteSpaces()
     if len(self.chunk) == 0 {
