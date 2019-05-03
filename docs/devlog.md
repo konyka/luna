@@ -7289,18 +7289,26 @@ Chunk和块
         KeyExp    Exp
     }
 
+    把有方括号所在的行号记录在字段LastLine中，供词法分析阶段使用。
 
+函数调用表达式
 
+    functioncall ::= prefixexp [‘:’ Name] args
+    args ::= ‘(’ [explist] ‘)’ | tableconstructor | LiteralString 
 
+    函数调用表达式以前缀表达式开始，后跟可选的冒号以及标识符，然后是表构造器、字符串字面量或者由圆括号包围起来的可选参数列表。
 
+    lua在函数调用表达式里面加了两个语法糖：第一个允许在有且仅有一个参数，且参数是字符串字面量或者表构造器的时候省略圆括号；第二个是为了模拟面向对象语言里面的方法调用而加入的。在语义上，v:name(args)完全等价于v.name(v, args).
 
+    定义函数调用表达式
 
-
-
-
-
-
-
+    type FuncCallExp struct {
+        Line      int // line of `(` ?
+        LastLine  int // line of ')'
+        PrefixExp Exp
+        NameExp   *StringExp
+        Args      []Exp
+    }
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 21:51:16
+* @Last Modified time: 2019-05-03 21:58:35
 */
 
 package ast
@@ -117,7 +117,13 @@ type TableAccessExp struct {
     KeyExp    Exp
 }
 
-
+type FuncCallExp struct {
+    Line      int // line of `(` ?
+    LastLine  int // line of ')'
+    PrefixExp Exp
+    NameExp   *StringExp
+    Args      []Exp
+}
 
 
 
