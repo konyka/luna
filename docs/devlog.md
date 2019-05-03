@@ -6125,7 +6125,7 @@ Upvalue相关的指令
 实现词法分析器
     词法分析器一般使用有限状态机实现。
 
-    compiler/lexer/lexer.go 定义结构体
+    compiler/lexer/lexer.go 定义结构体Lexer
 
      package lexer
 
@@ -6142,12 +6142,16 @@ Upvalue相关的指令
         line          int    // current line number
     }
 
+    chunk用来保存将要进行词法分析的源代码
+    line用来保存当前的行号
+    这两个字段构成了词法分析器的内部状态。
+    chunkName用来保存源文件的名称，用于在词法分析过程中，出错的是欧生成错误提示信息
 
+    lexer.go 添加NewLexer（）方法
 
-
-
-
-
+    func NewLexer(chunk, chunkName string) *Lexer {
+        return &Lexer{chunk, chunkName, 1}
+    }
 
 
 
