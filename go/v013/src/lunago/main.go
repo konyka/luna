@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 09:18:10
+* @Last Modified time: 2019-05-03 10:43:45
 */
 package main
 
@@ -99,4 +99,8 @@ func _iPairsAux(ls LuaState) int {
     } else {
         return 2
     }
+}
+
+func error(ls LuaState) int {
+    return ls.Error()
 }

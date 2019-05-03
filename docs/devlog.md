@@ -5991,16 +5991,28 @@ Upvalue相关的指令
 
     既然使用go的panic抛出错误，自然就需要使用defer-recover机制来捕获异常。如果一切正常，返回LUA_OK,反之，捕获并处理错误
 
-    
+    defer func() {
+            if err := recover(); err != nil {
+                if msgh != 0 {
+                    panic(err)
+                }
+                for self.stack != caller {
+                    self.popLuaStack()
+                }
+                self.stack.push(err)
+            }
+        }()
+
+        调用go内置的recover（）从错误中恢复，然后从调用栈顶依次弹出调用帧， 直到到达发起调用的调用帧为止，然后把所错误对象push到栈顶，返回LUA_ERRUN.
 
 
+    error pcall
 
+    在main。go实现简化版的error
 
-
-
-
-
-
+    func error(ls LuaState) int {
+        return ls.Error()
+    }
 
 
 
