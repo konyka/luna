@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 14:34:25
+* @Last Modified time: 2019-05-03 14:43:19
 */
 
 package lexer
@@ -33,7 +33,7 @@ type Lexer struct {
 }
 
 func NewLexer(chunk, chunkName string) *Lexer {
-    return &Lexer{chunk, chunkName, 1}
+    return &Lexer{chunk, chunkName, 1, "", 0, 0}
 }
 
 func (self *Lexer) NextToken() (line, kind int, token string) {

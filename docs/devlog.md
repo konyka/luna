@@ -6798,15 +6798,62 @@ Upvalue相关的指令
         return self.line
     }   
 
+单元测试
 
+    package main
 
+    import "fmt"
+    import "io/ioutil"
+    import "os"
+    import . "lunago/compiler/lexer"
 
+    func main() {
+        if len(os.Args) > 1 {
+            data, err := ioutil.ReadFile(os.Args[1])
+            if err != nil {
+                panic(err)
+            }
 
+            testLexer(string(data), os.Args[1])
+        }
+    }
 
+    根据命令行参数读取测试脚本，然后交给testLexer处理
 
+    func testLexer(chunk, chunkName string) {
+        lexer := NewLexer(chunk, chunkName)
+        for {
+            line, kind, token := lexer.NextToken()
+            fmt.Printf("[%2d] [%-10s] %s\n",
+                line, kindToCategory(kind), token)
+            if kind == TOKEN_EOF {
+                break
+            }
+        }
+    }
 
+    testLexer函数先根据源文件名和脚本创建Lexer结构体的实例，然后循环调用NextToken对脚本进行词法分析，打印出每个token的行号、类型和内容，直到整个甲苯都分析完成为止。kindToCategory函数把token的类型转换成更容易理解的字符串形式。
 
-
+    func kindToCategory(kind int) string {
+        switch {
+        case kind < TOKEN_SEP_SEMI:
+            return "other"
+        case kind <= TOKEN_SEP_RCURLY:
+            return "separator"
+        case kind <= TOKEN_OP_NOT:
+            return "operator"
+        case kind <= TOKEN_KW_WHILE:
+            return "keyword"
+        case kind == TOKEN_IDENTIFIER:
+            return "identifier"
+        case kind == TOKEN_NUMBER:
+            return "number"
+        case kind == TOKEN_STRING:
+            return "string"
+        default:
+            return "other"
+        }
+    }
 
 
 
