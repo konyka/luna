@@ -6025,21 +6025,45 @@ Upvalue相关的指令
     }
 
 
+    调用PCall并插入一个布尔类型的返回值。PCall会把被调函数和参数从栈顶弹出，然后把返回值或者错误对象留在栈顶，只需要根据PCall（）返回的状态码向栈顶push一个布尔值，然后将其移动到栈底，让它成为返回给Lua的第一个值就可以了
+
+    简化版的error pcall就心这样了，注册到全局环境。
+
+    func main() {
+        if len(os.Args) > 1 {
+            data, err := ioutil.ReadFile(os.Args[1])
+            if err != nil {
+                panic(err)
+            }
+
+            ls := state.New()
+            ls.Register("print", print)
+            ls.Register("getmetatable", getMetatable)
+            ls.Register("setmetatable", setMetatable)
+            ls.Register("next", next)
+            ls.Register("pairs", pairs)
+            ls.Register("ipairs", iPairs)
+            ls.Register("error", error)
+            ls.Register("pcall", pCall)
+            ls.Load(data, os.Args[1], "b")
+            ls.Call(0, 0)
+        }
+    }
 
 
 
+单元测试
 
+    $ go run main.go luac.out 
+    true    2
+    false   DIV BY ZERO !
+    false   arithmetic error!
 
+================
 
+词法分析
 
-
-
-
-
-
-
-
-
+    
 
 
 
