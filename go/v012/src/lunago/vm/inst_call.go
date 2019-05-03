@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 19:26:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 10:14:37
+* @Last Modified time: 2019-05-03 08:59:09
 */
 
 
@@ -177,6 +177,22 @@ func self(i Instruction, vm LuaVM) {
 }
 
 
+/**
+ * [tForCall R(A+3), ... ,R(A+2+C) := R(A)(R(A+1), R(A+2))]
+ * @Author   konyka
+ * @DateTime 2019-05-03T08:59:01+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func tForCall(i Instruction, vm LuaVM) {
+    a, _, c := i.ABC()
+    a += 1
+
+    _pushFuncAndArgs(a, 3, vm)
+    vm.Call(2, c)
+    _popResults(a+3, c+1, vm)
+}
 
 
 
