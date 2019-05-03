@@ -7137,11 +7137,14 @@ Chunk和块
 表达式
     lua有11种表达式，分为5类：字面量表达式、构造器表达式、混算符表达式、vararg表达式以及前缀表达式。字面量表达式包括nil、布尔、数字和字符串表达式。构造器表达式包括表构造器和函数构造器表达式。运算符表达式包括一元和二元运算符表达式。
 
-    
+    exp ::=  nil | false | true | Numeral | LiteralString | ‘...’ | functiondef | 
+         prefixexp | tableconstructor | exp binop exp | unop exp   
 
+    ast/exp.go中定义接口Exp
 
+    package ast
 
-
+    type Exp interface{}
 
 
 
