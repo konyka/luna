@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:59:29
+* @Last Modified time: 2019-05-03 14:01:03
 */
 
 package lexer
@@ -401,5 +401,11 @@ func (self *Lexer) scanNumber() string {
     return self.scan(reNumber)
 }
 
-
+func (self *Lexer) scan(re *regexp.Regexp) string {
+    if token := re.FindString(self.chunk); token != "" {
+        self.next(len(token))
+        return token
+    }
+    panic("unreachable!")
+}
 

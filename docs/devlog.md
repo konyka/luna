@@ -6678,14 +6678,20 @@ Upvalue相关的指令
     }
 
     scanNumber简单调用scan
-    
+
     func (self *Lexer) scanNumber() string {
         return self.scan(reNumber)
     }
 
+    为了简化数字字面量和标识符的提取逻辑，scan也使用了正则表达式
 
-
-
+    func (self *Lexer) scan(re *regexp.Regexp) string {
+        if token := re.FindString(self.chunk); token != "" {
+            self.next(len(token))
+            return token
+        }
+        panic("unreachable!")
+    }
 
 
 
