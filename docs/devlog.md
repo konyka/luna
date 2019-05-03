@@ -7248,23 +7248,37 @@ Chunk和块
         Block    *Block
     }
 
+    需要记录{}所在的行号，供代码生成阶段使用。
 
+前缀表达式
+    prefixexp ::= var | functioncall | ‘(’ exp ‘)’
+    var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name 
+    functioncall ::=  prefixexp args | prefixexp ‘:’ Name args 
 
+    前缀表达式包括var表达式、函数调用表达式、和圆括号表达式三种。var表达式是能够出现在赋值语句等号左侧的表达式，又包括名称表达式、表访问表达式和记录访问表达式三种。
 
+    为了更直观的理解前缀表达式，对上面的写法进行改造
 
+  
+    prefixexp ::= Name |
+                  ‘(’ exp ‘)’ |
+                  prefixexp ‘[’ exp ‘]’ |
+                  prefixexp ‘.’ Name |
+                  prefixexp ‘:’ Name args |
+                  prefixexp args
+    
+    可见，之所以叫做“前缀”表达式，就是因为可以作为表访问表达式、记录表达式和函数调用表达式的前缀。
+    
+    名称表达式茜米昂已经定义了。记录访问表达式其实是表访问表达式的语法糖，在语义上，t.k完全等价于t["k"]。在语法分析阶段会把记录访问表达式转换成表访问表达式，所以没有必要专门定义记录访问表达式。              
+圆括号表达式
 
+    圆括号表达式主要有两个用途：改变运算符的优先级或者结合性，或者在多重赋值的时候将vararg和函数调用的返回值固定为1.运算符的优先级可以隐含在ast中，所以可以在语法分析阶段扔掉这部分的圆括号。但是对于其他情况，为了简化语法分析和代码生成阶段，还是需要保留圆括号。
 
+    定义圆括号表达式
 
-
-
-
-
-
-
-
-
-
-
+    type ParensExp struct {
+        Exp Exp
+    }
 
 
 

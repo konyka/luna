@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 19:56:43
+* @Last Modified time: 2019-05-03 21:30:33
 */
 
 package ast
@@ -97,10 +97,19 @@ type FuncDefExp struct {
     Block    *Block
 }
 
+/*
+prefixexp ::= Name |
+              ‘(’ exp ‘)’ |
+              prefixexp ‘[’ exp ‘]’ |
+              prefixexp ‘.’ Name |
+              prefixexp ‘:’ Name args |
+              prefixexp args
+*/
 
 
-
-
+type ParensExp struct {
+    Exp Exp
+}
 
 
 
