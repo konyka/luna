@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:10:50
+* @Last Modified time: 2019-05-03 13:12:27
 */
 
 package lexer
@@ -60,7 +60,24 @@ func (self *Lexer) skipWhiteSpaces() {
     }
 }
 
+/**
+ * test()判断剩余的源代码是否以某种字符串开头
+ */
 func (self *Lexer) test(s string) bool {
     return strings.HasPrefix(self.chunk, s)
 }
+
+/**
+ * [func nextf跳过n个字节]
+ * @Author   konyka
+ * @DateTime 2019-05-03T13:12:04+0800
+ * @param    {[type]}                 self *Lexer)       next(n int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *Lexer) next(n int) {
+    self.chunk = self.chunk[n:]
+}
+
+
+
 
