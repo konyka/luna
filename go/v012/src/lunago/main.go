@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 09:12:30
+* @Last Modified time: 2019-05-03 09:14:37
 */
 package main
 
@@ -87,3 +87,13 @@ func iPairs(ls LuaState) int {
     return 3
 }
 
+
+func _iPairsAux(ls LuaState) int {
+    i := ls.ToInteger(2) + 1
+    ls.PushInteger(i)
+    if ls.GetI(1, i) == LUA_TNIL {
+        return 1
+    } else {
+        return 2
+    }
+}

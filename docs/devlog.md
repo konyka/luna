@@ -5819,8 +5819,16 @@ Upvalue相关的指令
         ls.PushInteger(0)             /* initial value */
         return 3
     }
-
-
+    数组版的next（）
+    func _iPairsAux(ls LuaState) int {
+        i := ls.ToInteger(2) + 1
+        ls.PushInteger(i)
+        if ls.GetI(1, i) == LUA_TNIL {
+            return 1
+        } else {
+            return 2
+        }
+    }
 
 
 
