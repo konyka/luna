@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 09:08:09
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-30 09:16:18
+* @Last Modified time: 2019-05-03 09:02:37
 */
 
 package vm
@@ -76,7 +76,25 @@ func forLoop(i Instruction, vm LuaVM) {
 }
 
 
+/**
+ * [tForLoop description]
+ * if R(A+1) ~= nil then {
+ *   R(A)=R(A+1); pc += sBx
+ *  }
+ * @Author   konyka
+ * @DateTime 2019-05-03T09:02:15+0800
+ * @param    {[type]}                 i  Instruction   [description]
+ * @param    {[type]}                 vm LuaVM         [description]
+ * @return   {[type]}                    [description]
+ */
+func tForLoop(i Instruction, vm LuaVM) {
+    a, sBx := i.AsBx()
+    a += 1
 
-
+    if !vm.IsNil(a + 1) {
+        vm.Copy(a+1, a)
+        vm.AddPC(sBx)
+    }
+}
 
 

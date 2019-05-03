@@ -5775,11 +5775,20 @@ Upvalue相关的指令
     }
 
 
+    vm/inst_for.go实现tforloop
 
 
+    func tForLoop(i Instruction, vm LuaVM) {
+        a, sBx := i.AsBx()
+        a += 1
 
+        if !vm.IsNil(a + 1) {
+            vm.Copy(a+1, a)
+            vm.AddPC(sBx)
+        }
+    }
 
-
+    修改opcodes.go 修改指令表，注册上面的函数
 
 
 
