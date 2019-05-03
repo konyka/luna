@@ -5842,56 +5842,89 @@ Upvalue相关的指令
         end
     end
 
-    
+    修改mian，注册pairs ipairs
+
+    func main() {
+        if len(os.Args) > 1 {
+            data, err := ioutil.ReadFile(os.Args[1])
+            if err != nil {
+                panic(err)
+            }
+
+            ls := state.New()
+            ls.Register("print", print)
+            ls.Register("getmetatable", getMetatable)
+            ls.Register("setmetatable", setMetatable)
+            ls.Register("next", next)
+            ls.Register("pairs", pairs)
+            ls.Register("ipairs", iPairs)
+            ls.Load(data, os.Args[1], "b")
+            ls.Call(0, 0)
+        }
+    }
+
+=================
+
+错误和异常处理
+
+    介绍
+
+    lua并没有在语法层面上直接支持异常处理，不过在标准库中提供了一些函数，可以用来抛出异常或者捕获异常。
+
+    function lock2seconds (lock)
+        if not lock:tryLock() then
+            error("Unable to acquire the lock!")
+        end
+        pcall(function() sleep(2000) end)
+        lock:unlock()
+    end
+
+    error()抛出异常，异常抛出以后，正常的函数执行结束，然后异常逐步向外传播，直到被pcall（）捕获。通常可以使用字符串表示异常信息，实际上，error（）可以把任何lua值当作异常抛出
+
+    error（{err="Unable to acquire the lock!"}）
+
+    如果抛出的异常时字符串或者表，由于lua的函数调用语法糖允许载有且只有一个参数，并且该参数是字符串字面领或者表构造器的时候省略圆括号，所以，也可以让error（）看起来像个关键字
+
+    error {err="Unable to acquire the lock!"}
+
+    上面使用匿名函数来保护可能会抛出异常的代码块，然后交给pcall（）调用，对于这个例子来说，完全没有必要使用匿名函数，直接把被调函数和参数一起传递给pcall就可以了
+
+    function lock2seconds(lock)
+        lock:lock()
+        pcall(sleep, 2000)
+        lock:unlock()
+    end
+
+    pcall()会在保护模式下调用被调函数，如果一切正常，pcall（）返回true和被调函数返回的全部值；如果被调过程中有异常抛出，pcall不捕获异常，返回false以及异常。通常需要检查pcall的第一个返回值，看看调用是否正常，然后根据情况进行一步处理
+
+    function lock2seconds (lock)
+        lock:lock()
+        local ok, msg = pcall(sleep, 2000)
+
+        lock:unlock()
+
+        if ok then
+            print("ok")
+        else
+            print("error:" .. msg)
+        end
+
+     end   
+
+     实际上，error（）还有一个可选参数level，pcall函数还有另一个版本xpcall（）
 
 
+     错误和异常处理api
 
+     lua api提供了两个方法 Error（）和PCall（）。对应标准库的error（）、pcall（）。
 
+     api/lua_state.go
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    type LuaState interface {
+        ...
+        Error() int
+        PCall(nArgs, nResults, msgh int) int
+    }
 
 
 
