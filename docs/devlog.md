@@ -7218,23 +7218,35 @@ Chunk和块
 
      表构造器由花括号、其中是可选的字段列表组成；字段列表由逗号或者分号分隔，并且末尾可以有一个可选的逗号或者分号。字段可以类似索引赋值或者变量赋值，也可以是一个简单的表达式。
 
-    type TableConstructorExp struct {
+
+    之所以这么复杂，是因为lua在李米昂放了几个字段语法糖。在{}中，k = v 完全等价于["k"] = v,单独的表达式exp则基本上等价于[n] = exp(n是整数，从1开始递增)。
+
+        type TableConstructorExp struct {
         Line     int // line of `{` ?
         LastLine int // line of `}`
         KeyExps  []Exp
         ValExps  []Exp
     }
 
+    需要记录{}所在的行号，供以后代码生成阶段使用。在语法分析阶段，会把字段的语法糖去掉，这样就可以统一把key value表达式整理到KeyExps和ValExps中
 
+函数定义表达式
+    函数定义表达式也叫做函数构造器，其求值的结果是一个匿名函数
 
+    functiondef ::= function funcbody
+    funcbody ::= ‘(’ [parlist] ‘)’ block end
+    parlist ::= namelist [‘,’ ‘...’] | ‘...’
+    namelist ::= Name {‘,’ Name}
 
+    函数定义表达式和函数定义语句很像，区别在于前者省略了函数名，定义函数定义表达式
 
-
-
-
-
-
-
+    type FuncDefExp struct {
+        Line     int
+        LastLine int // line of `end`
+        ParList  []string
+        IsVararg bool
+        Block    *Block
+    }
 
 
 

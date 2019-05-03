@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 19:47:58
+* @Last Modified time: 2019-05-03 19:56:43
 */
 
 package ast
@@ -83,7 +83,19 @@ type TableConstructorExp struct {
 }
 
 
-
+/**
+ *functiondef ::= function funcbody
+ *funcbody ::= ‘(’ [parlist] ‘)’ block end
+ * parlist ::= namelist [‘,’ ‘...’] | ‘...’
+ * namelist ::= Name {‘,’ Name}
+ */
+type FuncDefExp struct {
+    Line     int
+    LastLine int // line of `end`
+    ParList  []string
+    IsVararg bool
+    Block    *Block
+}
 
 
 
