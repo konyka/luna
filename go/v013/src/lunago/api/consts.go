@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:09:33
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 16:14:58
+* @Last Modified time: 2019-05-03 10:13:42
 */
 
 package api
@@ -52,7 +52,17 @@ const (
 )
 
 
-
+/* thread status */
+const (
+	LUA_OK = iota
+	LUA_YIELD
+	LUA_ERRRUN
+	LUA_ERRSYNTAX
+	LUA_ERRMEM
+	LUA_ERRGCMM
+	LUA_ERRERR
+	LUA_ERRFILE
+)
 
 
 

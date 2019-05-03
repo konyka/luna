@@ -5926,7 +5926,8 @@ Upvalue相关的指令
         PCall(nArgs, nResults, msgh int) int
     }
 
-
+    定义常量
+    
 
 
 
