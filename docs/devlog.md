@@ -6656,7 +6656,9 @@ Upvalue相关的指令
     \z
     先跳过\z这个转义序列，跳过紧随其后的空白符。需要定义提取转义序列的正则表达式。
 
-    
+    var reDecEscapeSeq = regexp.MustCompile(`^\\[0-9]{1,3}`)
+    var reHexEscapeSeq = regexp.MustCompile(`^\\x[0-9a-fA-F]{2}`)
+    var reUnicodeEscapeSeq = regexp.MustCompile(`^\\u\{[0-9a-fA-F]+\}`)
     
 
 
