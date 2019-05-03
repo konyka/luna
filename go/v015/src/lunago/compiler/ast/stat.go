@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 18:11:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 18:12:50
+* @Last Modified time: 2019-05-03 18:16:53
 */
 
 package ast
@@ -25,6 +25,16 @@ stat ::=  ‘;’ |
      local namelist [‘=’ explist]
 */
 type Stat interface{}
+
+
+type EmptyStat struct{}              // ‘;’
+type BreakStat struct{ Line int }    // break
+type LabelStat struct{ Name string } // ‘::’ Name ‘::’
+type GotoStat struct{ Name string }  // goto Name
+type DoStat struct{ Block *Block }   // do block end
+type FuncCallStat = FuncCallExp      // functioncall
+
+
 
 
 

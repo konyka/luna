@@ -6947,15 +6947,21 @@ Chunk和块
     type Stat interface{}
 
 
+  1、简单语句
+    空语句、break、do、函数调用、label和goto语句比较简单。定义这几种语句
 
+    type EmptyStat struct{}              // ‘;’
+    type BreakStat struct{ Line int }    // break
+    type LabelStat struct{ Name string } // ‘::’ Name ‘::’
+    type GotoStat struct{ Name string }  // goto Name
+    type DoStat struct{ Block *Block }   // do block end
+    type FuncCallStat = FuncCallExp      // functioncall
 
-
-
-
-
-
-
-
+    空语句没有任何语义，仅仅起到分隔的作用，所以结构体EmptyStat也没有任何字段。
+    break语句会在代码生成阶段产生一条跳转指令，所以需要记录其行号
+    label和goto语句搭配使用，用来实现任意跳转，所以需要记录标签名
+    do语句仅仅是为了给语句快引入新的作用域，所以结构体DoStat也只有一个字段Block
+    函数调用既可以是语句，也可以是表达式，所以仅仅是起了一个别名。
 
 
 
