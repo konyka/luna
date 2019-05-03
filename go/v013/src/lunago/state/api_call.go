@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 16:10:16
+* @Last Modified time: 2019-05-03 10:33:22
 */
 
 package state
@@ -132,7 +132,27 @@ func (self *luaState) callGoClosure(nArgs, nResults int, c *closure) {
 }
 
 
+func (self *luaState) PCall(nArgs, nResults, msgh int) (status int) {
+    caller := self.stack
+    status = LUA_ERRRUN
 
+    // catch error
+    defer func() {
+        if err := recover(); err != nil {
+            if msgh != 0 {
+                panic(err)
+            }
+            for self.stack != caller {
+                self.popLuaStack()
+            }
+            self.stack.push(err)
+        }
+    }()
+
+    self.Call(nArgs, nResults)
+    status = LUA_OK
+    return
+}
 
 
 

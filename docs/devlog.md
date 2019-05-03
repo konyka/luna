@@ -5960,16 +5960,38 @@ Upvalue相关的指令
 
     从栈顶把错误对象弹出，然后调用go的panic抛出即可。
 
+    PCall()
+
+    与Call比较类似，区别在于PCall会捕获函数调用过程中产生的错误，而Call会错误传播出去。如果没有错误产生，它们的行为完全一样，最后妇女会LUA_OK.如果有错误产生，PCall会捕获错误，把错误对象留在栈顶，并返回相应的错误吗。PCall的第三个参数用于指定错误处理程序。
+
+    state/api_call.go
+
+    func (self *luaState) PCall(nArgs, nResults, msgh int) (status int) {
+        caller := self.stack
+        status = LUA_ERRRUN
+
+        // catch error
+        defer func() {
+            if err := recover(); err != nil {
+                if msgh != 0 {
+                    panic(err)
+                }
+                for self.stack != caller {
+                    self.popLuaStack()
+                }
+                self.stack.push(err)
+            }
+        }()
+
+        self.Call(nArgs, nResults)
+        status = LUA_OK
+        return
+    }
 
 
+    既然使用go的panic抛出错误，自然就需要使用defer-recover机制来捕获异常。如果一切正常，返回LUA_OK,反之，捕获并处理错误
 
-
-
-
-
-
-
-
+    
 
 
 
