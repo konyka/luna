@@ -5927,21 +5927,38 @@ Upvalue相关的指令
     }
 
     定义常量
-    
+    api/consts.go
 
 
+    const (
+        LUA_OK = iota
+        LUA_YIELD
+        LUA_ERRRUN
+        LUA_ERRSYNTAX
+        LUA_ERRMEM
+        LUA_ERRGCMM
+        LUA_ERRERR
+        LUA_ERRFILE
+    )
 
+    这些常量用来表示函数加载或者执行的状态，LUA_OK、LUA_ERRRUN会在PCall（）方法中用到。
 
+    Error()
 
+    从栈顶弹出一个值，把该值作为错误抛出，虽然方法以整数位返回值，但是实际上该方法是没有办法正常返回的，之所以有返回值，完全是为了方便用户使用。比如正在实现某个go函数，并且在某处需要调用Error（）抛出异常，就可以通过直接返回Error（）的返回值来简化代码
 
+    func gofunc(ls LuaState) int{
+        return ls.Error()
+    }
 
+    state/api_misc.go
 
+    func (self *luaState) Error() int {
+        err := self.stack.pop()
+        panic(err)
+    }
 
-
-
-
-
-
+    从栈顶把错误对象弹出，然后调用go的panic抛出即可。
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 15:24:47
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 08:27:05
+* @Last Modified time: 2019-05-03 10:21:47
 */
 
 package state
@@ -80,5 +80,8 @@ func (self *luaState) Next(idx int) bool {
     panic("table expected!")
 }
 
-
+func (self *luaState) Error() int {
+    err := self.stack.pop()
+    panic(err)
+}
 
