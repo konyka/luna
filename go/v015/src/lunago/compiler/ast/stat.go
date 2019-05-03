@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 18:11:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 18:24:56
+* @Last Modified time: 2019-05-03 18:30:35
 */
 
 package ast
@@ -51,7 +51,13 @@ type RepeatStat struct {
     Exp   Exp
 }
 
-
+/**
+ * if exp then block {elseif exp then block} [else block] end
+ */
+type IfStat struct {
+    Exps   []Exp
+    Blocks []*Block
+}
 
 
 

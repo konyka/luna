@@ -6981,15 +6981,25 @@ Chunk和块
         Exp   Exp
     }
 
+ 3、if
+    Ebnf:
+    if exp then block {elseif exp then block} [else block] end
 
+    为了简化st和后面的代码生成，对if语句进行改造，把最后可选的else块改为elseif块：
 
+    if exp then block {elseif exp then block} [elseif true then block] end
 
+    如果把elseif合并。ebnf可以简化为
 
+    if exp then block {elseif exp then block} end
 
+    定义if语句
 
-
-
-
+    
+    type IfStat struct {
+        Exps   []Exp
+        Blocks []*Block
+    }
 
 
 
