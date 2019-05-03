@@ -6856,7 +6856,12 @@ Upvalue相关的指令
     }
 
 
-
+    $ go run main.go helloworld.lua 
+    [ 6] [identifier] print
+    [ 6] [separator ] (
+    [ 6] [string    ] hello world！！！
+    [ 6] [separator ] )
+    [13] [other     ] EOF
 
 
 
