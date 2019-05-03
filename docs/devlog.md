@@ -6673,7 +6673,9 @@ Upvalue相关的指令
     如果发现下一个token是数字字面量，调用scanNumber（）提取token，isDigit是用来判断字符是不是数字
 
 
-    
+    func isDigit(c byte) bool {
+        return c >= '0' && c <= '9'
+    }
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:55:27
+* @Last Modified time: 2019-05-03 13:57:42
 */
 
 package lexer
@@ -393,6 +393,8 @@ func (self *Lexer) escape(str string) string {
     return buf.String()
 }
 
-
+func isDigit(c byte) bool {
+    return c >= '0' && c <= '9'
+}
 
 
