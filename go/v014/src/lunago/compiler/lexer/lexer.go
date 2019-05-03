@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:30:27
+* @Last Modified time: 2019-05-03 13:34:56
 */
 
 package lexer
@@ -263,5 +263,18 @@ func (self *Lexer) scanLongString() string {
 
     return str
 }
+
+func (self *Lexer) error(f string, a ...interface{}) {
+    err := fmt.Sprintf(f, a...)
+    err = fmt.Sprintf("%s:%d: %s", self.chunkName, self.line, err)
+    panic(err)
+}
+
+
+
+
+
+
+
 
 
