@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:36:21
+* @Last Modified time: 2019-05-03 13:37:48
 */
 
 package lexer
@@ -271,7 +271,19 @@ func (self *Lexer) error(f string, a ...interface{}) {
     panic(err)
 }
 
-
+func (self *Lexer) scanShortString() string {
+    if str := reShortStr.FindString(self.chunk); str != "" {
+        self.next(len(str))
+        str = str[1 : len(str)-1]
+        if strings.Index(str, `\`) >= 0 {
+            self.line += len(reNewLine.FindAllString(str, -1))
+            str = self.escape(str)
+        }
+        return str
+    }
+    self.error("unfinished string")
+    return ""
+}
 
 
 

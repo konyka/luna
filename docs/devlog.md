@@ -6529,9 +6529,21 @@ Upvalue相关的指令
 
     var reNewLine = regexp.MustCompile("\r\n|\n\r|\n|\r")
 
+    短字符串字面量
 
-
-
+    func (self *Lexer) scanShortString() string {
+        if str := reShortStr.FindString(self.chunk); str != "" {
+            self.next(len(str))
+            str = str[1 : len(str)-1]
+            if strings.Index(str, `\`) >= 0 {
+                self.line += len(reNewLine.FindAllString(str, -1))
+                str = self.escape(str)
+            }
+            return str
+        }
+        self.error("unfinished string")
+        return ""
+    }
 
 
 
