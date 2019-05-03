@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 09:14:37
+* @Last Modified time: 2019-05-03 09:18:10
 */
 package main
 
@@ -23,8 +23,11 @@ func main() {
 
         ls := state.New()
         ls.Register("print", print)
-        ls.Register("getmetatable", getMetatable) //register
-        ls.Register("setmetatable", setMetatable) //register
+        ls.Register("getmetatable", getMetatable)
+        ls.Register("setmetatable", setMetatable)
+        ls.Register("next", next)
+        ls.Register("pairs", pairs)
+        ls.Register("ipairs", iPairs)
         ls.Load(data, os.Args[1], "b")
         ls.Call(0, 0)
     }

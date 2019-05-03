@@ -5830,16 +5830,19 @@ Upvalue相关的指令
         }
     }
 
+    类似lua代码
 
+    function inext(t, i)
+        local nextIdx = i + 1
+        local nextVal = t[nextIdx]
+        if nextVal == nil then
+            retrun nil
+        else
+            return nextIdx, nextVal
+        end
+    end
 
-
-
-
-
-
-
-
-
+    
 
 
 
