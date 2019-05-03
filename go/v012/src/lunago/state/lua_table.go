@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 10:55:53
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 08:03:32
+* @Last Modified time: 2019-05-03 08:12:00
 */
 
 
@@ -165,6 +165,23 @@ func (self *luaTable) nextKey(key luaValue) luaValue {
     return nextKey
 }
 
+func (self *luaTable) initKeys() {
+    self.keys = make(map[luaValue]luaValue)
+    var key luaValue = nil
+    for i, v := range self.arr {
+        if v != nil {
+            self.keys[key] = int64(i + 1)
+            key = int64(i + 1)
+        }
+    }
+    for k, v := range self._map {
+        if v != nil {
+            self.keys[key] = k
+            key = k
+        }
+    }
+    self.lastKey = key
+}
 
 
 

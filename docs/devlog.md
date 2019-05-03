@@ -5681,8 +5681,25 @@ Upvalue相关的指令
     }
 
 
+    nextKey()根据传入的key返回表的下一个key，完全是为api方法Next（）而设计了。如果传入的key就是nil，表示遍历开始，需要把所有的key都收集到kyes中，keys的键值对记录了表的key和xiayigekey的关系。所以keys字段初始化好了以后，直接根据传入的参数取值，并返回就可以了。
 
-
+    func (self *luaTable) initKeys() {
+        self.keys = make(map[luaValue]luaValue)
+        var key luaValue = nil
+        for i, v := range self.arr {
+            if v != nil {
+                self.keys[key] = int64(i + 1)
+                key = int64(i + 1)
+            }
+        }
+        for k, v := range self._map {
+            if v != nil {
+                self.keys[key] = k
+                key = k
+            }
+        }
+        self.lastKey = key
+    }
 
 
 
