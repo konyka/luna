@@ -5701,14 +5701,16 @@ Upvalue相关的指令
         self.lastKey = key
     }
 
+    因为标准库next()和api 方法Next（）考虑的是整个表（包括数组部分和关联数组部分），因此initKeys（）需要把数组索引和关系数组键都手机起来。
 
+    扩展LUa api
 
+    api/lua_state.go 
 
-
-
-
-
-
+    type LuaState interface {
+        .....
+        Next(idx int) bool
+    }
 
 
 
