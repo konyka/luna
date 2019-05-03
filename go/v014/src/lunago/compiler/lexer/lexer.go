@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 14:08:52
+* @Last Modified time: 2019-05-03 14:09:49
 */
 
 package lexer
@@ -17,7 +17,7 @@ var reOpeningLongBracket = regexp.MustCompile(`^\[=*\[`)
 var reNewLine = regexp.MustCompile("\r\n|\n\r|\n|\r")
 var reShortStr = regexp.MustCompile(`(?s)(^'(\\\\|\\'|\\\n|\\z\s*|[^'\n])*')|(^"(\\\\|\\"|\\\n|\\z\s*|[^"\n])*")`)
 var reNumber = regexp.MustCompile(`^0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]*)?([pP][+\-]?[0-9]+)?|^[0-9]*(\.[0-9]*)?([eE][+\-]?[0-9]+)?`)
-
+var reIdentifier = regexp.MustCompile(`^[_\d\w]+`)
 
 var reDecEscapeSeq = regexp.MustCompile(`^\\[0-9]{1,3}`)
 var reHexEscapeSeq = regexp.MustCompile(`^\\x[0-9a-fA-F]{2}`)
