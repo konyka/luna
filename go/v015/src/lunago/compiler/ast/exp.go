@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 21:30:33
+* @Last Modified time: 2019-05-03 21:51:16
 */
 
 package ast
@@ -111,7 +111,11 @@ type ParensExp struct {
     Exp Exp
 }
 
-
+type TableAccessExp struct {
+    LastLine  int // line of `]` ?
+    PrefixExp Exp
+    KeyExp    Exp
+}
 
 
 

@@ -7280,10 +7280,14 @@ Chunk和块
         Exp Exp
     }
 
+表访问表达式
+    定义表访问表达式
 
-
-
-
+    type TableAccessExp struct {
+        LastLine  int // line of `]` ?
+        PrefixExp Exp
+        KeyExp    Exp
+    }
 
 
 
