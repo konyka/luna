@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 19:45:20
+* @Last Modified time: 2019-05-03 19:47:58
 */
 
 package ast
@@ -69,6 +69,18 @@ type ConcatExp struct {
 }
 
 
+/**
+ *tableconstructor ::= ‘{’ [fieldlist] ‘}’
+ *fieldlist ::= field {fieldsep field} [fieldsep]
+ * field ::= ‘[’ exp ‘]’ ‘=’ exp | Name ‘=’ exp | exp
+ * fieldsep ::= ‘,’ | ‘;’
+ */
+type TableConstructorExp struct {
+    Line     int // line of `{` ?
+    LastLine int // line of `}`
+    KeyExps  []Exp
+    ValExps  []Exp
+}
 
 
 

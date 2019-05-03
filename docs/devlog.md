@@ -7204,13 +7204,26 @@ Chunk和块
     type ConcatExp struct {
         Line int // line of last ..
         Exps []Exp
-}
+    }
+
+    在语法分析阶段，会把连续的多个拼接操作整合在一起，这样就可以很方便的在代码生成阶段使用一条指令CONCAT优化拼接操作。
+
+    表构造表达式
+
+     tableconstructor ::= ‘{’ [fieldlist] ‘}’
+     fieldlist ::= field {fieldsep field} [fieldsep]
+     field ::= ‘[’ exp ‘]’ ‘=’ exp | Name ‘=’ exp | exp
+     fieldsep ::= ‘,’ | ‘;’
 
 
+     表构造器由花括号、其中是可选的字段列表组成；字段列表由逗号或者分号分隔，并且末尾可以有一个可选的逗号或者分号。字段可以类似索引赋值或者变量赋值，也可以是一个简单的表达式。
 
-
-
-
+    type TableConstructorExp struct {
+        Line     int // line of `{` ?
+        LastLine int // line of `}`
+        KeyExps  []Exp
+        ValExps  []Exp
+    }
 
 
 
