@@ -6155,7 +6155,7 @@ Upvalue相关的指令
 
     NewLexer根据源文件名以及源代码创建Lexer结构体实例，并将出事行号设置为1.
 
-    添加方法
+    给结构体Lexer 添加方法 NextToken
 
     func (self *Lexer) NextToken() (line, kind int, token string) {
 
@@ -6176,17 +6176,86 @@ Upvalue相关的指令
         return
     }
 
+    NextToken()会掉过空白自负以及注释，返回下一个token（包括类型 行号），如果源代码以ing全部分析完毕，返回表示分析结果的特殊token。FSM可以使用swith-case语句来实现，词法分析器也是这样。
 
+    定义类型Token
 
+    lexer/token.go
+    定义表示token类型的常量
 
+    package lexer
 
+    // token kind
+    const (
+        TOKEN_EOF         = iota           // end-of-file
+        TOKEN_VARARG                       // ...
+        TOKEN_SEP_SEMI                     // ;
+        TOKEN_SEP_COMMA                    // ,
+        TOKEN_SEP_DOT                      // .
+        TOKEN_SEP_COLON                    // :
+        TOKEN_SEP_LABEL                    // ::
+        TOKEN_SEP_LPAREN                   // (
+        TOKEN_SEP_RPAREN                   // )
+        TOKEN_SEP_LBRACK                   // [
+        TOKEN_SEP_RBRACK                   // ]
+        TOKEN_SEP_LCURLY                   // {
+        TOKEN_SEP_RCURLY                   // }
+        TOKEN_OP_ASSIGN                    // =
+        TOKEN_OP_MINUS                     // - (sub or unm)
+        TOKEN_OP_WAVE                      // ~ (bnot or bxor)
+        TOKEN_OP_ADD                       // +
+        TOKEN_OP_MUL                       // *
+        TOKEN_OP_DIV                       // /
+        TOKEN_OP_IDIV                      // //
+        TOKEN_OP_POW                       // ^
+        TOKEN_OP_MOD                       // %
+        TOKEN_OP_BAND                      // &
+        TOKEN_OP_BOR                       // |
+        TOKEN_OP_SHR                       // >>
+        TOKEN_OP_SHL                       // <<
+        TOKEN_OP_CONCAT                    // ..
+        TOKEN_OP_LT                        // <
+        TOKEN_OP_LE                        // <=
+        TOKEN_OP_GT                        // >
+        TOKEN_OP_GE                        // >=
+        TOKEN_OP_EQ                        // ==
+        TOKEN_OP_NE                        // ~=
+        TOKEN_OP_LEN                       // #
+        TOKEN_OP_AND                       // and
+        TOKEN_OP_OR                        // or
+        TOKEN_OP_NOT                       // not
+        TOKEN_KW_BREAK                     // break
+        TOKEN_KW_DO                        // do
+        TOKEN_KW_ELSE                      // else
+        TOKEN_KW_ELSEIF                    // elseif
+        TOKEN_KW_END                       // end
+        TOKEN_KW_FALSE                     // false
+        TOKEN_KW_FOR                       // for
+        TOKEN_KW_FUNCTION                  // function
+        TOKEN_KW_GOTO                      // goto
+        TOKEN_KW_IF                        // if
+        TOKEN_KW_IN                        // in
+        TOKEN_KW_LOCAL                     // local
+        TOKEN_KW_NIL                       // nil
+        TOKEN_KW_REPEAT                    // repeat
+        TOKEN_KW_RETURN                    // return
+        TOKEN_KW_THEN                      // then
+        TOKEN_KW_TRUE                      // true
+        TOKEN_KW_UNTIL                     // until
+        TOKEN_KW_WHILE                     // while
+        TOKEN_IDENTIFIER                   // identifier
+        TOKEN_NUMBER                       // number literal
+        TOKEN_STRING                       // string literal
+        TOKEN_OP_UNM      = TOKEN_OP_MINUS // unary minus
+        TOKEN_OP_SUB      = TOKEN_OP_MINUS
+        TOKEN_OP_BNOT     = TOKEN_OP_WAVE
+        TOKEN_OP_BXOR     = TOKEN_OP_WAVE
+    )
 
+    除了字面量和标识符，给其他的没中token都分配了一个单独的常量值。需要注意的是，因为在词法分析阶段，没有办法区分建好到底是二元减法运算符 好事一元取负运算符，所以将其命名为TOKEN_OP_MINUS，并定义了TOKEN_OP_UNM 和TOKEN_OP_SUB，这三个常量有相同的常量值。同样，TOKEN_OP_BNOT TOKEN_OP_BXOR TOKEN_OP_WAVE也是一样的。
 
-
-
-
-
-
+    定义关联数组，将关键字和常量值一一对应
+    
 
 
 
