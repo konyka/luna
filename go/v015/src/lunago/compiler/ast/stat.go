@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 18:11:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 18:49:21
+* @Last Modified time: 2019-05-03 18:54:42
 */
 
 package ast
@@ -99,6 +99,17 @@ type LocalVarDeclStat struct {
 
 
 
+/**
+ *varlist ‘=’ explist
+ * varlist ::= var {‘,’ var}
+ * var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name
+ * explist ::= exp {‘,’ exp}
+ */
+type AssignStat struct {
+    LastLine int
+    VarList  []Exp
+    ExpList  []Exp
+}
 
 
 

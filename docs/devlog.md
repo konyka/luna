@@ -7057,20 +7057,31 @@ Chunk和块
     局部变量声明语句以关键字local开始，后跟逗号分隔的标识符列表，然后是可选的等号以及逗号分隔的表达式列表。
 
     定义局部变量的声明语句
-    
+
     type LocalVarDeclStat struct {
         LastLine int
         NameList []string
         ExpList  []Exp
     }
 
+    需要把末尾的行号记录下来，供代码生成阶段使用。和通用for循环类似，把等号左侧的标识符列表记录在NameList中，右侧的表达式列表记录在ExpList中，标识符和表达式也不是一一对应的，且表达式列表可以为空。
 
+7、赋值语句
 
+    赋值语句用于给变量（包括已经声明的局部变量、Upvalue或者全局变量）赋值、根据key给表赋值、或者修改记录的字段
 
+    varlist ‘=’ explist
+    varlist ::= var {‘,’ var}
+    var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name
+    explist ::= exp {‘,’ exp}
 
+    赋值语句被等号分成了两部分，左边是逗号分隔的var表达式列表，右边是逗啊后分隔的任意表达式列表。
 
-
-
+    type AssignStat struct {
+        LastLine int
+        VarList  []Exp
+        ExpList  []Exp
+    }
 
 
 
