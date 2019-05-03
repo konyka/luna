@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:25:54
+* @Last Modified time: 2019-05-03 13:30:27
 */
 
 package lexer
@@ -239,6 +239,29 @@ func (self *Lexer) skipComment() {
 }
 
 
+func (self *Lexer) scanLongString() string {
+    openingLongBracket := reOpeningLongBracket.FindString(self.chunk)
+    if openingLongBracket == "" {
+        self.error("invalid long string delimiter near '%s'",
+            self.chunk[0:2])
+    }
 
+    closingLongBracket := strings.Replace(openingLongBracket, "[", "]", -1)
+    closingLongBracketIdx := strings.Index(self.chunk, closingLongBracket)
+    if closingLongBracketIdx < 0 {
+        self.error("unfinished long string or comment")
+    }
+
+    str := self.chunk[len(openingLongBracket):closingLongBracketIdx]
+    self.next(closingLongBracketIdx + len(closingLongBracket))
+
+    str = reNewLine.ReplaceAllString(str, "\n")
+    self.line += strings.Count(str, "\n")
+    if len(str) > 0 && str[0] == '\n' {
+        str = str[1:]
+    }
+
+    return str
+}
 
 

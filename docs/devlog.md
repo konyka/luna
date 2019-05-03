@@ -6487,11 +6487,34 @@ Upvalue相关的指令
         }
 
 
-        
+   虽然分隔符和运算符比较多，但是每个case都不难。最后两个case用来提取字符串字面量     
 
+   长字符串字面量
 
+      func (self *Lexer) scanLongString() string {
+        openingLongBracket := reOpeningLongBracket.FindString(self.chunk)
+        if openingLongBracket == "" {
+            self.error("invalid long string delimiter near '%s'",
+                self.chunk[0:2])
+        }
 
+        closingLongBracket := strings.Replace(openingLongBracket, "[", "]", -1)
+        closingLongBracketIdx := strings.Index(self.chunk, closingLongBracket)
+        if closingLongBracketIdx < 0 {
+            self.error("unfinished long string or comment")
+        }
 
+        str := self.chunk[len(openingLongBracket):closingLongBracketIdx]
+        self.next(closingLongBracketIdx + len(closingLongBracket))
+
+        str = reNewLine.ReplaceAllString(str, "\n")
+        self.line += strings.Count(str, "\n")
+        if len(str) > 0 && str[0] == '\n' {
+            str = str[1:]
+        }
+
+        return str
+    } 
 
 
 
