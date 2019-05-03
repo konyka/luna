@@ -6677,8 +6677,11 @@ Upvalue相关的指令
         return c >= '0' && c <= '9'
     }
 
-
-
+    scanNumber简单调用scan
+    
+    func (self *Lexer) scanNumber() string {
+        return self.scan(reNumber)
+    }
 
 
 

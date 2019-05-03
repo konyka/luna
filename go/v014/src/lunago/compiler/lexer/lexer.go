@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:57:42
+* @Last Modified time: 2019-05-03 13:59:29
 */
 
 package lexer
@@ -166,7 +166,7 @@ func (self *Lexer) NextToken() (line, kind int, token string) {
         return self.line, TOKEN_NUMBER, token
     }
 
-    
+
 
     return
 }
@@ -396,5 +396,10 @@ func (self *Lexer) escape(str string) string {
 func isDigit(c byte) bool {
     return c >= '0' && c <= '9'
 }
+
+func (self *Lexer) scanNumber() string {
+    return self.scan(reNumber)
+}
+
 
 
