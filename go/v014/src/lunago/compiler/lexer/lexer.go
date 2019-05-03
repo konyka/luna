@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:05:35
+* @Last Modified time: 2019-05-03 13:10:50
 */
 
 package lexer
@@ -60,5 +60,7 @@ func (self *Lexer) skipWhiteSpaces() {
     }
 }
 
-
+func (self *Lexer) test(s string) bool {
+    return strings.HasPrefix(self.chunk, s)
+}
 

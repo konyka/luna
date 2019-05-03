@@ -6306,11 +6306,13 @@ Upvalue相关的指令
     }
 
 
+    skipWhiteSpaces()不仅仅跳过了空白自负，更新了行号，同时还一并跳过了注释。
 
+    test()判断剩余的源代码是否以某种字符串开头
 
-
-
-
+     func (self *Lexer) test(s string) bool {
+        return strings.HasPrefix(self.chunk, s)
+    }   
 
 
 
