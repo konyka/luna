@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:17:37
+* @Last Modified time: 2019-05-03 13:21:23
 */
 
 package lexer
@@ -12,6 +12,9 @@ import "fmt"
 import "regexp"
 import "strconv"
 import "strings"
+
+var reOpeningLongBracket = regexp.MustCompile(`^\[=*\[`)
+
 
 type Lexer struct {
     chunk         string // source code
