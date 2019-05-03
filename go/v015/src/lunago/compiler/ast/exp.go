@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 19:42:13
+* @Last Modified time: 2019-05-03 19:44:02
 */
 
 package ast
@@ -51,6 +51,34 @@ type UnopExp struct {
     Op   int // operator
     Exp  Exp
 }
+
+/**
+ * exp1 op exp2
+ */
+type BinopExp struct {
+    Line int // line of operator
+    Op   int // operator
+    Exp1 Exp
+    Exp2 Exp
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

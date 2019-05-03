@@ -7189,11 +7189,17 @@ Chunk和块
 
     记录了表达式以及运算符和运算符所在的行号。
 
+    定义二元运算符表达式
 
 
+    type BinopExp struct {
+        Line int // line of operator
+        Op   int // operator
+        Exp1 Exp
+        Exp2 Exp
+    }
 
-
-
+    
 
 
 
