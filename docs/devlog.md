@@ -5797,15 +5797,28 @@ Upvalue相关的指令
     修改main。go添加函数
 
 
+    func pairs(ls LuaState) int {
+        ls.PushGoFunction(next) /* will return generator, */
+        ls.PushValue(1)         /* state, */
+        ls.PushNil()
+        return 3
+    }
+
+    这个函数实际上就是返回了next函数（对应_f)\表（_s）\nil（_var），这三个值而已。类似lua代码
+
+    function pairs(t)
+        return next, t, nil
+    end
 
 
+    添加ipairs
 
-
-
-
-
-
-
+    func iPairs(ls LuaState) int {
+        ls.PushGoFunction(_iPairsAux) /* iteration function */
+        ls.PushValue(1)               /* state */
+        ls.PushInteger(0)             /* initial value */
+        return 3
+    }
 
 
 

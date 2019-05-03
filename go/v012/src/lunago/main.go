@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 09:08:15
+* @Last Modified time: 2019-05-03 09:12:30
 */
 package main
 
@@ -80,5 +80,10 @@ func pairs(ls LuaState) int {
 }
 
 
-
+func iPairs(ls LuaState) int {
+    ls.PushGoFunction(_iPairsAux) /* iteration function */
+    ls.PushValue(1)               /* state */
+    ls.PushInteger(0)             /* initial value */
+    return 3
+}
 
