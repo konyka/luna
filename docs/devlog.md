@@ -6136,7 +6136,11 @@ Upvalue相关的指令
     import "strings"   
 
 
-
+    type Lexer struct {
+        chunk         string // source code
+        chunkName     string // source name
+        line          int    // current line number
+    }
 
 
 
