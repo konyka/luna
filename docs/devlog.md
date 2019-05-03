@@ -5658,11 +5658,27 @@ Upvalue相关的指令
     type luaTable struct {
         。。。。。。
         keys      map[luaValue]luaValue // used by next()
+        lastKey   luaValue              // used by next()
+        changed   bool                  // used by next()
     }
 
+    因为go的map不保证遍历的顺序性（甚至同样内容的map，两次遍历的顺序也可能不一样），所以只能在遍历开始之前把所有的key都固定下来，保存在keys字段里面。
 
+    添加nextKey方法
 
+    func (self *luaTable) nextKey(key luaValue) luaValue {
+        if self.keys == nil || (key == nil && self.changed) {
+            self.initKeys()
+            self.changed = false
+        }
 
+        nextKey := self.keys[key]
+        if nextKey == nil && key != nil && key != self.lastKey {
+            panic("invalid key to 'next'")
+        }
+
+        return nextKey
+    }
 
 
 

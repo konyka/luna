@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 10:55:53
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 21:18:59
+* @Last Modified time: 2019-05-03 08:03:32
 */
 
 
@@ -16,6 +16,8 @@ type luaTable struct {
     arr       []luaValue
     _map      map[luaValue]luaValue
     keys      map[luaValue]luaValue // used by next()
+    lastKey   luaValue              // used by next()
+    changed   bool                  // used by next()
 }
 
 func newLuaTable(nArr, nRec int) *luaTable {
@@ -146,5 +148,28 @@ func (self *luaTable) hasMetafield(fieldName string) bool {
     return self.metatable != nil &&
         self.metatable.get(fieldName) != nil
 }
+
+
+
+func (self *luaTable) nextKey(key luaValue) luaValue {
+    if self.keys == nil || (key == nil && self.changed) {
+        self.initKeys()
+        self.changed = false
+    }
+
+    nextKey := self.keys[key]
+    if nextKey == nil && key != nil && key != self.lastKey {
+        panic("invalid key to 'next'")
+    }
+
+    return nextKey
+}
+
+
+
+
+
+
+
 
 
