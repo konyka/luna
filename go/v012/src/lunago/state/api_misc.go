@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 15:24:47
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 14:06:42
+* @Last Modified time: 2019-05-03 08:27:05
 */
 
 package state
@@ -66,7 +66,19 @@ func (self *luaState) Concat(n int) {
     // n == 1, do nothing
 }
 
-
+func (self *luaState) Next(idx int) bool {
+    val := self.stack.get(idx)
+    if t, ok := val.(*luaTable); ok {
+        key := self.stack.pop()
+        if nextKey := t.nextKey(key); nextKey != nil {
+            self.stack.push(nextKey)
+            self.stack.push(t.get(nextKey))
+            return true
+        }
+        return false
+    }
+    panic("table expected!")
+}
 
 
 

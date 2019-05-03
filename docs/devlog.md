@@ -5712,11 +5712,23 @@ Upvalue相关的指令
         Next(idx int) bool
     }
 
+    Next()方法根据key获取表的下一个键值对，其中表的索引由参数指定，上一个键从栈顶弹出。如果从栈顶弹出的key是nil，说明刚开始遍历表，把白哦的第一个键值对push到栈顶并返回true；否则，如果遍历还没有结束，把下一个键值对push到栈顶并返回true；如果表是空的，或者遍历已经结束，不用向栈里面push任何值，直接返回false即可。
 
+    state/api_misc.go
 
-
-
-
+    func (self *luaState) Next(idx int) bool {
+        val := self.stack.get(idx)
+        if t, ok := val.(*luaTable); ok {
+            key := self.stack.pop()
+            if nextKey := t.nextKey(key); nextKey != nil {
+                self.stack.push(nextKey)
+                self.stack.push(t.get(nextKey))
+                return true
+            }
+            return false
+        }
+        panic("table expected!")
+    }
 
 
 
