@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 12:47:19
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 12:47:40
+* @Last Modified time: 2019-05-03 12:53:05
 */
 
 package lexer
@@ -74,6 +74,34 @@ const (
     TOKEN_OP_BXOR     = TOKEN_OP_WAVE
 )
 
+/**
+ * [keywords 定义关联数组，将关键字和常量值一一对应]
+ * @type {[type]}
+ */
+var keywords = map[string]int{
+    "and":      TOKEN_OP_AND,
+    "break":    TOKEN_KW_BREAK,
+    "do":       TOKEN_KW_DO,
+    "else":     TOKEN_KW_ELSE,
+    "elseif":   TOKEN_KW_ELSEIF,
+    "end":      TOKEN_KW_END,
+    "false":    TOKEN_KW_FALSE,
+    "for":      TOKEN_KW_FOR,
+    "function": TOKEN_KW_FUNCTION,
+    "goto":     TOKEN_KW_GOTO,
+    "if":       TOKEN_KW_IF,
+    "in":       TOKEN_KW_IN,
+    "local":    TOKEN_KW_LOCAL,
+    "nil":      TOKEN_KW_NIL,
+    "not":      TOKEN_OP_NOT,
+    "or":       TOKEN_OP_OR,
+    "repeat":   TOKEN_KW_REPEAT,
+    "return":   TOKEN_KW_RETURN,
+    "then":     TOKEN_KW_THEN,
+    "true":     TOKEN_KW_TRUE,
+    "until":    TOKEN_KW_UNTIL,
+    "while":    TOKEN_KW_WHILE,
+}
 
 
 
