@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 08:19:54
+* @Last Modified time: 2019-05-03 10:11:27
 */
 
 
@@ -103,6 +103,10 @@ type LuaState interface {
     RawGetI(idx int, i int64) LuaType
     RawSetI(idx int, i int64)
     Next(idx int) bool
+
+    Error() int
+    PCall(nArgs, nResults, msgh int) int
+
 }
 
 
