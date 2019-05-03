@@ -5789,7 +5789,7 @@ Upvalue相关的指令
     }
 
     修改opcodes.go 修改指令表，注册上面的函数
-
+    vm/opcodes.go
 
 
 
