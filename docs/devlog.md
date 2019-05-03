@@ -6995,26 +6995,35 @@ Chunk和块
 
     定义if语句
 
-    
+
     type IfStat struct {
         Exps   []Exp
         Blocks []*Block
     }
 
 
+    把表达式收集到Exps总，把语句快收集到Blocks 字段中。表达式和语句块都是按照索引意义对应，索引0处是if-then表达式和块，其余索引处是elseif-then表达式和块。
+
+4、数值for
+
+    lua有阆中形式的for 循环：数值for和通用for循环
+    数值for的ebnf：
+    for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end
+
+    数值for循环以关键字for开始，然后是标识符和等号，然后是逗号分隔的初始值、限制以及可选的步长表达式，后跟一条do语句
+
+    定义数值for循环语句
 
 
-
-
-
-
-
-
-
-
-
-
-
+    type ForNumStat struct {
+        LineOfFor int
+        LineOfDo  int
+        VarName   string
+        InitExp   Exp
+        LimitExp  Exp
+        StepExp   Exp
+        Block     *Block
+    }
 
 
 

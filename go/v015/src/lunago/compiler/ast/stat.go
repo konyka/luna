@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 18:11:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 18:30:35
+* @Last Modified time: 2019-05-03 18:36:52
 */
 
 package ast
@@ -60,4 +60,16 @@ type IfStat struct {
 }
 
 
+/**
+ * for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end
+ */
+type ForNumStat struct {
+    LineOfFor int
+    LineOfDo  int
+    VarName   string
+    InitExp   Exp
+    LimitExp  Exp
+    StepExp   Exp
+    Block     *Block
+}
 
