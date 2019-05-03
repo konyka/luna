@@ -6518,16 +6518,16 @@ Upvalue相关的指令
 
     先查找左右的长方括号，如果任何一个都找不到，则寿命源代码有语法错误，调用error回报错误并终止分析。然后是提取字符串字面量，把左右长方括号去掉，把换行符序列统一转换为换行符\n,在把开头的第一个换行符去掉，如果有的话，得到的就是最终的字符串。error使用源文件名、当前行号，以及传入的格式和参数抛出错误信息。
 
-    
+
     func (self *Lexer) error(f string, a ...interface{}) {
         err := fmt.Sprintf(f, a...)
         err = fmt.Sprintf("%s:%d: %s", self.chunkName, self.line, err)
         panic(err)
     }
 
-    
+    同样使用正则表达式处理换行序列，定义正则表达式：
 
-
+    var reNewLine = regexp.MustCompile("\r\n|\n\r|\n|\r")
 
 
 
