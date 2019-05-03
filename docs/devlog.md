@@ -6725,19 +6725,26 @@ Upvalue相关的指令
 
     定义表示标识符的正则表达式
 
-    
+    var reIdentifier = regexp.MustCompile(`^[_\d\w]+`)
 
+    LookAhead（）
 
+    已经定义好了结构体Lexer，实现了NextToken方法，提供了基本的词法分析功能，每次调用都会读取并返回下一个token，不过有时候并不想跳过下一个token，指示向看看下一个token是什么类型。只需要备份词法分析器的状态，然后读取下一个token，记录类型，然后恢复状态就可以了。既然读都读了，还不如缓存起来，免得做无用功。
 
+    修改结构体
 
+    type Lexer struct {
+        chunk         string // source code
+        chunkName     string // source name
+        line          int    // current line number
+        nextToken     string
+        nextTokenKind int
+        nextTokenLine int
+    }
 
+  后面的三个字段用于缓存下一个token的信息，有了它们就可以实现提前看看的功能LookAhead（）
 
-
-
-
-
-
-
+  
 
 
 

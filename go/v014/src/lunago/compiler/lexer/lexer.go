@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 14:09:49
+* @Last Modified time: 2019-05-03 14:23:12
 */
 
 package lexer
@@ -27,6 +27,9 @@ type Lexer struct {
     chunk         string // source code
     chunkName     string // source name
     line          int    // current line number
+    nextToken     string
+    nextTokenKind int
+    nextTokenLine int
 }
 
 func NewLexer(chunk, chunkName string) *Lexer {
