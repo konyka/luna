@@ -6963,13 +6963,23 @@ Chunk和块
     do语句仅仅是为了给语句快引入新的作用域，所以结构体DoStat也只有一个字段Block
     函数调用既可以是语句，也可以是表达式，所以仅仅是起了一个别名。
 
+  2、while repeat
+    用于实现条件循环,ebnf表示
 
+    while exp do block end
+    repeat block until exp
 
+    定义语句
 
+    type WhileStat struct {
+        Exp   Exp
+        Block *Block
+    }
 
-
-
-
+    type RepeatStat struct {
+        Block *Block
+        Exp   Exp
+    }
 
 
 

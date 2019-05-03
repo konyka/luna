@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 18:11:48
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 18:16:53
+* @Last Modified time: 2019-05-03 18:24:56
 */
 
 package ast
@@ -35,7 +35,21 @@ type DoStat struct{ Block *Block }   // do block end
 type FuncCallStat = FuncCallExp      // functioncall
 
 
+/**
+ * while exp do block end
+ */
+type WhileStat struct {
+    Exp   Exp
+    Block *Block
+}
 
+/**
+ * repeat block until exp
+ */
+type RepeatStat struct {
+    Block *Block
+    Exp   Exp
+}
 
 
 
