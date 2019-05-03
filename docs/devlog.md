@@ -6153,9 +6153,28 @@ Upvalue相关的指令
         return &Lexer{chunk, chunkName, 1}
     }
 
+    NewLexer根据源文件名以及源代码创建Lexer结构体实例，并将出事行号设置为1.
 
+    添加方法
 
+    func (self *Lexer) NextToken() (line, kind int, token string) {
 
+        self.skipWhiteSpaces()
+        if len(self.chunk) == 0 {
+            return self.line, TOKEN_EOF, "EOF"
+        }
+
+        switch self.chunk[0] {
+        case ';':
+            self.next(1)
+            return self.line, TOKEN_SEP_SEMI, ";"
+        case ',':
+            self.next(1)
+            return self.line, TOKEN_SEP_COMMA, ","
+        }
+
+        return
+    }
 
 
 
