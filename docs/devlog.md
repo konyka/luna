@@ -6255,7 +6255,7 @@ Upvalue相关的指令
     除了字面量和标识符，给其他的没中token都分配了一个单独的常量值。需要注意的是，因为在词法分析阶段，没有办法区分建好到底是二元减法运算符 好事一元取负运算符，所以将其命名为TOKEN_OP_MINUS，并定义了TOKEN_OP_UNM 和TOKEN_OP_SUB，这三个常量有相同的常量值。同样，TOKEN_OP_BNOT TOKEN_OP_BXOR TOKEN_OP_WAVE也是一样的。
 
     定义关联数组，将关键字和常量值一一对应
-    
+
     var keywords = map[string]int{
         "and":      TOKEN_OP_AND,
         "break":    TOKEN_KW_BREAK,
@@ -6282,11 +6282,28 @@ Upvalue相关的指令
     }
 
 
+    空白字符
+    lexer/lexer.go
 
+    定义方法skipWhiteSpaces
 
-
-
-
+    func (self *Lexer) skipWhiteSpaces() {
+        for len(self.chunk) > 0 {
+            if self.test("--") {
+                self.skipComment()
+            } else if self.test("\r\n") || self.test("\n\r") {
+                self.next(2)
+                self.line += 1
+            } else if isNewLine(self.chunk[0]) {
+                self.next(1)
+                self.line += 1
+            } else if isWhiteSpace(self.chunk[0]) {
+                self.next(1)
+            } else {
+                break
+            }
+        }
+    }
 
 
 
