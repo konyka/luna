@@ -6360,14 +6360,134 @@ Upvalue相关的指令
 
     var reOpeningLongBracket = regexp.MustCompile(`^\[=*\[`)
 
+    分隔符和运算符
+
+     分隔符和运算符数量很多，所以NextToken的整个switch-case差不多都是用来读取这两种token的
+
+        switch self.chunk[0] {
+        case ';':
+            self.next(1)
+            return self.line, TOKEN_SEP_SEMI, ";"
+        case ',':
+            self.next(1)
+            return self.line, TOKEN_SEP_COMMA, ","
+        case '(':
+            self.next(1)
+            return self.line, TOKEN_SEP_LPAREN, "("
+        case ')':
+            self.next(1)
+            return self.line, TOKEN_SEP_RPAREN, ")"
+        case ']':
+            self.next(1)
+            return self.line, TOKEN_SEP_RBRACK, "]"
+        case '{':
+            self.next(1)
+            return self.line, TOKEN_SEP_LCURLY, "{"
+        case '}':
+            self.next(1)
+            return self.line, TOKEN_SEP_RCURLY, "}"
+        case '+':
+            self.next(1)
+            return self.line, TOKEN_OP_ADD, "+"
+        case '-':
+            self.next(1)
+            return self.line, TOKEN_OP_MINUS, "-"
+        case '*':
+            self.next(1)
+            return self.line, TOKEN_OP_MUL, "*"
+        case '^':
+            self.next(1)
+            return self.line, TOKEN_OP_POW, "^"
+        case '%':
+            self.next(1)
+            return self.line, TOKEN_OP_MOD, "%"
+        case '&':
+            self.next(1)
+            return self.line, TOKEN_OP_BAND, "&"
+        case '|':
+            self.next(1)
+            return self.line, TOKEN_OP_BOR, "|"
+        case '#':
+            self.next(1)
+            return self.line, TOKEN_OP_LEN, "#"
+        case ':':
+            if self.test("::") {
+                self.next(2)
+                return self.line, TOKEN_SEP_LABEL, "::"
+            } else {
+                self.next(1)
+                return self.line, TOKEN_SEP_COLON, ":"
+            }
+        case '/':
+            if self.test("//") {
+                self.next(2)
+                return self.line, TOKEN_OP_IDIV, "//"
+            } else {
+                self.next(1)
+                return self.line, TOKEN_OP_DIV, "/"
+            }
+        case '~':
+            if self.test("~=") {
+                self.next(2)
+                return self.line, TOKEN_OP_NE, "~="
+            } else {
+                self.next(1)
+                return self.line, TOKEN_OP_WAVE, "~"
+            }
+        case '=':
+            if self.test("==") {
+                self.next(2)
+                return self.line, TOKEN_OP_EQ, "=="
+            } else {
+                self.next(1)
+                return self.line, TOKEN_OP_ASSIGN, "="
+            }
+        case '<':
+            if self.test("<<") {
+                self.next(2)
+                return self.line, TOKEN_OP_SHL, "<<"
+            } else if self.test("<=") {
+                self.next(2)
+                return self.line, TOKEN_OP_LE, "<="
+            } else {
+                self.next(1)
+                return self.line, TOKEN_OP_LT, "<"
+            }
+        case '>':
+            if self.test(">>") {
+                self.next(2)
+                return self.line, TOKEN_OP_SHR, ">>"
+            } else if self.test(">=") {
+                self.next(2)
+                return self.line, TOKEN_OP_GE, ">="
+            } else {
+                self.next(1)
+                return self.line, TOKEN_OP_GT, ">"
+            }
+        case '.':
+            if self.test("...") {
+                self.next(3)
+                return self.line, TOKEN_VARARG, "..."
+            } else if self.test("..") {
+                self.next(2)
+                return self.line, TOKEN_OP_CONCAT, ".."
+            } else if len(self.chunk) == 1 || !isDigit(self.chunk[1]) {
+                self.next(1)
+                return self.line, TOKEN_SEP_DOT, "."
+            }
+        case '[':
+            if self.test("[[") || self.test("[=") {
+                return self.line, TOKEN_STRING, self.scanLongString()
+            } else {
+                self.next(1)
+                return self.line, TOKEN_SEP_LBRACK, "["
+            }
+        case '\'', '"':
+            return self.line, TOKEN_STRING, self.scanShortString()
+        }
 
 
-
-
-
-
-
-
+        
 
 
 
