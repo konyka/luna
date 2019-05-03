@@ -6659,15 +6659,21 @@ Upvalue相关的指令
     var reDecEscapeSeq = regexp.MustCompile(`^\\[0-9]{1,3}`)
     var reHexEscapeSeq = regexp.MustCompile(`^\\x[0-9a-fA-F]{2}`)
     var reUnicodeEscapeSeq = regexp.MustCompile(`^\\u\{[0-9a-fA-F]+\}`)
+
+    数字字面量
+
+    数字字面量以点或者数字开头，标识符和关键字以字母或者下划线开头。把提取这些token的代码写到switch-case的外面
+
+    c := self.chunk[0]
+    if c == '.' || isDigit(c) {
+        token := self.scanNumber()
+        return self.line, TOKEN_NUMBER, token
+    }
+
+    如果发现下一个token是数字字面量，调用scanNumber（）提取token，isDigit是用来判断字符是不是数字
+
+
     
-
-
-
-
-
-
-
-
 
 
 

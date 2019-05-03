@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:51:18
+* @Last Modified time: 2019-05-03 13:55:27
 */
 
 package lexer
@@ -159,6 +159,14 @@ func (self *Lexer) NextToken() (line, kind int, token string) {
     case '\'', '"':
         return self.line, TOKEN_STRING, self.scanShortString()
     }
+
+    c := self.chunk[0]
+    if c == '.' || isDigit(c) {
+        token := self.scanNumber()
+        return self.line, TOKEN_NUMBER, token
+    }
+
+    
 
     return
 }
