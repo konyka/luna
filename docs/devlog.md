@@ -6314,8 +6314,12 @@ Upvalue相关的指令
         return strings.HasPrefix(self.chunk, s)
     }   
 
+    next跳过n个字节
 
-    
+    func (self *Lexer) next(n int) {
+        self.chunk = self.chunk[n:]
+    }
+
 
 
 

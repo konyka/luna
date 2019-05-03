@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 13:12:27
+* @Last Modified time: 2019-05-03 13:14:26
 */
 
 package lexer
@@ -79,5 +79,14 @@ func (self *Lexer) next(n int) {
 }
 
 
-
+/**
+ * isWhiteSpace判断自负是不是空白符
+ */
+func isWhiteSpace(c byte) bool {
+    switch c {
+    case '\t', '\n', '\v', '\f', '\r', ' ':
+        return true
+    }
+    return false
+}
 
