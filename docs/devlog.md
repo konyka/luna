@@ -6717,8 +6717,11 @@ Upvalue相关的指令
         return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
     }
 
+    scanIdentifier也指示调用了scan
 
-
+    func (self *Lexer) scanIdentifier() string {
+        return self.scan(reIdentifier)
+    }
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 14:07:43
+* @Last Modified time: 2019-05-03 14:08:52
 */
 
 package lexer
@@ -422,3 +422,9 @@ func (self *Lexer) scan(re *regexp.Regexp) string {
 func isLetter(c byte) bool {
     return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
 }
+
+func (self *Lexer) scanIdentifier() string {
+    return self.scan(reIdentifier)
+}
+
+
