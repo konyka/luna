@@ -6335,11 +6335,27 @@ Upvalue相关的指令
         return c == '\r' || c == '\n'
     }
 
+    注释
 
+    skipComment跳过注释
 
+     func (self *Lexer) skipComment() {
+        self.next(2) // skip --
 
+        // long comment ?
+        if self.test("[") {
+            if reOpeningLongBracket.FindString(self.chunk) != "" {
+                self.scanLongString()
+                return
+            }
+        }
 
-
+        // short comment
+        for len(self.chunk) > 0 && !isNewLine(self.chunk[0]) {
+            self.next(1)
+        }
+    }
+   
 
 
 
