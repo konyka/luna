@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 10:01:20
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 08:34:07
+* @Last Modified time: 2019-05-03 09:08:15
 */
 package main
 
@@ -71,5 +71,14 @@ func next(ls LuaState) int {
         return 1
     }
 }
+
+func pairs(ls LuaState) int {
+    ls.PushGoFunction(next) /* will return generator, */
+    ls.PushValue(1)         /* state, */
+    ls.PushNil()
+    return 3
+}
+
+
 
 

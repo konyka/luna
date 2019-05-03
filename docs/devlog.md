@@ -5792,9 +5792,9 @@ Upvalue相关的指令
     vm/opcodes.go
 
 
+单元测试
 
-
-
+    修改main。go添加函数
 
 
 
