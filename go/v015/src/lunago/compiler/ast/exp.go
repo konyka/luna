@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 19:24:52
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 19:26:26
+* @Last Modified time: 2019-05-03 19:34:56
 */
 
 package ast
@@ -17,7 +17,31 @@ functioncall ::=  prefixexp args | prefixexp ‘:’ Name args
 
 type Exp interface{}
 
+type NilExp struct{ Line int }    // nil
+type TrueExp struct{ Line int }   // true
+type FalseExp struct{ Line int }  // false
+type VarargExp struct{ Line int } // ...
 
+// Numeral
+type IntegerExp struct {
+    Line int
+    Val  int64
+}
+type FloatExp struct {
+    Line int
+    Val  float64
+}
+
+// LiteralString
+type StringExp struct {
+    Line int
+    Str  string
+}
+
+type NameExp struct {
+    Line int
+    Name string
+}
 
 
 

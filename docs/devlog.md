@@ -7146,13 +7146,36 @@ Chunk和块
 
     type Exp interface{}
 
+    简单表达式
 
+    字面量、vararg、名称表达式的定义st/exp.go
 
+    type NilExp struct{ Line int }    // nil
+    type TrueExp struct{ Line int }   // true
+    type FalseExp struct{ Line int }  // false
+    type VarargExp struct{ Line int } // ...
 
+    // Numeral
+    type IntegerExp struct {
+        Line int
+        Val  int64
+    }
+    type FloatExp struct {
+        Line int
+        Val  float64
+    }
 
+    type StringExp struct {
+        Line int
+        Str  string
+    }
 
+    type NameExp struct {
+        Line int
+        Name string
+    }
 
-
+    
 
 
 
