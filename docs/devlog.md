@@ -6744,7 +6744,18 @@ Upvalue相关的指令
 
   后面的三个字段用于缓存下一个token的信息，有了它们就可以实现提前看看的功能LookAhead（）
 
-  
+      func (self *Lexer) LookAhead() int {
+        if self.nextTokenLine > 0 {
+            return self.nextTokenKind
+        }
+        currentLine := self.line
+        line, kind, token := self.NextToken()
+        self.line = currentLine
+        self.nextTokenLine = line
+        self.nextTokenKind = kind
+        self.nextToken = token
+        return kind
+    }
 
 
 

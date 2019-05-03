@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-03 11:57:34
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 14:23:12
+* @Last Modified time: 2019-05-03 14:25:05
 */
 
 package lexer
@@ -430,4 +430,15 @@ func (self *Lexer) scanIdentifier() string {
     return self.scan(reIdentifier)
 }
 
-
+func (self *Lexer) LookAhead() int {
+    if self.nextTokenLine > 0 {
+        return self.nextTokenKind
+    }
+    currentLine := self.line
+    line, kind, token := self.NextToken()
+    self.line = currentLine
+    self.nextTokenLine = line
+    self.nextTokenKind = kind
+    self.nextToken = token
+    return kind
+}
