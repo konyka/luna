@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 12:10:20
+* @Last Modified time: 2019-05-04 12:12:09
 */
 package codegen
 
@@ -50,7 +50,15 @@ func (self *funcInfo) freeReg() {
     self.usedRegs--
 }
 
-
+func (self *funcInfo) allocRegs(n int) int {
+    if n <= 0 {
+        panic("n <= 0 !")
+    }
+    for i := 0; i < n; i++ {
+        self.allocReg()
+    }
+    return self.usedRegs - n
+}
 
 
 
