@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 14:22:11
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 14:23:10
+* @Last Modified time: 2019-05-04 20:51:11
 */
 
 
@@ -39,6 +39,10 @@ func cgStat(fi *funcInfo, node Stat) {
     }
 }
 
+func cgLocalFuncDefStat(fi *funcInfo, node *LocalFuncDefStat) {
+    r := fi.addLocVar(node.Name)
+    cgFuncDefExp(fi, node.Exp, r)
+}
 
 
 

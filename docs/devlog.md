@@ -9028,11 +9028,16 @@ Upvalue表
         }
     }
 
+简单语句 
+
+    local function f() end <===>local f; f = function () end, 
+    所以局部函数定义语句处理起来也比较简单
+
+    func cgLocalFuncDefStat(fi *funcInfo, node *LocalFuncDefStat) {
+        r := fi.addLocVar(node.Name)
+        cgFuncDefExp(fi, node.Exp, r)
+    }
     
-
-
-
-
 
 
 
