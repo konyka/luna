@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 22:29:58
+* @Last Modified time: 2019-05-04 22:33:32
 */
 
 
@@ -50,7 +50,12 @@ func cgExp(fi *funcInfo, node Exp, a, n int) {
     }
 }
 
-
+func cgVarargExp(fi *funcInfo, node *VarargExp, a, n int) {
+    if !fi.isVararg {
+        panic("cannot use '...' outside a vararg function")
+    }
+    fi.emitVararg(a, n)
+}
 
 
 

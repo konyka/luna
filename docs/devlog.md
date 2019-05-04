@@ -9481,9 +9481,14 @@ for循环语句
         }
     }
 
+    字面量表达式，只要生成相应的load指令就可以了，所以直接在case语句里面处理。圆括号表达式也比较好处理，也直接写到了case种，其他的表达式需要使用专门的函数。vararg表达式的处理函数如下：
 
-
-
+    func cgVarargExp(fi *funcInfo, node *VarargExp, a, n int) {
+        if !fi.isVararg {
+            panic("cannot use '...' outside a vararg function")
+        }
+        fi.emitVararg(a, n)
+    }   
 
 
 
