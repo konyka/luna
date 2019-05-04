@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:52:32
+* @Last Modified time: 2019-05-04 08:54:04
 */
 
 package parser
@@ -92,6 +92,14 @@ func parseGotoStat(lexer *Lexer) *GotoStat {
     return &GotoStat{name}
 }
 
-
+/**
+ * do block end
+ */
+func parseDoStat(lexer *Lexer) *DoStat {
+    lexer.NextTokenOfKind(TOKEN_KW_DO)  // do
+    block := parseBlock(lexer)          // block
+    lexer.NextTokenOfKind(TOKEN_KW_END) // end
+    return &DoStat{block}
+}
 
 

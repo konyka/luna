@@ -7630,9 +7630,15 @@ Chunk和块
         return &GotoStat{name}
     }
 
-    
+    对于do语句，先跳过关键字do，然后调用函数parseBlock（）解析额块，最后跳过关键字end
 
-
+    // do block end
+    func parseDoStat(lexer *Lexer) *DoStat {
+        lexer.NextTokenOfKind(TOKEN_KW_DO)  // do
+        block := parseBlock(lexer)          // block
+        lexer.NextTokenOfKind(TOKEN_KW_END) // end
+        return &DoStat{block}
+    }
 
 
 
