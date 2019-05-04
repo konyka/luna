@@ -7663,14 +7663,40 @@ Chunk和块
         return &RepeatStat{block, exp}
     }
 
+    需要注意的是，parseBlock函数最后可能会调用到parseDotStat函数，而parseDotStat函数等又会调用到
+parseBlock函数，所以块和语句解析额函数之间存在递归调用的关系，递归下降解析器因此得名。
 
+if语句    
 
+    定义if语句的解析函数
 
+    // if exp then block {elseif exp then block} [else block] end
+    func parseIfStat(lexer *Lexer) *IfStat {
+        exps := make([]Exp, 0, 4)
+        blocks := make([]*Block, 0, 4)
 
+        lexer.NextTokenOfKind(TOKEN_KW_IF)         // if
+        exps = append(exps, parseExp(lexer))       // exp
+        lexer.NextTokenOfKind(TOKEN_KW_THEN)       // then
+        blocks = append(blocks, parseBlock(lexer)) // block
 
+        for lexer.LookAhead() == TOKEN_KW_ELSEIF {
+            lexer.NextToken()                          // elseif
+            exps = append(exps, parseExp(lexer))       // exp
+            lexer.NextTokenOfKind(TOKEN_KW_THEN)       // then
+            blocks = append(blocks, parseBlock(lexer)) // block
+        }
 
+        // else block => elseif true then block
+        if lexer.LookAhead() == TOKEN_KW_ELSE {
+            lexer.NextToken()                           // else
+            exps = append(exps, &TrueExp{lexer.Line()}) //
+            blocks = append(blocks, parseBlock(lexer))  // block
+        }
 
-
+        lexer.NextTokenOfKind(TOKEN_KW_END) // end
+        return &IfStat{exps, blocks}
+    }
 
 
 

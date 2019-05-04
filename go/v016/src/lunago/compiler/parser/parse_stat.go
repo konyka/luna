@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:56:02
+* @Last Modified time: 2019-05-04 09:00:07
 */
 
 package parser
@@ -125,7 +125,33 @@ func parseRepeatStat(lexer *Lexer) *RepeatStat {
     return &RepeatStat{block, exp}
 }
 
+// if exp then block {elseif exp then block} [else block] end
+func parseIfStat(lexer *Lexer) *IfStat {
+    exps := make([]Exp, 0, 4)
+    blocks := make([]*Block, 0, 4)
 
+    lexer.NextTokenOfKind(TOKEN_KW_IF)         // if
+    exps = append(exps, parseExp(lexer))       // exp
+    lexer.NextTokenOfKind(TOKEN_KW_THEN)       // then
+    blocks = append(blocks, parseBlock(lexer)) // block
+
+    for lexer.LookAhead() == TOKEN_KW_ELSEIF {
+        lexer.NextToken()                          // elseif
+        exps = append(exps, parseExp(lexer))       // exp
+        lexer.NextTokenOfKind(TOKEN_KW_THEN)       // then
+        blocks = append(blocks, parseBlock(lexer)) // block
+    }
+
+    // else block => elseif true then block
+    if lexer.LookAhead() == TOKEN_KW_ELSE {
+        lexer.NextToken()                           // else
+        exps = append(exps, &TrueExp{lexer.Line()}) //
+        blocks = append(blocks, parseBlock(lexer))  // block
+    }
+
+    lexer.NextTokenOfKind(TOKEN_KW_END) // end
+    return &IfStat{exps, blocks}
+}
 
 
 
