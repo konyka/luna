@@ -9209,14 +9209,33 @@ if语句
         }
     }    
 
-    
 
+for循环语句
 
+    lua有两种for循环，其中数值for循环需要借助forrep和forloop指令实现。通用for循环需要借助tforcall、tforloop指令实现
 
+    数值for处理：
 
+    func cgForNumStat(fi *funcInfo, node *ForNumStat) {
+        fi.enterScope(true)
+        //1
+        cgLocalVarDeclStat(fi, &LocalVarDeclStat{
+            NameList: []string{"(for index)", "(for limit)", "(for step)"},
+            ExpList:  []Exp{node.InitExp, node.LimitExp, node.StepExp},
+        })
+        fi.addLocVar(node.VarName)
+        //2
+        a := fi.usedRegs - 4
+        pcForPrep := fi.emitForPrep(a, 0)
+        cgBlock(fi, node.Block)
+        fi.closeOpenUpvals()
+        pcForLoop := fi.emitForLoop(a, 0)
+        //3
+        fi.fixSbx(pcForPrep, pcForLoop-pcForPrep-1)
+        fi.fixSbx(pcForLoop, pcForPrep-pcForLoop)
 
-
-
+        fi.exitScope()
+    }    
 
 
 

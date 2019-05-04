@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 14:22:11
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 21:32:39
+* @Last Modified time: 2019-05-04 21:40:20
 */
 
 
@@ -155,7 +155,26 @@ func cgIfStat(fi *funcInfo, node *IfStat) {
     }
 }
 
+func cgForNumStat(fi *funcInfo, node *ForNumStat) {
+    fi.enterScope(true)
 
+    cgLocalVarDeclStat(fi, &LocalVarDeclStat{
+        NameList: []string{"(for index)", "(for limit)", "(for step)"},
+        ExpList:  []Exp{node.InitExp, node.LimitExp, node.StepExp},
+    })
+    fi.addLocVar(node.VarName)
+
+    a := fi.usedRegs - 4
+    pcForPrep := fi.emitForPrep(a, 0)
+    cgBlock(fi, node.Block)
+    fi.closeOpenUpvals()
+    pcForLoop := fi.emitForLoop(a, 0)
+
+    fi.fixSbx(pcForPrep, pcForLoop-pcForPrep-1)
+    fi.fixSbx(pcForLoop, pcForPrep-pcForLoop)
+
+    fi.exitScope()
+}
 
 
 
