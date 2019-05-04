@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 07:31:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 07:39:45
+* @Last Modified time: 2019-05-05 07:41:51
 */
 
 
@@ -41,7 +41,13 @@ func toProtos(fis []*funcInfo) []*Prototype {
     return protos
 }
 
-
+func getConstants(fi *funcInfo) []interface{} {
+    consts := make([]interface{}, len(fi.constants))
+    for k, idx := range fi.constants {
+        consts[idx] = k
+    }
+    return consts
+}
 
 
 

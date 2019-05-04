@@ -9855,11 +9855,17 @@ for循环语句
     }
 
 
+    常量表需要调用函数  进行转换：
 
+    func getConstants(fi *funcInfo) []interface{} {
+        consts := make([]interface{}, len(fi.constants))
+        for k, idx := range fi.constants {
+            consts[idx] = k
+        }
+        return consts
+    }
 
-
-
-
+    
 
 
 
