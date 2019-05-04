@@ -9855,7 +9855,7 @@ for循环语句
     }
 
 
-    常量表需要调用函数  进行转换：
+    常量表需要调用函数 getConstants 进行转换：
 
     func getConstants(fi *funcInfo) []interface{} {
         consts := make([]interface{}, len(fi.constants))
@@ -9865,9 +9865,20 @@ for循环语句
         return consts
     }
 
-    
 
+    UPvalue表需要调用函数  getUpvalues 进行转换：
 
+    func getUpvalues(fi *funcInfo) []Upvalue {
+        upvals := make([]Upvalue, len(fi.upvalues))
+        for _, uv := range fi.upvalues {
+            if uv.locVarSlot >= 0 { // instack
+                upvals[uv.index] = Upvalue{1, byte(uv.locVarSlot)}
+            } else {
+                upvals[uv.index] = Upvalue{0, byte(uv.upvalIndex)}
+            }
+        }
+        return upvals
+    }
 
 
 
