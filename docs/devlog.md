@@ -8417,11 +8417,39 @@ for循环语句
 单元测试
 
     
+    package main
 
+    import "encoding/json"
+    import "io/ioutil"
+    import "os"
+    import "lunago/compiler/parser"
 
+    func main() {
+        if len(os.Args) > 1 {
+            data, err := ioutil.ReadFile(os.Args[1])
+            if err != nil {
+                panic(err)
+            }
 
+            testParser(string(data), os.Args[1])
+        }
+    }
 
+    testParser对语法分析器进行测试
 
+    func testParser(chunk, chunkName string) {
+        ast := parser.Parse(chunk, chunkName)
+        b, err := json.Marshal(ast)
+        if err != nil {
+            panic(err)
+        }
+        println(string(b))
+    }
+
+    先对源代码进行解析，得到ast，然后把ast以json的格式打印。
+
+    $ go run main.go helloworld.lua 
+{"LastLine":6,"Stats":[{"Line":6,"LastLine":6,"PrefixExp":{"Line":6,"Name":"print"},"NameExp":null,"Args":[{"Line":6,"Str":"hello world！！！"}]}],"RetExps":null}
 
 
 
