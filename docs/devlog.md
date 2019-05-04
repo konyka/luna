@@ -9212,7 +9212,7 @@ if语句
 
 for循环语句
 
-    lua有两种for循环，其中数值for循环需要借助forrep和forloop指令实现。通用for循环需要借助tforcall、tforloop指令实现
+    lua有两种for循环，其中数值for循环需要借助forprep和forloop指令实现。通用for循环需要借助tforcall、tforloop指令实现
 
     数值for处理：
 
@@ -9238,11 +9238,35 @@ for循环语句
     }    
 
 
+    数值for使用了三个特殊的局部变量，分别保存索引、限制还有步长。
+    1、声明三个局部变量，并且使用初值、限制以及步长表达式的值初始化这三个变量，另外，跟在关键字for后面的名称也声明了一个局部变量
+    2、生成forprep指令，处理块，然后程程forloop指令
+    3、吧指令里面的调整偏移量修复就可以了
 
+    通用for循环
 
+    func cgForInStat(fi *funcInfo, node *ForInStat) {
+        fi.enterScope(true)
 
+        cgLocalVarDeclStat(fi, &LocalVarDeclStat{
+            NameList: []string{"(for generator)", "(for state)", "(for control)"},
+            ExpList:  node.ExpList,
+        })
+        for _, name := range node.NameList {
+            fi.addLocVar(name)
+        }
 
+        pcJmpToTFC := fi.emitJmp(0, 0)
+        cgBlock(fi, node.Block)
+        fi.closeOpenUpvals()
+        fi.fixSbx(pcJmpToTFC, fi.pc()-pcJmpToTFC)
 
+        rGenerator := fi.slotOfLocVar("(for generator)")
+        fi.emitTForCall(rGenerator, len(node.NameList))
+        fi.emitTForLoop(rGenerator+2, pcJmpToTFC-fi.pc()-1)
+
+        fi.exitScope()
+    }    
 
 
 

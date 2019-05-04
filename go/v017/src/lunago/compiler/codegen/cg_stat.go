@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 14:22:11
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 21:40:20
+* @Last Modified time: 2019-05-04 21:57:24
 */
 
 
@@ -177,7 +177,28 @@ func cgForNumStat(fi *funcInfo, node *ForNumStat) {
 }
 
 
+func cgForInStat(fi *funcInfo, node *ForInStat) {
+    fi.enterScope(true)
 
+    cgLocalVarDeclStat(fi, &LocalVarDeclStat{
+        NameList: []string{"(for generator)", "(for state)", "(for control)"},
+        ExpList:  node.ExpList,
+    })
+    for _, name := range node.NameList {
+        fi.addLocVar(name)
+    }
+
+    pcJmpToTFC := fi.emitJmp(0, 0)
+    cgBlock(fi, node.Block)
+    fi.closeOpenUpvals()
+    fi.fixSbx(pcJmpToTFC, fi.pc()-pcJmpToTFC)
+
+    rGenerator := fi.slotOfLocVar("(for generator)")
+    fi.emitTForCall(rGenerator, len(node.NameList))
+    fi.emitTForLoop(rGenerator+2, pcJmpToTFC-fi.pc()-1)
+
+    fi.exitScope()
+}
 
 
 
