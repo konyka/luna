@@ -7592,16 +7592,20 @@ Chunk和块
     }
 
 
+    前瞻一个token，然后根据类型调用对应的函数解析语句
 
+简单语句
+    空语句、break、label、goto、do、while、repeat，这几种语句的解析函数很简单，对于空语句，跳过分号就可以可
 
+    // ;
+    func parseEmptyStat(lexer *Lexer) *EmptyStat {
+        lexer.NextTokenOfKind(TOKEN_SEP_SEMI)
+        return _statEmpty
+    }
 
+    对于break语句，则掉过关键字并记录行号就可以了
 
-
-
-
-
-
-
+    
 
 
 

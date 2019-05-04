@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:44:03
+* @Last Modified time: 2019-05-04 08:48:53
 */
 
 package parser
@@ -56,7 +56,13 @@ func parseStat(lexer *Lexer) Stat {
     }
 }
 
-
+/**
+ * ;
+ */
+func parseEmptyStat(lexer *Lexer) *EmptyStat {
+    lexer.NextTokenOfKind(TOKEN_SEP_SEMI)
+    return _statEmpty
+}
 
 
 
