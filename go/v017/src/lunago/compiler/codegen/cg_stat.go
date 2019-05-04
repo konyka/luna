@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 14:22:11
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 21:23:58
+* @Last Modified time: 2019-05-04 21:32:39
 */
 
 
@@ -114,7 +114,46 @@ func cgRepeatStat(fi *funcInfo, node *RepeatStat) {
     fi.exitScope()
 }
 
+/*
+         _________________       _________________       _____________
+        / false? jmp      |     / false? jmp      |     / false? jmp  |
+       /                  V    /                  V    /              V
+if exp1 then block1 elseif exp2 then block2 elseif true then block3 end <-.
+                   \                       \                       \      |
+                    \_______________________\_______________________\_____|
+                    jmp                     jmp                     jmp
+*/
+func cgIfStat(fi *funcInfo, node *IfStat) {
+    pcJmpToEnds := make([]int, len(node.Exps))
+    pcJmpToNextExp := -1
 
+    for i, exp := range node.Exps {
+        if pcJmpToNextExp >= 0 {
+            fi.fixSbx(pcJmpToNextExp, fi.pc()-pcJmpToNextExp)
+        }
+
+        r := fi.allocReg()
+        cgExp(fi, exp, r, 1)
+        fi.freeReg()
+
+        fi.emitTest(r, 0)
+        pcJmpToNextExp = fi.emitJmp(0, 0)
+
+        fi.enterScope(false)
+        cgBlock(fi, node.Blocks[i])
+        fi.closeOpenUpvals()
+        fi.exitScope()
+        if i < len(node.Exps)-1 {
+            pcJmpToEnds[i] = fi.emitJmp(0, 0)
+        } else {
+            pcJmpToEnds[i] = pcJmpToNextExp
+        }
+    }
+
+    for _, pc := range pcJmpToEnds {
+        fi.fixSbx(pc, fi.pc()-pc)
+    }
+}
 
 
 
