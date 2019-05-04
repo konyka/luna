@@ -9762,14 +9762,20 @@ for循环语句
         fi.freeRegs(2)
     }
 
+    先后给表和键分别分配临时变量并对表达式求值，然后生成gettable指令，并释放临时变量。
 
 
+函数调用表达式
 
+    如何处理函数调用表达式？？？
+    先处理前缀表达式，然后依次处理每个参数表达式，最后生成一条call指令就可以了
+    函数调用表达式的处理：
 
-
-
-
-
+    // r[a] := f(args)
+    func cgFuncCallExp(fi *funcInfo, node *FuncCallExp, a, n int) {
+        nArgs := prepFuncCall(fi, node, a)
+        fi.emitCall(a, nArgs, n)
+    }
 
 
 

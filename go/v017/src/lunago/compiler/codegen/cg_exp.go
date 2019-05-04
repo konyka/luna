@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 23:15:43
+* @Last Modified time: 2019-05-04 23:18:24
 */
 
 
@@ -203,5 +203,23 @@ func cgTableAccessExp(fi *funcInfo, node *TableAccessExp, a int) {
     fi.emitGetTable(a, b, c)
     fi.freeRegs(2)
 }
+
+// r[a] := f(args)
+func cgFuncCallExp(fi *funcInfo, node *FuncCallExp, a, n int) {
+    nArgs := prepFuncCall(fi, node, a)
+    fi.emitCall(a, nArgs, n)
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
