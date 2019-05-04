@@ -8313,7 +8313,7 @@ for循环语句
         return nil
     }
 
-    参数列表由函数解析
+    参数列表由函数 _parseArgs 解析
 
     // args ::=  ‘(’ [explist] ‘)’ | tableconstructor | LiteralString
     func _parseArgs(lexer *Lexer) (args []Exp) {
@@ -8334,23 +8334,51 @@ for循环语句
     }
 
 
+表达式的优化
+
+    为了降低开发难度并提高可重用性、可以吧编译器分为前端、中端、后端三部分，优化，一般在中端和后端进行。不过这里仅仅设计了前段的词法分析和语法分析，以及后端的代码生成阶段，为了简化代码生成器，会在语法分析阶段进行一点优化。
+
+    对全部由字面量参与的算术、按位、逻辑运算符表达式进行优化
+
+    如果运算符表达式的值能够在编译期间计算出来，lua编译器会完全将其优化掉。可以在解析额运算符表达式的时候，顺便做一下这个优化，比如一元运算符，增加优化逻辑以后的解析函数代码如下：
 
 
+    func parseExp2(lexer *Lexer) Exp {
+        switch lexer.LookAhead() {
+        case TOKEN_OP_UNM, TOKEN_OP_BNOT, TOKEN_OP_LEN, TOKEN_OP_NOT:
+            line, op, _ := lexer.NextToken()
+            exp := &UnopExp{line, op, parseExp2(lexer)}
+            return optimizeUnaryOp(exp)
+        }
+        return parseExp1(lexer)
+    }
 
+    compiler/parser/optimizer.go ，优化相关的代码放在这里，定义函数
+    optimizeUnaryOp（）
 
+    package parser
 
+    import "math"
+    import "lunago/number"
+    import . "lunago/compiler/ast"
+    import . "lunago/compiler/lexer"
 
+    func optimizeUnaryOp(exp *UnopExp) Exp {
+        switch exp.Op {
+        case TOKEN_OP_UNM:
+            return optimizeUnm(exp)
+        case TOKEN_OP_NOT:
+            return optimizeNot(exp)
+        case TOKEN_OP_BNOT:
+            return optimizeBnot(exp)
+        default:
+            return exp
+        }
+    }
 
+    一元取负运算符表达式的优化
 
-
-
-
-
-
-
-
-
-
+    
 
 
 
