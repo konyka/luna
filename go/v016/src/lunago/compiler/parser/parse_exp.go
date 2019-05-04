@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:33:46
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:26:25
+* @Last Modified time: 2019-05-04 10:28:56
 */
 
 package parser
@@ -327,5 +327,35 @@ func parseTableConstructorExp(lexer *Lexer) *TableConstructorExp {
     lastLine := lexer.Line()
     return &TableConstructorExp{line, lastLine, keyExps, valExps}
 }
+
+/**
+ * fieldlist ::= field {fieldsep field} [fieldsep]
+ * @Author   konyka
+ * @DateTime 2019-05-04T10:28:55+0800
+ * @param    {[type]}                 lexer *Lexer)       (ks, vs []Exp [description]
+ * @return   {[type]}                       [description]
+ */
+func _parseFieldList(lexer *Lexer) (ks, vs []Exp) {
+    if lexer.LookAhead() != TOKEN_SEP_RCURLY {
+        k, v := _parseField(lexer)
+        ks = append(ks, k)
+        vs = append(vs, v)
+
+        for _isFieldSep(lexer.LookAhead()) {
+            lexer.NextToken()
+            if lexer.LookAhead() != TOKEN_SEP_RCURLY {
+                k, v := _parseField(lexer)
+                ks = append(ks, k)
+                vs = append(vs, v)
+            } else {
+                break
+            }
+        }
+    }
+    return
+}
+
+
+
 
 

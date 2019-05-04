@@ -8158,13 +8158,33 @@ for循环语句
     }
 
 
+    可选的字段列表由函数 _parseFieldList 解析
 
+    // fieldlist ::= field {fieldsep field} [fieldsep]
+    func _parseFieldList(lexer *Lexer) (ks, vs []Exp) {
+        if lexer.LookAhead() != TOKEN_SEP_RCURLY {
+            k, v := _parseField(lexer)
+            ks = append(ks, k)
+            vs = append(vs, v)
 
+            for _isFieldSep(lexer.LookAhead()) {
+                lexer.NextToken()
+                if lexer.LookAhead() != TOKEN_SEP_RCURLY {
+                    k, v := _parseField(lexer)
+                    ks = append(ks, k)
+                    vs = append(vs, v)
+                } else {
+                    break
+                }
+            }
+        }
+        return
+    }
 
+    因为字段列表的末尾允许有可以可选的分隔符，所以有点麻烦。
+    字段分隔符可以是逗号或者分号
 
-
-
-
+    
 
 
 
