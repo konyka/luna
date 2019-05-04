@@ -8624,7 +8624,14 @@ for循环语句
     }   
 
 
+  slotOfLocVar检查局部变量名是否已经和某个寄存器绑定，如果过是，则返回寄存器的索引，否则返回-1
 
+    func (self *funcInfo) slotOfLocVar(name string) int {
+        if locVar, found := self.locNames[name]; found {
+            return locVar.slot
+        }
+        return -1
+    }
 
 
 
