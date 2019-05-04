@@ -8554,7 +8554,7 @@ for循环语句
         return self.usedRegs - n
     }
 
-    
+     freeRegs方法回收最近分配的n个寄存器   
 
     func (self *funcInfo) freeRegs(n int) {
         if n < 0 {
@@ -8566,17 +8566,23 @@ for循环语句
     }
 
 
+局部变量表
 
+    lua采用词法作用域。在函数内部，某个局部变量的作用域是包围该变量的最内层语句块。简单的说，每个块都会制造一个新的作用域，在块的内部可以使用局部变量声明语句声明（并初始化）局部变量，每个局部变量都会占用一个寄存器索引，当块结束以后，作用域也随之消失。局部变量不复存在，占用的寄存器也会被回收。对于repeat和for语句中的块，情况有一些不同。
 
+    由于同一个局部变量名可以先后绑定不同的寄存器，为了简化代码，使用单项链表来串联同名的局部变量。
 
+    定义结构体locVarInfo
 
+    type locVarInfo struct {
+        prev     *locVarInfo
+        name     string
+        scopeLv  int
+        slot     int
+        captured bool
+    }
 
-
-
-
-
-
-
+    其中字段prev使结构体locVarInfo成为单项链表的节点。
 
 
 

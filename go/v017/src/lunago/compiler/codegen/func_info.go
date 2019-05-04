@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 12:15:02
+* @Last Modified time: 2019-05-04 12:22:08
 */
 package codegen
 
@@ -15,6 +15,14 @@ type funcInfo struct {
     usedRegs  int
     maxRegs   int
     //to do
+}
+
+type locVarInfo struct {
+    prev     *locVarInfo
+    name     string
+    scopeLv  int
+    slot     int
+    captured bool
 }
 
 /* constants */
