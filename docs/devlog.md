@@ -8878,17 +8878,31 @@ Upvalue表
         }
     }   
 
+ ast===>funcInfo实例   
 
+编译块
 
+    由于函数的主题实际上就是语句块，所以从块入手。
+    compiler/codegen/cg_block.go
 
+    定义函数cgBlock（）
 
+    package codegen
 
+    import . "lunago/compiler/ast"
 
+    func cgBlock(fi *funcInfo, node *Block) {
+        for _, stat := range node.Stats {
+            cgStat(fi, stat)
+        }
 
+        if node.RetExps != nil {
+            cgRetStat(fi, node.RetExps)
+        }
+    }
+    
 
-
-
-
+    
 
 
 
