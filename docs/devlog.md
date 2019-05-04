@@ -9048,12 +9048,15 @@ Upvalue表
 
     对于break语句，生成一条jmp指令，并吧地址保存在break表中就可以了，等到块退出以后，在修补跳转的偏移量。break语句的处理代码：
 
+    func cgBreakStat(fi *funcInfo, node *BreakStat) {
+        pc := fi.emitJmp(0, 0)
+        fi.addBreakJmp(pc)
+    }    
+
+
+    由于do语句本质上就是一个块，作用就是引入新的作用域，所以也不难
+
     
-
-
-
-
-
 
 
 
