@@ -7428,10 +7428,39 @@ Chunk和块
     那么如何知道块在什么地方结束呢？
     只要把所有和块相关的语法规则都列出来，就可以找到规律
 
-    
+    block ::= {stat} [retstat]
+    stat ::=  ‘;’ | 
+         varlist ‘=’ explist | 
+         functioncall | 
+         label | 
+         break | 
+         goto Name | 
+
+
+         do block end | 
+         while exp do block end | 
+         repeat block until exp | 
+         if exp then block {elseif exp then block} [else block] end | 
+         for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end | 
+         for namelist in explist do block end | 
+         function funcname funcbody | 
+         local function Name funcbody | 
 
 
 
+         local namelist [‘=’ explist] 
+ 
+   可见，如果出现在其他语句里面，快后面的值你鞥是关键字end、else、esleif或者until。如果作为单独的chunk，并且没有返回语句，那么块的后面不能再有任何非空白token。
+   把这些判断放到函数_isReturnOrBlockEnd里：
+
+   func _isReturnOrBlockEnd(tokenKind int) bool {
+        switch tokenKind {
+        case TOKEN_KW_RETURN, TOKEN_EOF, TOKEN_KW_END,
+            TOKEN_KW_ELSE, TOKEN_KW_ELSEIF, TOKEN_KW_UNTIL:
+            return true
+        }
+        return false
+    }
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:12:28
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:17:00
+* @Last Modified time: 2019-05-04 08:25:35
 */
 
 package parser
@@ -30,6 +30,14 @@ func parseStats(lexer *Lexer) []Stat {
     return stats
 }
 
+func _isReturnOrBlockEnd(tokenKind int) bool {
+    switch tokenKind {
+    case TOKEN_KW_RETURN, TOKEN_EOF, TOKEN_KW_END,
+        TOKEN_KW_ELSE, TOKEN_KW_ELSEIF, TOKEN_KW_UNTIL:
+        return true
+    }
+    return false
+}
 
 
 
