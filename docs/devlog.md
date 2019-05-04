@@ -7408,15 +7408,27 @@ Chunk和块
         }
     }
 
+    创建结构体Block的实例，调用parseBlock（）解析语句序列，调用parseRetExps（）解析额可选的返回语句，并记录末尾的行号，
+
+    parseStats（）
+
+    func parseStats(lexer *Lexer) []Stat {
+        stats := make([]Stat, 0, 8)
+        for !_isReturnOrBlockEnd(lexer.LookAhead()) {
+            stat := parseStat(lexer)
+            if _, ok := stat.(*EmptyStat); !ok {
+                stats = append(stats, stat)
+            }
+        }
+        return stats
+    }
 
 
+    循环调用parseStat（）解析语句，知道痛殴前瞻看到关键字return或者发现块已经结束为止。
+    那么如何知道块在什么地方结束呢？
+    只要把所有和块相关的语法规则都列出来，就可以找到规律
 
-
-
-
-
-
-
+    
 
 
 
