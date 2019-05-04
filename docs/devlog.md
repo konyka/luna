@@ -7462,7 +7462,31 @@ Chunk和块
         return false
     }
 
+    parseRetExps函数
 
+    // retstat ::= return [explist] [‘;’]
+    // explist ::= exp {‘,’ exp}
+    func parseRetExps(lexer *Lexer) []Exp {
+        if lexer.LookAhead() != TOKEN_KW_RETURN {
+            return nil
+        }
+
+        lexer.NextToken()
+        switch lexer.LookAhead() {
+        case TOKEN_EOF, TOKEN_KW_END,
+            TOKEN_KW_ELSE, TOKEN_KW_ELSEIF, TOKEN_KW_UNTIL:
+            return []Exp{}
+        case TOKEN_SEP_SEMI:
+            lexer.NextToken()
+            return []Exp{}
+        default:
+            exps := parseExpList(lexer)
+            if lexer.LookAhead() == TOKEN_SEP_SEMI {
+                lexer.NextToken()
+            }
+            return exps
+        }
+    }   
 
 
 
