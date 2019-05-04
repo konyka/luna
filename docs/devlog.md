@@ -9750,9 +9750,17 @@ for循环语句
     }
 
 
+    如果是局部变量，生成move指令；如果是Upvalue，生成getupval指令；如果是全局变量，则转换成表访问表达式，交给函数 cgTableAccessExp 处理
 
-
-
+    // r[a] := prefix[key]
+    func cgTableAccessExp(fi *funcInfo, node *TableAccessExp, a int) {
+        b := fi.allocReg()
+        cgExp(fi, node.PrefixExp, b, 1)
+        c := fi.allocReg()
+        cgExp(fi, node.KeyExp, c, 1)
+        fi.emitGetTable(a, b, c)
+        fi.freeRegs(2)
+    }
 
 
 

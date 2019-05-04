@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 23:13:53
+* @Last Modified time: 2019-05-04 23:15:43
 */
 
 
@@ -194,6 +194,14 @@ func cgNameExp(fi *funcInfo, node *NameExp, a int) {
     }
 }
 
-
+// r[a] := prefix[key]
+func cgTableAccessExp(fi *funcInfo, node *TableAccessExp, a int) {
+    b := fi.allocReg()
+    cgExp(fi, node.PrefixExp, b, 1)
+    c := fi.allocReg()
+    cgExp(fi, node.KeyExp, c, 1)
+    fi.emitGetTable(a, b, c)
+    fi.freeRegs(2)
+}
 
 
