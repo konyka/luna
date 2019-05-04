@@ -9320,25 +9320,116 @@ for循环语句
         }
     }
 
+    如果等号左侧声明的局部变量和等号右侧提供的表达式数量一样，那么处理起来就容易了。需要注意的是，新声明的局部变量，只有在声明语句结束以后才会生效，所以先分配临时的变量，对表达式求值，然后在讲局部变量名和寄存器绑定。如果表达式比局部变量多，处理起来也不麻烦
 
-    
+    多余的表达式也一样要求值，另外如果最后一个表达式是vararg或者函数调用，还需要特别处理一下，如果表达式比局部变量少，处理起来最麻烦
+
+    这里有两种情况，如果最后一个表达式是vararg或者函数调用，则需要使用多重赋值初始化其余的局部变量，否则必须生成loadnil指令来初始化剩余的局部变量。最后释放临时变量，声明局部变量就可以了。
+
+赋值语句   
+
+    赋值语句不仅仅支持多重赋值，而且还可以同时给局部变量、Upvalue、全局变量赋值或者根据索引修改表，所以处理起来很麻烦。
+
+    func cgAssignStat(fi *funcInfo, node *AssignStat) {
+        exps := removeTailNils(node.ExpList)
+        nExps := len(exps)
+        nVars := len(node.VarList)
+
+        tRegs := make([]int, nVars)
+        kRegs := make([]int, nVars)
+        vRegs := make([]int, nVars)
+        oldRegs := fi.usedRegs
+
+        for i, exp := range node.VarList {
+            if taExp, ok := exp.(*TableAccessExp); ok {
+                tRegs[i] = fi.allocReg()
+                cgExp(fi, taExp.PrefixExp, tRegs[i], 1)
+                kRegs[i] = fi.allocReg()
+                cgExp(fi, taExp.KeyExp, kRegs[i], 1)
+            } else {
+                name := exp.(*NameExp).Name
+                if fi.slotOfLocVar(name) < 0 && fi.indexOfUpval(name) < 0 {
+                    // global var
+                    kRegs[i] = -1
+                    if fi.indexOfConstant(name) > 0xFF {
+                        kRegs[i] = fi.allocReg()
+                    }
+                }
+            }
+        }
+        for i := 0; i < nVars; i++ {
+            vRegs[i] = fi.usedRegs + i
+        }
+
+        if nExps >= nVars {
+            for i, exp := range exps {
+                a := fi.allocReg()
+                if i >= nVars && i == nExps-1 && isVarargOrFuncCall(exp) {
+                    cgExp(fi, exp, a, 0)
+                } else {
+                    cgExp(fi, exp, a, 1)
+                }
+            }
+        } else { // nVars > nExps
+            multRet := false
+            for i, exp := range exps {
+                a := fi.allocReg()
+                if i == nExps-1 && isVarargOrFuncCall(exp) {
+                    multRet = true
+                    n := nVars - nExps + 1
+                    cgExp(fi, exp, a, n)
+                    fi.allocRegs(n - 1)
+                } else {
+                    cgExp(fi, exp, a, 1)
+                }
+            }
+            if !multRet {
+                n := nVars - nExps
+                a := fi.allocRegs(n)
+                fi.emitLoadNil(a, n)
+            }
+        }
+
+        for i, exp := range node.VarList {
+            if nameExp, ok := exp.(*NameExp); ok {
+                varName := nameExp.Name
+                if a := fi.slotOfLocVar(varName); a >= 0 {
+                    fi.emitMove(a, vRegs[i])
+                } else if b := fi.indexOfUpval(varName); b >= 0 {
+                    fi.emitSetUpval(vRegs[i], b)
+                } else if a := fi.slotOfLocVar("_ENV"); a >= 0 {
+                    if kRegs[i] < 0 {
+                        b := 0x100 + fi.indexOfConstant(varName)
+                        fi.emitSetTable(a, b, vRegs[i])
+                    } else {
+                        fi.emitSetTable(a, kRegs[i], vRegs[i])
+                    }
+                } else { // global var
+                    a := fi.indexOfUpval("_ENV")
+                    if kRegs[i] < 0 {
+                        b := 0x100 + fi.indexOfConstant(varName)
+                        fi.emitSetTabUp(a, b, vRegs[i])
+                    } else {
+                        fi.emitSetTabUp(a, kRegs[i], vRegs[i])
+                    }
+                }
+            } else {
+                fi.emitSetTable(tRegs[i], kRegs[i], vRegs[i])
+            }
+        }
+
+        // todo
+        fi.usedRegs = oldRegs
+    }
 
 
+    由于赋值语句等号左边可以出现t[k]这样的表达式，灯油右边可以出现任意表达式，所以需要先分配临时变量，对这些表达式进行求值，然后在统一生成赋值指令。tRegs\kRegs\vRegs这三个数组分别记录为表、键、值分配的临时变量。
 
+    先处理等号左侧的索引表达式，分配临时变量，并对表和键求值。然后统一为等号右侧的表达式计算寄存器的索引。
 
+    这里的做法和局部变量声明语句类似，需要考虑多重赋值，也需要在必要的时候补上loadnil指令。
 
-
-
-
-
-
-
-
-
-
-
-
-
+    在循环中对赋值进行处理：如果给局部变量赋值，生成move指令；如果给Upvalue赋值，生成Setupval指令；如果给全局变量赋值，生成settabup指令；如果值按照索引给表赋值，则生成settable指令。循环结束以后，需要释放掉所有的临时变量。
 
 
 
