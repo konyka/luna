@@ -8099,16 +8099,51 @@ for循环语句
         }
     }    
 
+函数定义表达式    
+    
+    函数定义表达式的解析函数
+
+    // functiondef ::= function funcbody
+    // funcbody ::= ‘(’ [parlist] ‘)’ block end
+    func parseFuncDefExp(lexer *Lexer) *FuncDefExp {
+        line := lexer.Line()                               // function
+        lexer.NextTokenOfKind(TOKEN_SEP_LPAREN)            // (
+        parList, isVararg := _parseParList(lexer)          // [parlist]
+        lexer.NextTokenOfKind(TOKEN_SEP_RPAREN)            // )
+        block := parseBlock(lexer)                         // block
+        lastLine, _ := lexer.NextTokenOfKind(TOKEN_KW_END) // end
+        return &FuncDefExp{line, lastLine, parList, isVararg, block}
+    }
 
 
+    为了在其他地方可以重用这个方法，跳过了关键字function，只解析函数定义表达式的其他部分。可选的参数列表由函数 _parseParList 解析：
 
+    // [parlist]
+    // parlist ::= namelist [‘,’ ‘...’] | ‘...’
+    func _parseParList(lexer *Lexer) (names []string, isVararg bool) {
+        switch lexer.LookAhead() {
+        case TOKEN_SEP_RPAREN:
+            return nil, false
+        case TOKEN_VARARG:
+            lexer.NextToken()
+            return nil, true
+        }
 
-
-
-
-
-
-
+        _, name := lexer.NextIdentifier()
+        names = append(names, name)
+        for lexer.LookAhead() == TOKEN_SEP_COMMA {
+            lexer.NextToken()
+            if lexer.LookAhead() == TOKEN_IDENTIFIER {
+                _, name := lexer.NextIdentifier()
+                names = append(names, name)
+            } else {
+                lexer.NextTokenOfKind(TOKEN_VARARG)
+                isVararg = true
+                break
+            }
+        }
+        return
+    }
 
 
 

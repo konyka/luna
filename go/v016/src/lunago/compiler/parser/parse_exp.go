@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:33:46
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:20:17
+* @Last Modified time: 2019-05-04 10:25:12
 */
 
 package parser
@@ -268,8 +268,53 @@ func parseNumberExp(lexer *Lexer) Exp {
 }
 
 
+/**
+ * functiondef ::= function funcbody
+ * funcbody ::= ‘(’ [parlist] ‘)’ block end
+ */
+func parseFuncDefExp(lexer *Lexer) *FuncDefExp {
+    line := lexer.Line()                               // function
+    lexer.NextTokenOfKind(TOKEN_SEP_LPAREN)            // (
+    parList, isVararg := _parseParList(lexer)          // [parlist]
+    lexer.NextTokenOfKind(TOKEN_SEP_RPAREN)            // )
+    block := parseBlock(lexer)                         // block
+    lastLine, _ := lexer.NextTokenOfKind(TOKEN_KW_END) // end
+    return &FuncDefExp{line, lastLine, parList, isVararg, block}
+}
 
 
+/**
+ * [parlist]
+ * parlist ::= namelist [‘,’ ‘...’] | ‘...’
+ * @Author   konyka
+ * @DateTime 2019-05-04T10:24:31+0800
+ * @param    {[type]}                 lexer *Lexer)       (names []string, isVararg bool [description]
+ * @return   {[type]}                       [description]
+ */
+func _parseParList(lexer *Lexer) (names []string, isVararg bool) {
+    switch lexer.LookAhead() {
+    case TOKEN_SEP_RPAREN:
+        return nil, false
+    case TOKEN_VARARG:
+        lexer.NextToken()
+        return nil, true
+    }
+
+    _, name := lexer.NextIdentifier()
+    names = append(names, name)
+    for lexer.LookAhead() == TOKEN_SEP_COMMA {
+        lexer.NextToken()
+        if lexer.LookAhead() == TOKEN_IDENTIFIER {
+            _, name := lexer.NextIdentifier()
+            names = append(names, name)
+        } else {
+            lexer.NextTokenOfKind(TOKEN_VARARG)
+            isVararg = true
+            break
+        }
+    }
+    return
+}
 
 
 
