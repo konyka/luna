@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:33:46
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:25:12
+* @Last Modified time: 2019-05-04 10:26:25
 */
 
 package parser
@@ -316,6 +316,16 @@ func _parseParList(lexer *Lexer) (names []string, isVararg bool) {
     return
 }
 
-
+/**
+ * tableconstructor ::= ‘{’ [fieldlist] ‘}’
+ */
+func parseTableConstructorExp(lexer *Lexer) *TableConstructorExp {
+    line := lexer.Line()
+    lexer.NextTokenOfKind(TOKEN_SEP_LCURLY)    // {
+    keyExps, valExps := _parseFieldList(lexer) // [fieldlist]
+    lexer.NextTokenOfKind(TOKEN_SEP_RCURLY)    // }
+    lastLine := lexer.Line()
+    return &TableConstructorExp{line, lastLine, keyExps, valExps}
+}
 
 

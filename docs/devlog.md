@@ -8145,9 +8145,17 @@ for循环语句
         return
     }
 
+表构造表达式   
 
-
-
+    // tableconstructor ::= ‘{’ [fieldlist] ‘}’
+    func parseTableConstructorExp(lexer *Lexer) *TableConstructorExp {
+        line := lexer.Line()
+        lexer.NextTokenOfKind(TOKEN_SEP_LCURLY)    // {
+        keyExps, valExps := _parseFieldList(lexer) // [fieldlist]
+        lexer.NextTokenOfKind(TOKEN_SEP_RCURLY)    // }
+        lastLine := lexer.Line()
+        return &TableConstructorExp{line, lastLine, keyExps, valExps}
+    }
 
 
 
