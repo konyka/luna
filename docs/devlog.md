@@ -9843,9 +9843,16 @@ for循环语句
         return proto
     }
 
+    函数原型的NumParams、MaxStackSize、Code 直接获取funcInfo的对应字段就可以。子函数原型则需要
+    调用函数  toProtos 进行转换：
 
-    
-
+    func toProtos(fis []*funcInfo) []*Prototype {
+        protos := make([]*Prototype, len(fis))
+        for i, fi := range fis {
+            protos[i] = toProto(fi)
+        }
+        return protos
+    }
 
 
 

@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 07:31:44
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 07:32:40
+* @Last Modified time: 2019-05-05 07:39:45
 */
 
 
@@ -33,7 +33,13 @@ func toProto(fi *funcInfo) *Prototype {
     return proto
 }
 
-
+func toProtos(fis []*funcInfo) []*Prototype {
+    protos := make([]*Prototype, len(fis))
+    for i, fi := range fis {
+        protos[i] = toProto(fi)
+    }
+    return protos
+}
 
 
 
