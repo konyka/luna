@@ -8217,16 +8217,31 @@ for循环语句
         return nil, exp
     }
 
+    字段分三种情况解析，需要说明的是，去掉了k = v中的语法糖，将其变回["k"] = v。
 
+前缀表达式
 
+    为了避免parse_exp.go文件过长，把前缀表达式相关的解析函数放在单独的文件中。
 
+    compiler/parser/parse_prefix_exp.go，定义解析函数parsePrefixExp
 
+    package parser
 
+    import . "lunago/compiler/ast"
+    import . "lunago/compiler/lexer"
 
+    func parsePrefixExp(lexer *Lexer) Exp {
+        var exp Exp
+        if lexer.LookAhead() == TOKEN_IDENTIFIER {
+            line, name := lexer.NextIdentifier() // Name
+            exp = &NameExp{line, name}
+        } else { // ‘(’ exp ‘)’
+            exp = parseParensExp(lexer)
+        }
+        return _finishPrefixExp(lexer, exp)
+    }
 
-
-
-
+    前缀表达式只能以标识符或者左圆括号开始，所以先前瞻一个token，根据情况解析出标识符或者圆括号表达式，然后调用函数 _finishPrefixExp 完成后续的解析工作。
 
 
 
