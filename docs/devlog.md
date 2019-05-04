@@ -8821,8 +8821,8 @@ Upvalue表
         i := ax<<6 | opcode
         self.insts = append(self.insts, uint32(i))
     }
-    
 
+    为了提高可读性，还需要定义emitMove、emitLoadNil、emitVararg等针对单个指令的方法。
 
 
 
