@@ -7621,10 +7621,16 @@ Chunk和块
         return &LabelStat{name}
     }
 
+    对于goto语句，跳过关键字并记录标签名就可以
 
+    // goto Name
+    func parseGotoStat(lexer *Lexer) *GotoStat {
+        lexer.NextTokenOfKind(TOKEN_KW_GOTO) // goto
+        _, name := lexer.NextIdentifier()    // name
+        return &GotoStat{name}
+    }
 
-
-
+    
 
 
 

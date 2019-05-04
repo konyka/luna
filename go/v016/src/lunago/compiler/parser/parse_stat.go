@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:51:03
+* @Last Modified time: 2019-05-04 08:52:32
 */
 
 package parser
@@ -83,6 +83,14 @@ func parseLabelStat(lexer *Lexer) *LabelStat {
     return &LabelStat{name}
 }
 
+/**
+ * goto Name
+ */
+func parseGotoStat(lexer *Lexer) *GotoStat {
+    lexer.NextTokenOfKind(TOKEN_KW_GOTO) // goto
+    _, name := lexer.NextIdentifier()    // name
+    return &GotoStat{name}
+}
 
 
 
