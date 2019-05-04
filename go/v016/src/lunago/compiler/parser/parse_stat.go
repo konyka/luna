@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:28:03
+* @Last Modified time: 2019-05-04 09:29:31
 */
 
 package parser
@@ -312,5 +312,21 @@ func _finishVarList(lexer *Lexer, var0 Exp) []Exp {
     } // }
     return vars
 }
+
+/**
+ * var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name
+ */
+func _checkVar(lexer *Lexer, exp Exp) Exp {
+    switch exp.(type) {
+    case *NameExp, *TableAccessExp:
+        return exp
+    }
+    lexer.NextTokenOfKind(-1) // trigger error
+    panic("unreachable!")
+}
+
+
+
+
 
 

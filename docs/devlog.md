@@ -7846,7 +7846,7 @@ for循环语句
     }
 
     _finishVarList代码如下：
-    
+
     // varlist ::= var {‘,’ var}
     func _finishVarList(lexer *Lexer, var0 Exp) []Exp {
         vars := []Exp{_checkVar(lexer, var0)}      // var
@@ -7859,6 +7859,17 @@ for循环语句
     }
 
 
+    通过_checkVar确保解析出来的都是var表达式，否则借助词法分析器报错。
+
+    // var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name
+    func _checkVar(lexer *Lexer, exp Exp) Exp {
+        switch exp.(type) {
+        case *NameExp, *TableAccessExp:
+            return exp
+        }
+        lexer.NextTokenOfKind(-1) // trigger error
+        panic("unreachable!")
+    }
 
 
 
