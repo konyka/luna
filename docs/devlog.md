@@ -9604,13 +9604,38 @@ for循环语句
 
     先分配一个临时变量，然后对表达式求值，最后释放临时变量，并生成相应的一元运算符指令就可以了。
 
+    emitUnaryOp位于func_info.go
 
+    // r[a] = op r[b]
+    func (self *funcInfo) emitUnaryOp(op, a, b int) {
+        switch op {
+        case TOKEN_OP_NOT:
+            self.emitABC(OP_NOT, a, b, 0)
+        case TOKEN_OP_BNOT:
+            self.emitABC(OP_BNOT, a, b, 0)
+        case TOKEN_OP_LEN:
+            self.emitABC(OP_LEN, a, b, 0)
+        case TOKEN_OP_UNM:
+            self.emitABC(OP_UNM, a, b, 0)
+        }
+    }   
 
+    二元运算符表达式需要分三种情况处理。对于拼接表达式，语法分析器已经生成了不同的ast节点，循环处理每个操作数（分配临时变量、表达式求值），然后释放临时变量，生成一条concat指令就可以了。
+    拼接表达式的处理函数：
 
+    
+    // r[a] := exp1 .. exp2
+    func cgConcatExp(fi *funcInfo, node *ConcatExp, a int) {
+        for _, subExp := range node.Exps {
+            a := fi.allocReg()
+            cgExp(fi, subExp, a, 1)
+        }
 
-
-
-
+        c := fi.usedRegs - 1
+        b := c - len(node.Exps) + 1
+        fi.freeRegs(c - b + 1)
+        fi.emitABC(OP_CONCAT, a, b, c)
+    }
 
 
 

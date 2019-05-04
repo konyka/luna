@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 22:57:58
+* @Last Modified time: 2019-05-04 23:02:26
 */
 
 
@@ -136,6 +136,18 @@ func cgUnopExp(fi *funcInfo, node *UnopExp, a int) {
     fi.freeReg()
 }
 
+// r[a] := exp1 .. exp2
+func cgConcatExp(fi *funcInfo, node *ConcatExp, a int) {
+    for _, subExp := range node.Exps {
+        a := fi.allocReg()
+        cgExp(fi, subExp, a, 1)
+    }
+
+    c := fi.usedRegs - 1
+    b := c - len(node.Exps) + 1
+    fi.freeRegs(c - b + 1)
+    fi.emitABC(OP_CONCAT, a, b, c)
+}
 
 
 
