@@ -7926,28 +7926,39 @@ for循环语句
     }
 
 
+    去掉冒号语法糖以后，函数名实际上就是一蹿记录访问表达式。记录访问也是语法糖，去掉以后就是一段表索引访问表达式。
+
+解析表达式    
     
+    之前说了怎么使用前瞻和一些技巧来解析语句，不过由于运算符表达式语法存在歧义，所以这个方法并不能直接用来解析表达式，为了套用这个方法，必须借助语义规则，把表达式语法中存在的歧义消除掉，这个语义规则就是lua运算符的优先级和结合性。
 
+    根据运算符和优先级把表达式的语法规则重写
 
+    exp   ::= exp12
+    exp12 ::= exp11 {or exp11}
+    exp11 ::= exp10 {and exp10}
+    exp10 ::= exp9 {(‘<’ | ‘>’ | ‘<=’ | ‘>=’ | ‘~=’ | ‘==’) exp9}
+    exp9  ::= exp8 {‘|’ exp8}
+    exp8  ::= exp7 {‘~’ exp7}
+    exp7  ::= exp6 {‘&’ exp6}
+    exp6  ::= exp5 {(‘<<’ | ‘>>’) exp5}
+    exp5  ::= exp4 {‘..’ exp4}
+    exp4  ::= exp3 {(‘+’ | ‘-’) exp3}
+    exp3  ::= exp2 {(‘*’ | ‘/’ | ‘//’ | ‘%’) exp2}
+    exp2  ::= {(‘not’ | ‘#’ | ‘-’ | ‘~’)} exp1
+    exp1  ::= exp0 {‘^’ exp2}
+    exp0  ::= nil | false | true | Numeral | LiteralString
+            | ‘...’ | functiondef | prefixexp | tableconstructor
 
+    有了重写的语法规则，表达式解析函数也就水到渠成了。
 
+    compiler/parser/parse_exp.go定义parseExp（）函数
 
+    func parseExp(lexer *Lexer) Exp {
+        return parseExp12(lexer)
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
