@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 14:22:11
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 20:51:11
+* @Last Modified time: 2019-05-04 20:59:35
 */
 
 
@@ -43,6 +43,23 @@ func cgLocalFuncDefStat(fi *funcInfo, node *LocalFuncDefStat) {
     r := fi.addLocVar(node.Name)
     cgFuncDefExp(fi, node.Exp, r)
 }
+
+func cgFuncCallStat(fi *funcInfo, node *FuncCallStat) {
+    r := fi.allocReg()
+    cgFuncCallExp(fi, node, r, 0)
+    fi.freeReg()
+}
+
+func cgBreakStat(fi *funcInfo, node *BreakStat) {
+    pc := fi.emitJmp(0, 0)
+    fi.addBreakJmp(pc)
+}
+
+
+
+
+
+
 
 
 

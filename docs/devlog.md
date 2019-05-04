@@ -9037,14 +9037,18 @@ Upvalue表
         r := fi.addLocVar(node.Name)
         cgFuncDefExp(fi, node.Exp, r)
     }
+
+    对于函数调用语句，可以认为是对函数调用表达式进行求值，但是不需要任何返回值，所以处理起来一样简单
+
+     func cgFuncCallStat(fi *funcInfo, node *FuncCallStat) {
+        r := fi.allocReg()
+        cgFuncCallExp(fi, node, r, 0)
+        fi.freeReg()
+    }   
+
+    对于break语句，生成一条jmp指令，并吧地址保存在break表中就可以了，等到块退出以后，在修补跳转的偏移量。break语句的处理代码：
+
     
-
-
-
-
-
-
-
 
 
 
