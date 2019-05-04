@@ -8302,9 +8302,16 @@ for循环语句
     }
 
 
+    可选的方法名由函数 _parseNameExp 解析
 
-
-
+    func _parseNameExp(lexer *Lexer) *StringExp {
+        if lexer.LookAhead() == TOKEN_SEP_COLON {
+            lexer.NextToken()
+            line, name := lexer.NextIdentifier()
+            return &StringExp{line, name}
+        }
+        return nil
+    }
 
 
 

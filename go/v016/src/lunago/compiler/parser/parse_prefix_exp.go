@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 10:36:43
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:49:28
+* @Last Modified time: 2019-05-04 10:51:05
 */
 
 package parser
@@ -83,7 +83,14 @@ func _finishFuncCallExp(lexer *Lexer, prefixExp Exp) *FuncCallExp {
     return &FuncCallExp{line, lastLine, prefixExp, nameExp, args}
 }
 
-
+func _parseNameExp(lexer *Lexer) *StringExp {
+    if lexer.LookAhead() == TOKEN_SEP_COLON {
+        lexer.NextToken()
+        line, name := lexer.NextIdentifier()
+        return &StringExp{line, name}
+    }
+    return nil
+}
 
 
 
