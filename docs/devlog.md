@@ -7488,13 +7488,29 @@ Chunk和块
         }
     }   
 
+    通过词法分析器前瞻下一个token，如果不是return，说明没有返回语句，直接返回nil；否则掉过关键值return，前瞻下一个token，如果返现块已经结束或者分号，那么返回教育没有任何表达式，跳过分号，如果有的话，返回空的Exp列表就可以了，否则调用parseExpList()函数解析表达式序列，并跳过可选的分号
+
+    compiler/parser/parse_exp.go
 
 
+    parseExpList函数
 
+    package parser
 
+    import . "lunago/compiler/ast"
+    import . "lunago/compiler/lexer"
+    import "lunago/number"
 
-
-
+    // explist ::= exp {‘,’ exp}
+    func parseExpList(lexer *Lexer) []Exp {
+        exps := make([]Exp, 0, 4)
+        exps = append(exps, parseExp(lexer))
+        for lexer.LookAhead() == TOKEN_SEP_COMMA {
+            lexer.NextToken()
+            exps = append(exps, parseExp(lexer))
+        }
+        return exps
+    }
 
 
 
