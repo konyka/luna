@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:33:46
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:11:45
+* @Last Modified time: 2019-05-04 10:20:17
 */
 
 package parser
@@ -256,7 +256,16 @@ func parseExp0(lexer *Lexer) Exp {
     }
 }
 
-
+func parseNumberExp(lexer *Lexer) Exp {
+    line, _, token := lexer.NextToken()
+    if i, ok := number.ParseInteger(token); ok {
+        return &IntegerExp{line, i}
+    } else if f, ok := number.ParseFloat(token); ok {
+        return &FloatExp{line, f}
+    } else { // todo
+        panic("not a number: " + token)
+    }
+}
 
 
 

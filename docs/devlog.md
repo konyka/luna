@@ -8088,7 +8088,16 @@ for循环语句
 
     数字字面量表达式的解析函数：
 
-    
+    func parseNumberExp(lexer *Lexer) Exp {
+        line, _, token := lexer.NextToken()
+        if i, ok := number.ParseInteger(token); ok {
+            return &IntegerExp{line, i}
+        } else if f, ok := number.ParseFloat(token); ok {
+            return &FloatExp{line, f}
+        } else { // todo
+            panic("not a number: " + token)
+        }
+    }    
 
 
 
