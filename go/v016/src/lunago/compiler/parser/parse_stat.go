@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:27:24
+* @Last Modified time: 2019-05-04 09:28:03
 */
 
 package parser
@@ -300,6 +300,17 @@ func parseAssignStat(lexer *Lexer, var0 Exp) *AssignStat {
     return &AssignStat{lastLine, varList, expList}
 }
 
-
+/**
+ * varlist ::= var {‘,’ var}
+ */
+func _finishVarList(lexer *Lexer, var0 Exp) []Exp {
+    vars := []Exp{_checkVar(lexer, var0)}      // var
+    for lexer.LookAhead() == TOKEN_SEP_COMMA { // {
+        lexer.NextToken()                          // ,
+        exp := parsePrefixExp(lexer)               // var
+        vars = append(vars, _checkVar(lexer, exp)) //
+    } // }
+    return vars
+}
 
 
