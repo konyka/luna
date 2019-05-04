@@ -8830,13 +8830,18 @@ Upvalue表
         return len(self.insts) - 1
     }   
 
+    fixSbx修复Sbx
+
+
+    func (self *funcInfo) fixSbx(pc, sBx int) {
+        i := self.insts[pc]
+        i = i << 18 >> 18                  // clear sBx
+        i = i | uint32(sBx+MAXARG_sBx)<<14 // reset sBx
+        self.insts[pc] = i
+    }
+
+
     
-
-
-
-
-
-
 
 
 

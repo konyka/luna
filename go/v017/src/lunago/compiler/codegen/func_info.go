@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:43:53
+* @Last Modified time: 2019-05-04 13:44:43
 */
 package codegen
 
@@ -436,6 +436,11 @@ func (self *funcInfo) pc() int {
     return len(self.insts) - 1
 }
 
-
+func (self *funcInfo) fixSbx(pc, sBx int) {
+    i := self.insts[pc]
+    i = i << 18 >> 18                  // clear sBx
+    i = i | uint32(sBx+MAXARG_sBx)<<14 // reset sBx
+    self.insts[pc] = i
+}
 
 
