@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 14:02:04
+* @Last Modified time: 2019-05-04 21:08:30
 */
 package codegen
 
@@ -458,5 +458,13 @@ func newFuncInfo(parent *funcInfo, fd *FuncDefExp) *funcInfo {
         insts:     make([]uint32, 0, 8),
         numParams: len(fd.ParList),
         isVararg:  fd.IsVararg,
+    }
+}
+
+
+func (self *funcInfo) closeOpenUpvals() {
+    a := self.getJmpArgA()
+    if a > 0 {
+        self.emitJmp(a, 0)
     }
 }

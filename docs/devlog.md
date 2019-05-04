@@ -9056,11 +9056,22 @@ Upvalue表
 
     由于do语句本质上就是一个块，作用就是引入新的作用域，所以也不难
 
+     func cgDoStat(fi *funcInfo, node *DoStat) {
+        fi.enterScope(false)    //非循环块
+        cgBlock(fi, node.Block)
+        fi.closeOpenUpvals()
+        fi.exitScope()
+    }   
+
+    当居于变量退出作用域的时候，调用 closeOpenUpvals 把处于开启状态的Upvalue 闭合。如果有需要处理的局部变量，这个方法就会产生一个jmp指令，其操作数A指出了需要处理的第一个局部变量的寄存器索引。代码：
+    compiler/codegen/func_info.go
     
-
-
-
-
+    func (self *funcInfo) closeOpenUpvals() {
+        a := self.getJmpArgA()
+        if a > 0 {
+            self.emitJmp(a, 0)
+        }
+    }
 
 
 

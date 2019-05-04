@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 14:22:11
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 21:02:41
+* @Last Modified time: 2019-05-04 21:03:25
 */
 
 
@@ -57,7 +57,7 @@ func cgBreakStat(fi *funcInfo, node *BreakStat) {
 
 
 func cgDoStat(fi *funcInfo, node *DoStat) {
-    fi.enterScope(false)
+    fi.enterScope(false)    //非循环块
     cgBlock(fi, node.Block)
     fi.closeOpenUpvals()
     fi.exitScope()
