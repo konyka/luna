@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:29:31
+* @Last Modified time: 2019-05-04 09:31:37
 */
 
 package parser
@@ -326,6 +326,29 @@ func _checkVar(lexer *Lexer, exp Exp) Exp {
 }
 
 
+/**
+ *function funcname funcbody
+ *funcname ::= Name {‘.’ Name} [‘:’ Name]
+ *funcbody ::= ‘(’ [parlist] ‘)’ block end
+ * parlist ::= namelist [‘,’ ‘...’] | ‘...’
+ * namelist ::= Name {‘,’ Name}
+ */
+func parseFuncDefStat(lexer *Lexer) *AssignStat {
+    lexer.NextTokenOfKind(TOKEN_KW_FUNCTION) // function
+    fnExp, hasColon := _parseFuncName(lexer) // funcname
+    fdExp := parseFuncDefExp(lexer)          // funcbody
+    if hasColon {                            // insert self
+        fdExp.ParList = append(fdExp.ParList, "")
+        copy(fdExp.ParList[1:], fdExp.ParList)
+        fdExp.ParList[0] = "self"
+    }
+
+    return &AssignStat{
+        LastLine: fdExp.Line,
+        VarList:  []Exp{fnExp},
+        ExpList:  []Exp{fdExp},
+    }
+}
 
 
 

@@ -7871,10 +7871,31 @@ for循环语句
         panic("unreachable!")
     }
 
+非局部函数定义语句
 
+    非局部函数定义语句的解析代码
 
+    // function funcname funcbody
+    // funcname ::= Name {‘.’ Name} [‘:’ Name]
+    // funcbody ::= ‘(’ [parlist] ‘)’ block end
+    // parlist ::= namelist [‘,’ ‘...’] | ‘...’
+    // namelist ::= Name {‘,’ Name}
+    func parseFuncDefStat(lexer *Lexer) *AssignStat {
+        lexer.NextTokenOfKind(TOKEN_KW_FUNCTION) // function
+        fnExp, hasColon := _parseFuncName(lexer) // funcname
+        fdExp := parseFuncDefExp(lexer)          // funcbody
+        if hasColon {                            // insert self
+            fdExp.ParList = append(fdExp.ParList, "")
+            copy(fdExp.ParList[1:], fdExp.ParList)
+            fdExp.ParList[0] = "self"
+        }
 
-
+        return &AssignStat{
+            LastLine: fdExp.Line,
+            VarList:  []Exp{fnExp},
+            ExpList:  []Exp{fdExp},
+        }
+    }
 
 
 
