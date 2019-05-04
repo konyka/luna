@@ -7605,9 +7605,13 @@ Chunk和块
 
     对于break语句，则掉过关键字并记录行号就可以了
 
+     // break
+    func parseBreakStat(lexer *Lexer) *BreakStat {
+        lexer.NextTokenOfKind(TOKEN_KW_BREAK)
+        return &BreakStat{lexer.Line()}
+    }   
+
     
-
-
 
 
 

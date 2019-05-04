@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:48:53
+* @Last Modified time: 2019-05-04 08:49:54
 */
 
 package parser
@@ -65,7 +65,13 @@ func parseEmptyStat(lexer *Lexer) *EmptyStat {
 }
 
 
-
+/**
+ * break
+ */
+func parseBreakStat(lexer *Lexer) *BreakStat {
+    lexer.NextTokenOfKind(TOKEN_KW_BREAK)
+    return &BreakStat{lexer.Line()}
+}
 
 
 
