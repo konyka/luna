@@ -7958,51 +7958,137 @@ for循环语句
         return parseExp12(lexer)
     }
 
+    因为运算符分12级，所以需要编写parseExp12到parseExp1 这12个函数。
+
+
+运算符表达式
+
+    逻辑或表达式的解析函数
+
+    // x or y
+    func parseExp12(lexer *Lexer) Exp {
+        exp := parseExp11(lexer)
+        for lexer.LookAhead() == TOKEN_OP_OR {
+            line, op, _ := lexer.NextToken()
+            lor := &BinopExp{line, op, exp, parseExp11(lexer)}
+            exp = optimizeLogicalOr(lor)
+        }
+        return exp
+    }
+
+
+    在二元运算符中，只有拼接“..” 和乘方“^”具有右结合性，其他均具有左结合性。由于逻辑或运算符具有左结合性，所以在循环里面调用了函数
+    parseExp11（）解析更好优先级的运算符表达式。比如a or b or c,解析后的ast如下
+
+            or
+         or          
+      a     b     c
+
+    对比一下，看看成方混算符表达式的解析函数
+
+    /**
+     * x ^ y exp0 {'^' exp2}
+     */
+    func parseExp1(lexer *Lexer) Exp { // pow is right associative
+        exp := parseExp0(lexer)
+        if lexer.LookAhead() == TOKEN_OP_POW {
+            line, op, _ := lexer.NextToken()
+            exp = &BinopExp{line, op, exp, parseExp2(lexer)}
+        }
+        return optimizePow(exp)
+    }
+
+    因为乘方运算符具有右结合性，所以函数parseExp1（）递归调用自己，解析后面的乘方运算符表达式。
+    以a ^ b ^ c为例，解析后的ast如下
+
+                ^
+                  ^
+             a   b  c     
+
+
+    一元运算符的解析函数
+
+    /**
+     * unary {(‘not’ | ‘#’ | ‘-’ | ‘~’)} exp1
+     */
+    func parseExp2(lexer *Lexer) Exp {
+        switch lexer.LookAhead() {
+        case TOKEN_OP_UNM, TOKEN_OP_BNOT, TOKEN_OP_LEN, TOKEN_OP_NOT:
+            line, op, _ := lexer.NextToken()
+            exp := &UnopExp{line, op, parseExp2(lexer)}
+            return optimizeUnaryOp(exp)
+        }
+        return parseExp1(lexer)
+    }
+
+
+    可以说一元运算符也具有右结合性，所以parseExp2需要调用自身解析后面的一段怒算符表达式。
+
+    拼接运算符表达式的解析函数
+
+    /**
+     * a .. b exp4 {‘..’ exp4}
+     */
+    func parseExp5(lexer *Lexer) Exp {
+        exp := parseExp4(lexer)
+        if lexer.LookAhead() != TOKEN_OP_CONCAT {
+            return exp
+        }
+
+        line := 0
+        exps := []Exp{exp}
+        for lexer.LookAhead() == TOKEN_OP_CONCAT {
+            line, _, _ = lexer.NextToken()
+            exps = append(exps, parseExp4(lexer))
+        }
+        return &ConcatExp{line, exps}
+    }
+
+    虽然凭借运算符也具有右结合性，不过由于其对应的lua虚拟机指令CONCAT比较特别，所以对它进行了特殊的处理。对于拼接运算符表达式，解析生成的并不是二叉树，而是多叉树，比如a.. b .. c,解析后ast如下
+
+                ..
+
+            a    b    c
+            
+     非运算符表达式           
+
+     运算符表达式之外额其他表达式由parseExp0解析
+
+     func parseExp0(lexer *Lexer) Exp {
+        switch lexer.LookAhead() {
+        case TOKEN_VARARG: // ...
+            line, _, _ := lexer.NextToken()
+            return &VarargExp{line}
+        case TOKEN_KW_NIL: // nil
+            line, _, _ := lexer.NextToken()
+            return &NilExp{line}
+        case TOKEN_KW_TRUE: // true
+            line, _, _ := lexer.NextToken()
+            return &TrueExp{line}
+        case TOKEN_KW_FALSE: // false
+            line, _, _ := lexer.NextToken()
+            return &FalseExp{line}
+        case TOKEN_STRING: // LiteralString
+            line, _, token := lexer.NextToken()
+            return &StringExp{line, token}
+        case TOKEN_NUMBER: // Numeral
+            return parseNumberExp(lexer)
+        case TOKEN_SEP_LCURLY: // tableconstructor
+            return parseTableConstructorExp(lexer)
+        case TOKEN_KW_FUNCTION: // functiondef
+            lexer.NextToken()
+            return parseFuncDefExp(lexer)
+        default: // prefixexp
+            return parsePrefixExp(lexer)
+        }
+    }
+
+
+    和语句类似，前瞻一个token来决定具体要解析哪种表达式，由于vararg和非数字字面量表达式较为简单，所以直接写在了case中。
+
+    数字字面量表达式的解析函数：
+
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
