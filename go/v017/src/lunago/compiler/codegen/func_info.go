@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:12:50
+* @Last Modified time: 2019-05-04 13:15:19
 */
 package codegen
 
@@ -141,13 +141,23 @@ func (self *funcInfo) slotOfLocVar(name string) int {
 }
 
 /**
- * [func 退出作用域]
+ * [func exitScope，在退出作用域的时候修复调转指令]
  * @Author   konyka
  * @DateTime 2019-05-04T12:54:36+0800
  * @param    {[type]}                 self *funcInfo)    exitScope( [description]
  * @return   {[type]}                      [description]
  */
 func (self *funcInfo) exitScope() {
+    pendingBreakJmps := self.breaks[len(self.breaks)-1]
+    self.breaks = self.breaks[:len(self.breaks)-1]
+
+    a := self.getJmpArgA()
+    for _, pc := range pendingBreakJmps {
+        sBx := self.pc() - pc
+        i := (sBx+MAXARG_sBx)<<14 | a<<6 | OP_JMP
+        self.insts[pc] = uint32(i)
+    }
+
     self.scopeLv--
     for _, locVar := range self.locNames {
         if locVar.scopeLv > self.scopeLv { // out of scope

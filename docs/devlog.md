@@ -8698,7 +8698,7 @@ removeLocVar中
 
     func (self *funcInfo) addBreakJmp(pc int) {
         for i := self.scopeLv; i >= 0; i-- {
-            if self.breaks[i] != nil { // breakable
+            if self.breaks[i] != nil { // breakable 循环块
                 self.breaks[i] = append(self.breaks[i], pc)
                 return
             }
@@ -8707,7 +8707,26 @@ removeLocVar中
         panic("<break> at line ? not inside a loop!")
     }
 
+    
 
+    func (self *funcInfo) exitScope() {
+        pendingBreakJmps := self.breaks[len(self.breaks)-1]
+        self.breaks = self.breaks[:len(self.breaks)-1]
+
+        a := self.getJmpArgA()
+        for _, pc := range pendingBreakJmps {
+            sBx := self.pc() - pc
+            i := (sBx+MAXARG_sBx)<<14 | a<<6 | OP_JMP
+            self.insts[pc] = uint32(i)
+        }
+
+        self.scopeLv--
+        for _, locVar := range self.locNames {
+            if locVar.scopeLv > self.scopeLv { // out of scope
+                self.removeLocVar(locVar)
+            }
+        }
+    }    
 
 
 
