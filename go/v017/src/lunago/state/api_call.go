@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-30 18:39:45
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 10:33:22
+* @Last Modified time: 2019-05-05 07:53:46
 */
 
 package state
@@ -10,20 +10,26 @@ package state
 import "lunago/binchunk"
 import "lunago/vm"
 import . "lunago/api"
-
+import "lunago/compiler"
 
 /**
  * 加载chunk
  */
 func (self *luaState) Load(chunk []byte, chunkName, mode string) int {
-    proto := binchunk.Undump(chunk) // todo
+    var proto *binchunk.Prototype
+    if binchunk.IsBinaryChunk(chunk) {
+        proto = binchunk.Undump(chunk)
+    } else {
+        proto = compiler.Compile(string(chunk), chunkName)
+    }
+
     c := newLuaClosure(proto)
     self.stack.push(c)
-    if len(proto.Upvalues) > 0 {    //set _ENV
+    if len(proto.Upvalues) > 0 {
         env := self.registry.get(LUA_RIDX_GLOBALS)
         c.upvals[0] = &upvalue{&env}
     }
-    return 0
+    return LUA_OK
 }
 
 /**

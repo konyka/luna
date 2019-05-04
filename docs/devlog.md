@@ -9920,10 +9920,28 @@ for循环语句
         return codegen.GenProto(ast)
     }
 
+    state/api_call.go,增加import：
 
+    import "lunago/compiler"
 
+    然后修改Load（）方法，让其可以加载、编译lua源代码：
 
+    func (self *luaState) Load(chunk []byte, chunkName, mode string) int {
+        var proto *binchunk.Prototype
+        if binchunk.IsBinaryChunk(chunk) {
+            proto = binchunk.Undump(chunk)
+        } else {
+            proto = compiler.Compile(string(chunk), chunkName)
+        }
 
+        c := newLuaClosure(proto)
+        self.stack.push(c)
+        if len(proto.Upvalues) > 0 {
+            env := self.registry.get(LUA_RIDX_GLOBALS)
+            c.upvals[0] = &upvalue{&env}
+        }
+        return LUA_OK
+    }    
 
 
 
