@@ -9880,8 +9880,24 @@ for循环语句
         return upvals
     }
 
+    compiler/codegen/code_gen.go，定义函数 GenProto,将中间结构和处理过程封装起来 ：
 
+    package codegen
 
+    import . "lunago/binchunk"
+    import . "lunago/compiler/ast"
+
+    func GenProto(chunk *Block) *Prototype {
+        fd := &FuncDefExp{
+            IsVararg: true,
+            Block:    chunk,
+        }
+
+        fi := newFuncInfo(nil, fd)
+        fi.addLocVar("_ENV")
+        cgFuncDefExp(fi, fd, 0)
+        return toProto(fi.subFuncs[0])
+    }
 
 
 
