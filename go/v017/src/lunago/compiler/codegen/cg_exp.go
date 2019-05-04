@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 23:18:24
+* @Last Modified time: 2019-05-04 23:19:37
 */
 
 
@@ -210,7 +210,35 @@ func cgFuncCallExp(fi *funcInfo, node *FuncCallExp, a, n int) {
     fi.emitCall(a, nArgs, n)
 }
 
+func prepFuncCall(fi *funcInfo, node *FuncCallExp, a int) int {
+    nArgs := len(node.Args)
+    lastArgIsVarargOrFuncCall := false
 
+    cgExp(fi, node.PrefixExp, a, 1)
+    if node.NameExp != nil {
+        c := 0x100 + fi.indexOfConstant(node.NameExp.Str)
+        fi.emitSelf(a, a, c)
+    }
+    for i, arg := range node.Args {
+        tmp := fi.allocReg()
+        if i == nArgs-1 && isVarargOrFuncCall(arg) {
+            lastArgIsVarargOrFuncCall = true
+            cgExp(fi, arg, tmp, -1)
+        } else {
+            cgExp(fi, arg, tmp, 1)
+        }
+    }
+    fi.freeRegs(nArgs)
+
+    if node.NameExp != nil {
+        nArgs++
+    }
+    if lastArgIsVarargOrFuncCall {
+        nArgs = -1
+    }
+
+    return nArgs
+}
 
 
 
