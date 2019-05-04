@@ -8800,9 +8800,28 @@ Upvalue表
         //to do
     }     
 
+    直接存储编码后的指令，然后给结构体funcInfo添加一些方法，用来生成四种编码模式的指令。
+
+    func (self *funcInfo) emitABC(opcode, a, b, c int) {
+        i := b<<23 | c<<14 | a<<6 | opcode
+        self.insts = append(self.insts, uint32(i))
+    }
+
+    func (self *funcInfo) emitABx(opcode, a, bx int) {
+        i := bx<<14 | a<<6 | opcode
+        self.insts = append(self.insts, uint32(i))
+    }
+
+    func (self *funcInfo) emitAsBx(opcode, a, b int) {
+        i := (b+MAXARG_sBx)<<14 | a<<6 | opcode
+        self.insts = append(self.insts, uint32(i))
+    }
+
+    func (self *funcInfo) emitAx(opcode, ax int) {
+        i := ax<<6 | opcode
+        self.insts = append(self.insts, uint32(i))
+    }
     
-
-
 
 
 

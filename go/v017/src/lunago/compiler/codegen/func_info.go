@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:29:17
+* @Last Modified time: 2019-05-04 13:34:08
 */
 package codegen
 
@@ -238,6 +238,25 @@ func (self *funcInfo) indexOfUpval(name string) int {
     return -1
 }
 
+func (self *funcInfo) emitABC(opcode, a, b, c int) {
+    i := b<<23 | c<<14 | a<<6 | opcode
+    self.insts = append(self.insts, uint32(i))
+}
+
+func (self *funcInfo) emitABx(opcode, a, bx int) {
+    i := bx<<14 | a<<6 | opcode
+    self.insts = append(self.insts, uint32(i))
+}
+
+func (self *funcInfo) emitAsBx(opcode, a, b int) {
+    i := (b+MAXARG_sBx)<<14 | a<<6 | opcode
+    self.insts = append(self.insts, uint32(i))
+}
+
+func (self *funcInfo) emitAx(opcode, ax int) {
+    i := ax<<6 | opcode
+    self.insts = append(self.insts, uint32(i))
+}
 
 
 
