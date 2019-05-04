@@ -8545,16 +8545,25 @@ for循环语句
     allocRegs分配连续的n个寄存器，返回第一个寄存器的索引：
 
     func (self *funcInfo) allocRegs(n int) int {
-    if n <= 0 {
-        panic("n <= 0 !")
+        if n <= 0 {
+            panic("n <= 0 !")
+        }
+        for i := 0; i < n; i++ {
+            self.allocReg()
+        }
+        return self.usedRegs - n
     }
-    for i := 0; i < n; i++ {
-        self.allocReg()
+
+    
+
+    func (self *funcInfo) freeRegs(n int) {
+        if n < 0 {
+            panic("n < 0 !")
+        }
+        for i := 0; i < n; i++ {
+            self.freeReg()
+        }
     }
-    return self.usedRegs - n
-}
-
-
 
 
 

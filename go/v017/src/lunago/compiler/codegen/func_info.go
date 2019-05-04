@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 12:12:09
+* @Last Modified time: 2019-05-04 12:15:02
 */
 package codegen
 
@@ -31,6 +31,9 @@ func (self *funcInfo) indexOfConstant(k interface{}) int {
 
 /* registers */
 
+/**
+ * allocReg分配一个寄存器，必要的时候更新最大寄存器数量，并返回寄存器的索引
+ */
 func (self *funcInfo) allocReg() int {
     self.usedRegs++
     if self.usedRegs >= 255 {
@@ -42,7 +45,13 @@ func (self *funcInfo) allocReg() int {
     return self.usedRegs - 1
 }
 
-
+/**
+ * [func freeReg回收最近分配的寄存器]
+ * @Author   konyka
+ * @DateTime 2019-05-04T12:12:38+0800
+ * @param    {[type]}                 self *funcInfo)    freeReg( [description]
+ * @return   {[type]}                      [description]
+ */
 func (self *funcInfo) freeReg() {
     if self.usedRegs <= 0 {
         panic("usedRegs <= 0 !")
@@ -50,6 +59,9 @@ func (self *funcInfo) freeReg() {
     self.usedRegs--
 }
 
+/**
+ * allocRegs分配连续的n个寄存器，返回第一个寄存器的索引
+ */
 func (self *funcInfo) allocRegs(n int) int {
     if n <= 0 {
         panic("n <= 0 !")
@@ -60,7 +72,21 @@ func (self *funcInfo) allocRegs(n int) int {
     return self.usedRegs - n
 }
 
-
+/**
+ * [func freeRegs方法回收最近分配的n个寄存器 ]
+ * @Author   konyka
+ * @DateTime 2019-05-04T12:14:35+0800
+ * @param    {[type]}                 self *funcInfo)    freeRegs(n int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *funcInfo) freeRegs(n int) {
+    if n < 0 {
+        panic("n < 0 !")
+    }
+    for i := 0; i < n; i++ {
+        self.freeReg()
+    }
+}
 
 
 
