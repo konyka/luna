@@ -9900,13 +9900,25 @@ for循环语句
     }
 
 
+    代码生成器基本就完成了。
 
 
+编译器的使用
 
+    词法分析器、语法分析器、代码生成器都已经实现好
 
+    compiler/compiler.go ，定义函数 Compile()  ，将语法分析和代码生成阶段整合在一起：
 
+    package compiler
 
+    import "lunago/binchunk"
+    import "lunago/compiler/codegen"
+    import "lunago/compiler/parser"
 
+    func Compile(chunk, chunkName string) *binchunk.Prototype {
+        ast := parser.Parse(chunk, chunkName)
+        return codegen.GenProto(ast)
+    }
 
 
 
