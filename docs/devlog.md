@@ -8824,11 +8824,13 @@ Upvalue表
 
     为了提高可读性，还需要定义emitMove、emitLoadNil、emitVararg等针对单个指令的方法。
 
+    为了方便跳转指令的生成，定义个pc方法，这个方法返回已经生成的最后一条指令的成功女婿计数器（program  counter），也就是该指令的索引。
 
+     func (self *funcInfo) pc() int {
+        return len(self.insts) - 1
+    }   
 
-
-
-
+    
 
 
 

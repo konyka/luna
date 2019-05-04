@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:36:40
+* @Last Modified time: 2019-05-04 13:43:53
 */
 package codegen
 
@@ -430,7 +430,11 @@ func (self *funcInfo) emitBinaryOp(op, a, b, c int) {
 }
 
 
+/* code */
 
+func (self *funcInfo) pc() int {
+    return len(self.insts) - 1
+}
 
 
 
