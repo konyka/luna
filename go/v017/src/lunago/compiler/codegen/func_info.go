@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 14:00:16
+* @Last Modified time: 2019-05-04 14:02:04
 */
 package codegen
 
@@ -446,4 +446,17 @@ func (self *funcInfo) fixSbx(pc, sBx int) {
     self.insts[pc] = i
 }
 
-
+func newFuncInfo(parent *funcInfo, fd *FuncDefExp) *funcInfo {
+    return &funcInfo{
+        parent:    parent,
+        subFuncs:  []*funcInfo{},
+        locVars:   make([]*locVarInfo, 0, 8),
+        locNames:  map[string]*locVarInfo{},
+        upvalues:  map[string]upvalInfo{},
+        constants: map[interface{}]int{},
+        breaks:    make([][]int, 1),
+        insts:     make([]uint32, 0, 8),
+        numParams: len(fd.ParList),
+        isVararg:  fd.IsVararg,
+    }
+}

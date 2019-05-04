@@ -8860,10 +8860,23 @@ Upvalue表
         //to do
     }      
 
+    subFuncs用于存放子函数的信息。其他两个字段是生成函数原型的时候所必须的，也需要记录下来。
+    在定义一个newFuncInfo函数，用来创建结构体实例
 
-
-
-
+     func newFuncInfo(parent *funcInfo, fd *FuncDefExp) *funcInfo {
+        return &funcInfo{
+            parent:    parent,
+            subFuncs:  []*funcInfo{},
+            locVars:   make([]*locVarInfo, 0, 8),
+            locNames:  map[string]*locVarInfo{},
+            upvalues:  map[string]upvalInfo{},
+            constants: map[interface{}]int{},
+            breaks:    make([][]int, 1),
+            insts:     make([]uint32, 0, 8),
+            numParams: len(fd.ParList),
+            isVararg:  fd.IsVararg,
+        }
+    }   
 
 
 
