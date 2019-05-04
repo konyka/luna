@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 23:04:22
+* @Last Modified time: 2019-05-04 23:13:53
 */
 
 
@@ -179,7 +179,20 @@ func cgBinopExp(fi *funcInfo, node *BinopExp, a int) {
 }
 
 
-
+// r[a] := name
+func cgNameExp(fi *funcInfo, node *NameExp, a int) {
+    if r := fi.slotOfLocVar(node.Name); r >= 0 {
+        fi.emitMove(a, r)
+    } else if idx := fi.indexOfUpval(node.Name); idx >= 0 {
+        fi.emitGetUpval(a, idx)
+    } else { // x => _ENV['x']
+        taExp := &TableAccessExp{
+            PrefixExp: &NameExp{0, "_ENV"},
+            KeyExp:    &StringExp{0, node.Name},
+        }
+        cgTableAccessExp(fi, taExp, a)
+    }
+}
 
 
 

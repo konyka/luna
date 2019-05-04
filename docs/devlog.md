@@ -9730,11 +9730,24 @@ for循环语句
     }
 
 
+名称和表访问表达式
 
+    名称表达式的求值结果可能是局部变量、Upvalue或者全局变量，如下是处理函数
 
-
-
-
+    // r[a] := name
+    func cgNameExp(fi *funcInfo, node *NameExp, a int) {
+        if r := fi.slotOfLocVar(node.Name); r >= 0 {
+            fi.emitMove(a, r)
+        } else if idx := fi.indexOfUpval(node.Name); idx >= 0 {
+            fi.emitGetUpval(a, idx)
+        } else { // x => _ENV['x']
+            taExp := &TableAccessExp{
+                PrefixExp: &NameExp{0, "_ENV"},
+                KeyExp:    &StringExp{0, node.Name},
+            }
+            cgTableAccessExp(fi, taExp, a)
+        }
+    }
 
 
 
