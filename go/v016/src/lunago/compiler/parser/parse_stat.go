@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:54:04
+* @Last Modified time: 2019-05-04 08:55:00
 */
 
 package parser
@@ -102,4 +102,14 @@ func parseDoStat(lexer *Lexer) *DoStat {
     return &DoStat{block}
 }
 
-
+/**
+ * while exp do block end
+ */
+func parseWhileStat(lexer *Lexer) *WhileStat {
+    lexer.NextTokenOfKind(TOKEN_KW_WHILE) // while
+    exp := parseExp(lexer)                // exp
+    lexer.NextTokenOfKind(TOKEN_KW_DO)    // do
+    block := parseBlock(lexer)            // block
+    lexer.NextTokenOfKind(TOKEN_KW_END)   // end
+    return &WhileStat{exp, block}
+}

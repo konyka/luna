@@ -7640,11 +7640,19 @@ Chunk和块
         return &DoStat{block}
     }
 
+    while语句解析
 
+    // while exp do block end
+    func parseWhileStat(lexer *Lexer) *WhileStat {
+        lexer.NextTokenOfKind(TOKEN_KW_WHILE) // while
+        exp := parseExp(lexer)                // exp
+        lexer.NextTokenOfKind(TOKEN_KW_DO)    // do
+        block := parseBlock(lexer)            // block
+        lexer.NextTokenOfKind(TOKEN_KW_END)   // end
+        return &WhileStat{exp, block}
+    }
 
-
-
-
+    
 
 
 
