@@ -8451,29 +8451,60 @@ for循环语句
     $ go run main.go helloworld.lua 
 {"LastLine":6,"Stats":[{"Line":6,"LastLine":6,"PrefixExp":{"Line":6,"Name":"print"},"NameExp":null,"Args":[{"Line":6,"Str":"hello world！！！"}]}],"RetExps":null}
 
+============
 
 
+代码生成
+
+有了语法分析器，就可以把lua源代码解析成一棵抽象语法树ast,进一步处理，利用它就可以生成lua字节码和函数原型，并最终输出二进制chunk文件。
 
 
+定义funcInfo结构体
 
+    每个lua函数都会被编译为函数原型存放在二进制chunk中，另外lua编译器还会生成一个main函数。以后的任务就是编写代码生成器（“代码”，在这里指的是存放在函数原型里面的lua虚拟机的字节码），把语法分析器输出的ast转换为函数原型。为了简单起见，把代码生成分成两个阶段：
 
+    1、对ast进行处理，生成自定义的内部结构
+    2、把内部的结构转换为函数原型
 
+    compiler/codegen/func_info.go
 
+    定义用来比奥市函数便捷结果的数据结构：
 
+    package codegen
 
+    import . "lunago/compiler/ast"
+    import . "lunago/compiler/lexer"
+    import . "lunago/vm"
 
+    type funcInfo struct {
+        //to do
+    }
 
+常量表    
+    
+    每个函数原型都有自己的常量表，里面存放函数体中出现的nil、布尔、数字或者字符串字面量。
+    添加字段，用来表示常量表
 
+    type funcInfo struct {
+        constants map[interface{}]int
+        //to do
+    }
 
+    为了便于查找，使用了map来存储常量，其中key是常量值，value是常量在表中的索引。给结构体定义一个方法：
 
+    /* constants */
 
+    func (self *funcInfo) indexOfConstant(k interface{}) int {
+        if idx, found := self.constants[k]; found {
+            return idx
+        }
 
+        idx := len(self.constants)
+        self.constants[k] = idx
+        return idx
+    }
 
-
-
-
-
-
+    该方法返回常量在表总的索引，
 
 
 
