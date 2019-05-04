@@ -8582,15 +8582,32 @@ for循环语句
         captured bool
     }
 
-    其中字段prev使结构体locVarInfo成为单项链表的节点。
+    其中字段prev使结构体locVarInfo成为单项链表的节点。name记录局部变量名，scopeLv记录记不变量所在的作用域层次，slot记录与局部变量绑定的寄存器列表，captured表示局部变量是否被闭包所捕获。
+
+    修改结构体funcInfo，增加三个字段
+
+    type funcInfo struct {
+         constants map[interface{}]int
+         usedRegs  int
+         maxRegs   int
+         scopeLv   int
+         locVars   []*locVarInfo
+         locNames  map[string]*locVarInfo
+        //to do
+    }
 
 
+    其中scopeLv记录当前作用域的层次，locVars按照顺序记录函数内部声明的全部局部变量，locNames记录当前生效的局部变量。作用域层次从0开始，没今日一个作用域就加1。
 
+    enterScope 进入新的作用域
 
+    /* lexical scope */
 
+    func (self *funcInfo) enterScope() {
+        self.scopeLv++
+    }
 
-
-
+    
 
 
 

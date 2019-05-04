@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 12:22:08
+* @Last Modified time: 2019-05-04 12:37:18
 */
 package codegen
 
@@ -14,6 +14,9 @@ type funcInfo struct {
     constants map[interface{}]int
     usedRegs  int
     maxRegs   int
+    scopeLv   int
+    locVars   []*locVarInfo
+    locNames  map[string]*locVarInfo
     //to do
 }
 
@@ -97,7 +100,11 @@ func (self *funcInfo) freeRegs(n int) {
 }
 
 
+/* lexical scope */
 
+func (self *funcInfo) enterScope() {
+    self.scopeLv++
+}
 
 
 
