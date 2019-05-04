@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 10:36:43
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:51:05
+* @Last Modified time: 2019-05-04 10:52:25
 */
 
 package parser
@@ -93,7 +93,29 @@ func _parseNameExp(lexer *Lexer) *StringExp {
 }
 
 
-
+/**
+ * args ::=  ‘(’ [explist] ‘)’ | tableconstructor | LiteralString
+ * @Author   konyka
+ * @DateTime 2019-05-04T10:52:25+0800
+ * @param    {[type]}                 lexer *Lexer)       (args []Exp [description]
+ * @return   {[type]}                       [description]
+ */
+func _parseArgs(lexer *Lexer) (args []Exp) {
+    switch lexer.LookAhead() {
+    case TOKEN_SEP_LPAREN: // ‘(’ [explist] ‘)’
+        lexer.NextToken() // TOKEN_SEP_LPAREN
+        if lexer.LookAhead() != TOKEN_SEP_RPAREN {
+            args = parseExpList(lexer)
+        }
+        lexer.NextTokenOfKind(TOKEN_SEP_RPAREN)
+    case TOKEN_SEP_LCURLY: // ‘{’ [fieldlist] ‘}’
+        args = []Exp{parseTableConstructorExp(lexer)}
+    default: // LiteralString
+        line, str := lexer.NextTokenOfKind(TOKEN_STRING)
+        args = []Exp{&StringExp{line, str}}
+    }
+    return
+}
 
 
 

@@ -8313,9 +8313,25 @@ for循环语句
         return nil
     }
 
+    参数列表由函数解析
 
-
-
+    // args ::=  ‘(’ [explist] ‘)’ | tableconstructor | LiteralString
+    func _parseArgs(lexer *Lexer) (args []Exp) {
+        switch lexer.LookAhead() {
+        case TOKEN_SEP_LPAREN: // ‘(’ [explist] ‘)’
+            lexer.NextToken() // TOKEN_SEP_LPAREN
+            if lexer.LookAhead() != TOKEN_SEP_RPAREN {
+                args = parseExpList(lexer)
+            }
+            lexer.NextTokenOfKind(TOKEN_SEP_RPAREN)
+        case TOKEN_SEP_LCURLY: // ‘{’ [fieldlist] ‘}’
+            args = []Exp{parseTableConstructorExp(lexer)}
+        default: // LiteralString
+            line, str := lexer.NextTokenOfKind(TOKEN_STRING)
+            args = []Exp{&StringExp{line, str}}
+        }
+        return
+    }
 
 
 
