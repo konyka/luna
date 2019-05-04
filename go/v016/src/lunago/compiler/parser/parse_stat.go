@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:00:07
+* @Last Modified time: 2019-05-04 09:03:00
 */
 
 package parser
@@ -125,7 +125,9 @@ func parseRepeatStat(lexer *Lexer) *RepeatStat {
     return &RepeatStat{block, exp}
 }
 
-// if exp then block {elseif exp then block} [else block] end
+/**
+ * if exp then block {elseif exp then block} [else block] end
+ */
 func parseIfStat(lexer *Lexer) *IfStat {
     exps := make([]Exp, 0, 4)
     blocks := make([]*Block, 0, 4)
@@ -154,6 +156,19 @@ func parseIfStat(lexer *Lexer) *IfStat {
 }
 
 
+/**
+ * for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end
+ * for namelist in explist do block end
+ */
+func parseForStat(lexer *Lexer) Stat {
+    lineOfFor, _ := lexer.NextTokenOfKind(TOKEN_KW_FOR)
+    _, name := lexer.NextIdentifier()
+    if lexer.LookAhead() == TOKEN_OP_ASSIGN {
+        return _finishForNumStat(lexer, lineOfFor, name)
+    } else {
+        return _finishForInStat(lexer, name)
+    }
+}
 
 
 

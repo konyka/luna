@@ -7698,18 +7698,28 @@ if语句
         return &IfStat{exps, blocks}
     }
 
+    按照步骤解析额每个语法元素就可以了，需要说明的是，为了简化代码生成器，把最后可选的else块换成了elseif块
+
+for循环语句    
+
+    lua有两种for循环：数值for和通用for循环。
+
+    定义for循环语句的解析函数
+
+    // for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end
+    // for namelist in explist do block end
+    func parseForStat(lexer *Lexer) Stat {
+        lineOfFor, _ := lexer.NextTokenOfKind(TOKEN_KW_FOR)
+        _, name := lexer.NextIdentifier()
+        if lexer.LookAhead() == TOKEN_OP_ASSIGN {
+            return _finishForNumStat(lexer, lineOfFor, name)
+        } else {
+            return _finishForInStat(lexer, name)
+        }
+    }
 
 
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
