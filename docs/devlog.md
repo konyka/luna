@@ -8633,8 +8633,16 @@ for循环语句
         return -1
     }
 
-
-
+    exitScope退出作用域
+    
+    func (self *funcInfo) exitScope() {
+    self.scopeLv--
+    for _, locVar := range self.locNames {
+        if locVar.scopeLv > self.scopeLv { // out of scope
+            self.removeLocVar(locVar)
+        }
+    }
+}
 
 
 

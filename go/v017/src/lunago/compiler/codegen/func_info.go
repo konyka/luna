@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 12:53:21
+* @Last Modified time: 2019-05-04 12:55:12
 */
 package codegen
 
@@ -133,7 +133,21 @@ func (self *funcInfo) slotOfLocVar(name string) int {
     return -1
 }
 
-
+/**
+ * [func 退出作用域]
+ * @Author   konyka
+ * @DateTime 2019-05-04T12:54:36+0800
+ * @param    {[type]}                 self *funcInfo)    exitScope( [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *funcInfo) exitScope() {
+    self.scopeLv--
+    for _, locVar := range self.locNames {
+        if locVar.scopeLv > self.scopeLv { // out of scope
+            self.removeLocVar(locVar)
+        }
+    }
+}
 
 
 
