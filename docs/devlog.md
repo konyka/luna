@@ -8607,7 +8607,21 @@ for循环语句
         self.scopeLv++
     }
 
-    
+    addLocVar在当前作用域里面增加一个局部变量，返回其分配的寄存器索引
+
+    func (self *funcInfo) addLocVar(name string) int {
+        newVar := &locVarInfo{
+            name:    name,
+            prev:    self.locNames[name],
+            scopeLv: self.scopeLv,
+            slot:    self.allocReg(),
+        }
+
+        self.locVars = append(self.locVars, newVar)
+        self.locNames[name] = newVar
+
+        return newVar.slot
+    }   
 
 
 
