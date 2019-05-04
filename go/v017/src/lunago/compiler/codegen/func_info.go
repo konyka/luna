@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:26:27
+* @Last Modified time: 2019-05-04 13:29:17
 */
 package codegen
 
@@ -20,6 +20,7 @@ type funcInfo struct {
     breaks    [][]int
     parent    *funcInfo
     upvalues  map[string]upvalInfo
+    insts     []uint32
     //to do
 }
 

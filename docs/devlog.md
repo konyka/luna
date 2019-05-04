@@ -8781,14 +8781,26 @@ Upvalue表
         return -1
     }
 
+
+字节码
+
+    字节码，也就是lua虚拟机指令才是函数原型的主角，其他信息都是配角。修改funcInfo，为主角添加字段
+
+    type funcInfo struct {
+         constants map[interface{}]int
+         usedRegs  int
+         maxRegs   int
+         scopeLv   int
+         locVars   []*locVarInfo
+         locNames  map[string]*locVarInfo
+         breaks    [][]int
+         parent    *funcInfo
+         upvalues  map[string]upvalInfo
+         insts     []uint32
+        //to do
+    }     
+
     
-
-
-
-
-
-
-
 
 
 
