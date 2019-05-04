@@ -9810,15 +9810,41 @@ for循环语句
     }    
 
 
+生成函数原型
+
+    与把ast转换为中间结构，把这个中间结构转换为函数原型就相对容易多了。
+
+    compiler/codegen/fi2proto.go，定义函数toproto():
+
+    package codegen
+
+    import . "lunago/binchunk"
+
+    func toProto(fi *funcInfo) *Prototype {
+        proto := &Prototype{
+            NumParams:    byte(fi.numParams),
+            MaxStackSize: byte(fi.maxRegs),
+            Code:         fi.insts,
+            Constants:    getConstants(fi),
+            Upvalues:     getUpvalues(fi),
+            Protos:       toProtos(fi.subFuncs),
+            LineInfo:     []uint32{}, // debug
+            LocVars:      []LocVar{}, // debug
+            UpvalueNames: []string{}, // debug
+        }
+
+        if proto.MaxStackSize < 2 {
+            proto.MaxStackSize = 2 // todo
+        }
+        if fi.isVararg {
+            proto.IsVararg = 1 // todo
+        }
+
+        return proto
+    }
 
 
-
-
-
-
-
-
-
+    
 
 
 
