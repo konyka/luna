@@ -8681,12 +8681,20 @@ removeLocVar中
         //to do
     }
 
+    以后将for、repeat、while循环语句块称之为 循环快。使用数字来保存循环块中待处理的跳转指令，数组长度和块的深度对应，通过判断数组元素（也是数组）是否为nil，可以知道对应的块是不是循环块。
+
+    修改enterScope，对进入的作用域是不是属于循环块进行标记
+
+    func (self *funcInfo) enterScope(breakable bool) {
+        self.scopeLv++
+        if breakable {
+            self.breaks = append(self.breaks, []int{}) //循环块
+        } else {
+            self.breaks = append(self.breaks, nil) //非循环块
+        }
+    }
 
     
-
-
-
-
 
 
 

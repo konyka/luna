@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:06:23
+* @Last Modified time: 2019-05-04 13:10:07
 */
 package codegen
 
@@ -103,9 +103,15 @@ func (self *funcInfo) freeRegs(n int) {
 
 /* lexical scope */
 
-func (self *funcInfo) enterScope() {
+func (self *funcInfo) enterScope(breakable bool) {
     self.scopeLv++
+    if breakable {
+        self.breaks = append(self.breaks, []int{}) //循环块
+    } else {
+        self.breaks = append(self.breaks, nil) //非循环块
+    }
 }
+
 
 /**
  * addLocVar在当前作用域里面增加一个局部变量，返回其分配的寄存器索引
