@@ -7747,9 +7747,20 @@ for循环语句
 
     关键字for和标识符已经读取，直接从等号开始解析就可以了，需要说明的是，为了简化代码生成器，给不上不上了默认值1.
 
+    通用for循环解析函数
 
-
-
+    // for namelist in explist do block end
+    // namelist ::= Name {‘,’ Name}
+    // explist ::= exp {‘,’ exp}
+    func _finishForInStat(lexer *Lexer, name0 string) *ForInStat {
+        nameList := _finishNameList(lexer, name0)         // for namelist
+        lexer.NextTokenOfKind(TOKEN_KW_IN)                // in
+        expList := parseExpList(lexer)                    // explist
+        lineOfDo, _ := lexer.NextTokenOfKind(TOKEN_KW_DO) // do
+        block := parseBlock(lexer)                        // block
+        lexer.NextTokenOfKind(TOKEN_KW_END)               // end
+        return &ForInStat{lineOfDo, nameList, expList, block}
+    }
 
 
 

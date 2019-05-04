@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:07:26
+* @Last Modified time: 2019-05-04 09:09:39
 */
 
 package parser
@@ -195,7 +195,20 @@ func _finishForNumStat(lexer *Lexer, lineOfFor int, varName string) *ForNumStat 
         varName, initExp, limitExp, stepExp, block}
 }
 
-
+/**
+ *for namelist in explist do block end
+ * namelist ::= Name {‘,’ Name}
+ * explist ::= exp {‘,’ exp}
+ */
+func _finishForInStat(lexer *Lexer, name0 string) *ForInStat {
+    nameList := _finishNameList(lexer, name0)         // for namelist
+    lexer.NextTokenOfKind(TOKEN_KW_IN)                // in
+    expList := parseExpList(lexer)                    // explist
+    lineOfDo, _ := lexer.NextTokenOfKind(TOKEN_KW_DO) // do
+    block := parseBlock(lexer)                        // block
+    lexer.NextTokenOfKind(TOKEN_KW_END)               // end
+    return &ForInStat{lineOfDo, nameList, expList, block}
+}
 
 
 
