@@ -7611,9 +7611,15 @@ Chunk和块
         return &BreakStat{lexer.Line()}
     }   
 
-    
+    对于label语句，跳过分隔符并记录标签名就可以了 
 
-
+    // ‘::’ Name ‘::’
+    func parseLabelStat(lexer *Lexer) *LabelStat {
+        lexer.NextTokenOfKind(TOKEN_SEP_LABEL) // ::
+        _, name := lexer.NextIdentifier()      // name
+        lexer.NextTokenOfKind(TOKEN_SEP_LABEL) // ::
+        return &LabelStat{name}
+    }
 
 
 

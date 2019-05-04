@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:49:54
+* @Last Modified time: 2019-05-04 08:51:03
 */
 
 package parser
@@ -73,7 +73,15 @@ func parseBreakStat(lexer *Lexer) *BreakStat {
     return &BreakStat{lexer.Line()}
 }
 
-
+/**
+ * ‘::’ Name ‘::’
+ */
+func parseLabelStat(lexer *Lexer) *LabelStat {
+    lexer.NextTokenOfKind(TOKEN_SEP_LABEL) // ::
+    _, name := lexer.NextIdentifier()      // name
+    lexer.NextTokenOfKind(TOKEN_SEP_LABEL) // ::
+    return &LabelStat{name}
+}
 
 
 
