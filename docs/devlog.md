@@ -8840,10 +8840,25 @@ Upvalue表
         self.insts[pc] = i
     }
 
+其他的一些信息    
+    函数原型是递归结构，因为其内部还可以有子函数原型，与此对应，funcInfo结构体也需要是递归结构。对其进行修改，增加字段
 
-    
-
-
+    type funcInfo struct {
+         constants map[interface{}]int
+         usedRegs  int
+         maxRegs   int
+         scopeLv   int
+         locVars   []*locVarInfo
+         locNames  map[string]*locVarInfo
+         breaks    [][]int
+         parent    *funcInfo
+         upvalues  map[string]upvalInfo
+         insts     []uint32
+         subFuncs  []*funcInfo
+         numParams int
+         isVararg  bool
+        //to do
+    }      
 
 
 

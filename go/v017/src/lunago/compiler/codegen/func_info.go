@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:44:43
+* @Last Modified time: 2019-05-04 14:00:16
 */
 package codegen
 
@@ -21,6 +21,9 @@ type funcInfo struct {
     parent    *funcInfo
     upvalues  map[string]upvalInfo
     insts     []uint32
+    subFuncs  []*funcInfo
+    numParams int
+    isVararg  bool
     //to do
 }
 
