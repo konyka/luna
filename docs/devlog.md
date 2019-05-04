@@ -7762,8 +7762,18 @@ for循环语句
         return &ForInStat{lineOfDo, nameList, expList, block}
     }
 
-
-
+    关键字for和第一个标识符已经读取，继续吧便是福列表解析完成，然后按照步骤解析其他语法元素就可以了。
+    
+    // namelist ::= Name {‘,’ Name}
+    func _finishNameList(lexer *Lexer, name0 string) []string {
+        names := []string{name0}
+        for lexer.LookAhead() == TOKEN_SEP_COMMA {
+            lexer.NextToken()                 // ,
+            _, name := lexer.NextIdentifier() // Name
+            names = append(names, name)
+        }
+        return names
+    }
 
 
 

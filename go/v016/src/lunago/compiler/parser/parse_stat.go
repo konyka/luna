@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:09:39
+* @Last Modified time: 2019-05-04 09:11:23
 */
 
 package parser
@@ -210,5 +210,17 @@ func _finishForInStat(lexer *Lexer, name0 string) *ForInStat {
     return &ForInStat{lineOfDo, nameList, expList, block}
 }
 
+/**
+ * namelist ::= Name {‘,’ Name}
+ */
+func _finishNameList(lexer *Lexer, name0 string) []string {
+    names := []string{name0}
+    for lexer.LookAhead() == TOKEN_SEP_COMMA {
+        lexer.NextToken()                 // ,
+        _, name := lexer.NextIdentifier() // Name
+        names = append(names, name)
+    }
+    return names
+}
 
 
