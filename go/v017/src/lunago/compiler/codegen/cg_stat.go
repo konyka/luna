@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 14:22:11
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 21:57:24
+* @Last Modified time: 2019-05-04 22:02:19
 */
 
 
@@ -200,7 +200,51 @@ func cgForInStat(fi *funcInfo, node *ForInStat) {
     fi.exitScope()
 }
 
+func cgLocalVarDeclStat(fi *funcInfo, node *LocalVarDeclStat) {
+    exps := removeTailNils(node.ExpList)
+    nExps := len(exps)
+    nNames := len(node.NameList)
 
+    oldRegs := fi.usedRegs
+    if nExps == nNames {
+        for _, exp := range exps {
+            a := fi.allocReg()
+            cgExp(fi, exp, a, 1)
+        }
+    } else if nExps > nNames {
+        for i, exp := range exps {
+            a := fi.allocReg()
+            if i == nExps-1 && isVarargOrFuncCall(exp) {
+                cgExp(fi, exp, a, 0)
+            } else {
+                cgExp(fi, exp, a, 1)
+            }
+        }
+    } else { // nNames > nExps
+        multRet := false
+        for i, exp := range exps {
+            a := fi.allocReg()
+            if i == nExps-1 && isVarargOrFuncCall(exp) {
+                multRet = true
+                n := nNames - nExps + 1
+                cgExp(fi, exp, a, n)
+                fi.allocRegs(n - 1)
+            } else {
+                cgExp(fi, exp, a, 1)
+            }
+        }
+        if !multRet {
+            n := nNames - nExps
+            a := fi.allocRegs(n)
+            fi.emitLoadNil(a, n)
+        }
+    }
+
+    fi.usedRegs = oldRegs
+    for _, name := range node.NameList {
+        fi.addLocVar(name)
+    }
+}
 
 
 
