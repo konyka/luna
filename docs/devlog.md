@@ -9098,25 +9098,77 @@ Upvalue表
     }    
 
 
+while repeat语句
 
+    while语句循环对表达式求值，如果结果为真，则执行块，继续循环，否则就跳过块结束循环。
 
+    /*
+               ______________
+              /  false? jmp  |
+             /               |
+    while exp do block end <-'
+          ^           \
+          |___________/
+               jmp
+    */
+    func cgWhileStat(fi *funcInfo, node *WhileStat) {
+        //1
+        pcBeforeExp := fi.pc()
+        //2
+        r := fi.allocReg()
+        cgExp(fi, node.Exp, r, 1)
+        fi.freeReg()
+        //3
+        fi.emitTest(r, 0)
+        pcJmpToEnd := fi.emitJmp(0, 0)
+        //4
+        fi.enterScope(true)
+        cgBlock(fi, node.Block)
+        fi.closeOpenUpvals()
+        fi.emitJmp(0, pcBeforeExp-fi.pc()-1)
+        fi.exitScope()
+        //5
+        fi.fixSbx(pcJmpToEnd, fi.pc()-pcJmpToEnd)
+    }
 
+   1、先保存当前的Pc，因为后面计算跳转偏移量的时候会用到； 
+   2、分配一个临时变量，对表达式求值，然后释放临时变量
+   3、生成test和jmp指令，实现条件跳转，由于此时还没有对块进行处理，所以跳转的偏移量还没有办法给出
+   4、对块进行处理，生成一条jmp指令，跳转到最开始
+   5、修复第一条jmp指令的偏移量
 
+   repeat语句先执行语句块，然后再对表达式求值，如果结果为真，则循环结束，否则继续循环。
 
+    /*
+            ______________
+           |  false? jmp  |
+           V              /
+    repeat block until exp
+    */
+    func cgRepeatStat(fi *funcInfo, node *RepeatStat) {
+        fi.enterScope(true)
 
+        pcBeforeBlock := fi.pc()
+        cgBlock(fi, node.Block)
 
+        r := fi.allocReg()
+        cgExp(fi, node.Exp, r, 1)
+        fi.freeReg()
 
+        fi.emitTest(r, 0)
+        fi.emitJmp(fi.getJmpArgA(), pcBeforeBlock-fi.pc()-1)
+        fi.closeOpenUpvals()
 
+        fi.exitScope()
+    }
 
+     需要说明的是，repeat语句块的作用域是把后面的表达式也覆盖在内了，所以在表达式里，可以访问到块里声明的局部变量   
 
+if语句
 
+    lua的if语句包括必须出现的if表达式和块、任意多个elseif表达式和块，以及可选的else表达式和块。不过在语法分析阶段，已经对if语句进行了简化，把可选的else部分合并到了elseif部分里面
 
-
-
-
-
-
-
+    
 
 
 

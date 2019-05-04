@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 14:22:11
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 21:03:25
+* @Last Modified time: 2019-05-04 21:23:58
 */
 
 
@@ -63,8 +63,56 @@ func cgDoStat(fi *funcInfo, node *DoStat) {
     fi.exitScope()
 }
 
+/*
+           ______________
+          /  false? jmp  |
+         /               |
+while exp do block end <-'
+      ^           \
+      |___________/
+           jmp
+*/
+func cgWhileStat(fi *funcInfo, node *WhileStat) {
+    pcBeforeExp := fi.pc()
 
+    r := fi.allocReg()
+    cgExp(fi, node.Exp, r, 1)
+    fi.freeReg()
 
+    fi.emitTest(r, 0)
+    pcJmpToEnd := fi.emitJmp(0, 0)
+
+    fi.enterScope(true)
+    cgBlock(fi, node.Block)
+    fi.closeOpenUpvals()
+    fi.emitJmp(0, pcBeforeExp-fi.pc()-1)
+    fi.exitScope()
+
+    fi.fixSbx(pcJmpToEnd, fi.pc()-pcJmpToEnd)
+}
+
+/*
+        ______________
+       |  false? jmp  |
+       V              /
+repeat block until exp
+*/
+func cgRepeatStat(fi *funcInfo, node *RepeatStat) {
+    fi.enterScope(true)
+
+    pcBeforeBlock := fi.pc()
+    cgBlock(fi, node.Block)
+
+    r := fi.allocReg()
+    cgExp(fi, node.Exp, r, 1)
+    fi.freeReg()
+
+    fi.emitTest(r, 0)
+    fi.emitJmp(fi.getJmpArgA(), pcBeforeBlock-fi.pc()-1)
+    fi.closeOpenUpvals()
+
+    fi.exitScope()
+}
 
 
 
