@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:31:37
+* @Last Modified time: 2019-05-04 09:35:17
 */
 
 package parser
@@ -350,6 +350,32 @@ func parseFuncDefStat(lexer *Lexer) *AssignStat {
     }
 }
 
+/**
+ * [funcname ::= Name {‘.’ Name} [‘:’ Name]
+ * @Author   konyka
+ * @DateTime 2019-05-04T09:34:48+0800
+ * @param    {[type]}                 lexer *Lexer)       (exp Exp, hasColon bool [description]
+ * @return   {[type]}                       [description]
+ */
+func _parseFuncName(lexer *Lexer) (exp Exp, hasColon bool) {
+    line, name := lexer.NextIdentifier()
+    exp = &NameExp{line, name}
 
+    for lexer.LookAhead() == TOKEN_SEP_DOT {
+        lexer.NextToken()
+        line, name := lexer.NextIdentifier()
+        idx := &StringExp{line, name}
+        exp = &TableAccessExp{line, exp, idx}
+    }
+    if lexer.LookAhead() == TOKEN_SEP_COLON {
+        lexer.NextToken()
+        line, name := lexer.NextIdentifier()
+        idx := &StringExp{line, name}
+        exp = &TableAccessExp{line, exp, idx}
+        hasColon = true
+    }
+
+    return
+}
 
 

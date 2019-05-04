@@ -7897,13 +7897,36 @@ for循环语句
         }
     }
 
+    需要说明的是：
+    1、去掉了冒号语法糖，在参数列表中插入了self参数
+    2、会把非局部函数定义语句转换成了赋值语句
+
+    _parseFuncName的代码如下：
+
+    // funcname ::= Name {‘.’ Name} [‘:’ Name]
+    func _parseFuncName(lexer *Lexer) (exp Exp, hasColon bool) {
+        line, name := lexer.NextIdentifier()
+        exp = &NameExp{line, name}
+
+        for lexer.LookAhead() == TOKEN_SEP_DOT {
+            lexer.NextToken()
+            line, name := lexer.NextIdentifier()
+            idx := &StringExp{line, name}
+            exp = &TableAccessExp{line, exp, idx}
+        }
+        if lexer.LookAhead() == TOKEN_SEP_COLON {
+            lexer.NextToken()
+            line, name := lexer.NextIdentifier()
+            idx := &StringExp{line, name}
+            exp = &TableAccessExp{line, exp, idx}
+            hasColon = true
+        }
+
+        return
+    }
 
 
-
-
-
-
-
+    
 
 
 
