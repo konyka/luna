@@ -8707,7 +8707,7 @@ removeLocVar中
         panic("<break> at line ? not inside a loop!")
     }
 
-    
+    exitScope，在退出作用域的时候修复调转指令
 
     func (self *funcInfo) exitScope() {
         pendingBreakJmps := self.breaks[len(self.breaks)-1]
@@ -8729,12 +8729,17 @@ removeLocVar中
     }    
 
 
+Upvalue表
 
+    Upvalue实际上就是闭包，按照词法作用域捕获的外围函数中的局部变量。和局部变量类似，也需要把Upvalue名称和外围函数的局部变量绑定。不过由于Upvalue名称仅仅能绑定唯一的Upvalue，所以不需要使用链表结构。
 
-
-
-
-
+    定义结构体upvalInfo
+    
+    type upvalInfo struct {
+        locVarSlot int
+        upvalIndex int
+        index      int
+    }
 
 
 

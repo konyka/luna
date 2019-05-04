@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:15:19
+* @Last Modified time: 2019-05-04 13:18:13
 */
 package codegen
 
@@ -27,6 +27,12 @@ type locVarInfo struct {
     scopeLv  int
     slot     int
     captured bool
+}
+
+type upvalInfo struct {
+    locVarSlot int
+    upvalIndex int
+    index      int
 }
 
 /* constants */
@@ -141,7 +147,7 @@ func (self *funcInfo) slotOfLocVar(name string) int {
 }
 
 /**
- * [func exitScope，在退出作用域的时候修复调转指令]
+ * [func exitScope，在退出作用域的时候修复调转指令  ]
  * @Author   konyka
  * @DateTime 2019-05-04T12:54:36+0800
  * @param    {[type]}                 self *funcInfo)    exitScope( [description]
