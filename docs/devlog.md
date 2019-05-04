@@ -7718,10 +7718,34 @@ for循环语句
         }
     }
 
+    因为两种for循环都以关键值for开始，后跟一个标识符，所以跳过关键字for以后，还需要前瞻两个token，才能判断到底是哪种for循环，不过为了简化词法分析器，尽量通过只前瞻一个token来完成解析。这里采用了不同的做法，先跳过关键字for，然后提取标识符，然后前瞻一个token，如果是等号，就按照数值for循环解析，否则按照通用for循环解析。
 
-    
+    数值for循环的解析函数：
 
+    // for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end
+    func _finishForNumStat(lexer *Lexer, lineOfFor int, varName string) *ForNumStat {
+        lexer.NextTokenOfKind(TOKEN_OP_ASSIGN) // for name =
+        initExp := parseExp(lexer)             // exp
+        lexer.NextTokenOfKind(TOKEN_SEP_COMMA) // ,
+        limitExp := parseExp(lexer)            // exp
 
+        var stepExp Exp
+        if lexer.LookAhead() == TOKEN_SEP_COMMA {
+            lexer.NextToken()         // ,
+            stepExp = parseExp(lexer) // exp
+        } else {
+            stepExp = &IntegerExp{lexer.Line(), 1}
+        }
+
+        lineOfDo, _ := lexer.NextTokenOfKind(TOKEN_KW_DO) // do
+        block := parseBlock(lexer)                        // block
+        lexer.NextTokenOfKind(TOKEN_KW_END)               // end
+
+        return &ForNumStat{lineOfFor, lineOfDo,
+            varName, initExp, limitExp, stepExp, block}
+    }
+
+    关键字for和标识符已经读取，直接从等号开始解析就可以了，需要说明的是，为了简化代码生成器，给不上不上了默认值1.
 
 
 

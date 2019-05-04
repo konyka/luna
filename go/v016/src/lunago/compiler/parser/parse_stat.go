@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:03:00
+* @Last Modified time: 2019-05-04 09:07:26
 */
 
 package parser
@@ -170,6 +170,30 @@ func parseForStat(lexer *Lexer) Stat {
     }
 }
 
+/**
+ * for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end
+ */
+func _finishForNumStat(lexer *Lexer, lineOfFor int, varName string) *ForNumStat {
+    lexer.NextTokenOfKind(TOKEN_OP_ASSIGN) // for name =
+    initExp := parseExp(lexer)             // exp
+    lexer.NextTokenOfKind(TOKEN_SEP_COMMA) // ,
+    limitExp := parseExp(lexer)            // exp
+
+    var stepExp Exp
+    if lexer.LookAhead() == TOKEN_SEP_COMMA {
+        lexer.NextToken()         // ,
+        stepExp = parseExp(lexer) // exp
+    } else {
+        stepExp = &IntegerExp{lexer.Line(), 1}
+    }
+
+    lineOfDo, _ := lexer.NextTokenOfKind(TOKEN_KW_DO) // do
+    block := parseBlock(lexer)                        // block
+    lexer.NextTokenOfKind(TOKEN_KW_END)               // end
+
+    return &ForNumStat{lineOfFor, lineOfDo,
+        varName, initExp, limitExp, stepExp, block}
+}
 
 
 
