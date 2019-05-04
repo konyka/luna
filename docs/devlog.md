@@ -8900,21 +8900,84 @@ Upvalue表
             cgRetStat(fi, node.RetExps)
         }
     }
-    
 
-    
+    函数体由任意语句和一条可选的返回语句组成，所以先循环调用cgStat（）处理每条语句，如果有返回语句，就调用cgRetStat进行处理。
+
+    cgRetStat的代码：
+
+    func cgRetStat(fi *funcInfo, exps []Exp) {
+        nExps := len(exps)
+        if nExps == 0 {
+            fi.emitReturn(0, 0)
+            return
+        }
+
+        if nExps == 1 {
+            if nameExp, ok := exps[0].(*NameExp); ok {
+                if r := fi.slotOfLocVar(nameExp.Name); r >= 0 {
+                    fi.emitReturn(r, 1)
+                    return
+                }
+            }
+            if fcExp, ok := exps[0].(*FuncCallExp); ok {
+                r := fi.allocReg()
+                cgTailCallExp(fi, fcExp, r)
+                fi.freeReg()
+                fi.emitReturn(r, -1)
+                return
+            }
+        }
+
+        multRet := isVarargOrFuncCall(exps[nExps-1])
+        for i, exp := range exps {
+            r := fi.allocReg()
+            if i == nExps-1 && multRet {
+                cgExp(fi, exp, r, -1)
+            } else {
+                cgExp(fi, exp, r, 1)
+            }
+        }
+        fi.freeRegs(nExps)
+
+        a := fi.usedRegs // correct?
+        if multRet {
+            fi.emitReturn(a, -1)
+        } else {
+            fi.emitReturn(a, nExps)
+        }
+    }    
 
 
+    如果返回语句后面没有任何表达式，那么只要生成一条RETURN指令就可以了。
+
+            nExps := len(exps)
+        if nExps == 0 {
+            fi.emitReturn(0, 0)
+            return
+        }
+
+    如果返回语句后面还有表达式，要先对表达式进行处理，然后在生成RETUEN指令。
+
+            multRet := isVarargOrFuncCall(exps[nExps-1])
+        for i, exp := range exps {
+            r := fi.allocReg()
+            if i == nExps-1 && multRet {
+                cgExp(fi, exp, r, -1)
+            } else {
+                cgExp(fi, exp, r, 1)
+            }
+        }
+        fi.freeRegs(nExps)
+
+         a := fi.usedRegs // correct?
+        if multRet {
+            fi.emitReturn(a, -1)
+        } else {
+            fi.emitReturn(a, nExps)
+        }   
 
 
-
-
-
-
-
-
-
-
+    有点繁琐，因为需要对最后一个表达式为vararg或者函数调用的情况进行特殊处理。另外，这里没有处理尾递归调用的情况。
 
 
 
