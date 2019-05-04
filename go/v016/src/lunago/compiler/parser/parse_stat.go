@@ -2,13 +2,15 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:35:17
+* @Last Modified time: 2019-05-04 11:21:40
 */
 
 package parser
 
 import . "lunago/compiler/ast"
 import . "lunago/compiler/lexer"
+
+var _statEmpty = &EmptyStat{}
 
 /*
 stat ::=  ‘;’
