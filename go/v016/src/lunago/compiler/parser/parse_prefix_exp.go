@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 10:36:43
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:45:45
+* @Last Modified time: 2019-05-04 10:49:28
 */
 
 package parser
@@ -72,7 +72,16 @@ func parseParensExp(lexer *Lexer) Exp {
     return exp
 }
 
-
+/**
+ * functioncall ::=  prefixexp args | prefixexp ‘:’ Name args
+ */
+func _finishFuncCallExp(lexer *Lexer, prefixExp Exp) *FuncCallExp {
+    nameExp := _parseNameExp(lexer)
+    line := lexer.Line() // todo
+    args := _parseArgs(lexer)
+    lastLine := lexer.Line()
+    return &FuncCallExp{line, lastLine, prefixExp, nameExp, args}
+}
 
 
 

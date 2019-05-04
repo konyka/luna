@@ -8286,13 +8286,20 @@ for循环语句
         return exp
     }
 
-    
+    由于圆括号会改变vararg和函数调用表达式的语义，所以需要保留着两种语句的圆括号，队医var表达式，也需要保留圆括号，否则之前的_checkVar()函数就会出现问题。奇遇的表达式两侧的圆括号，则完全没有必要留在ast中。
 
+函数调用表达式
 
+       函数调用表达式的解析函数 
 
-
-
-
+       // functioncall ::=  prefixexp args | prefixexp ‘:’ Name args
+    func _finishFuncCallExp(lexer *Lexer, prefixExp Exp) *FuncCallExp {
+        nameExp := _parseNameExp(lexer)
+        line := lexer.Line() // todo
+        args := _parseArgs(lexer)
+        lastLine := lexer.Line()
+        return &FuncCallExp{line, lastLine, prefixExp, nameExp, args}
+    }
 
 
 
