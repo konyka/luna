@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:10:07
+* @Last Modified time: 2019-05-04 13:12:50
 */
 package codegen
 
@@ -174,8 +174,24 @@ func (self *funcInfo) removeLocVar(locVar *locVarInfo) {
     }
 }
 
+/**
+ * [func addBreakJmp把break语句对应的跳转指令添加到最近的循环块中。
+ * 如果找不到循环块，则调用panic报错。]
+ * @Author   konyka
+ * @DateTime 2019-05-04T13:12:01+0800
+ * @param    {[type]}                 self *funcInfo)    addBreakJmp(pc int [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *funcInfo) addBreakJmp(pc int) {
+    for i := self.scopeLv; i >= 0; i-- {
+        if self.breaks[i] != nil { // breakable 循环块
+            self.breaks[i] = append(self.breaks[i], pc)
+            return
+        }
+    }
 
-
+    panic("<break> at line ? not inside a loop!")
+}
 
 
 

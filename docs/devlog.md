@@ -8694,7 +8694,18 @@ removeLocVar中
         }
     }
 
-    
+    addBreakJmp把break语句对应的跳转指令添加到最近的循环块中。如果找不到循环块，则调用panic报错。
+
+    func (self *funcInfo) addBreakJmp(pc int) {
+        for i := self.scopeLv; i >= 0; i-- {
+            if self.breaks[i] != nil { // breakable
+                self.breaks[i] = append(self.breaks[i], pc)
+                return
+            }
+        }
+
+        panic("<break> at line ? not inside a loop!")
+    }
 
 
 
