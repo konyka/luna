@@ -9432,12 +9432,54 @@ for循环语句
     在循环中对赋值进行处理：如果给局部变量赋值，生成move指令；如果给Upvalue赋值，生成Setupval指令；如果给全局变量赋值，生成settabup指令；如果值按照索引给表赋值，则生成settable指令。循环结束以后，需要释放掉所有的临时变量。
 
 
+编译表达式
 
+    lua表达式大值可以分为：字面量表达式、构造器表达式、运算符表达式、前缀表达式、vararg表达式5种。
 
+    compiler/codegen/cg_exp.go 定义函数cgExp（）函数：
 
+    package codegen
 
+    import . "lunago/compiler/ast"
+    import . "lunago/compiler/lexer"
+    import . "lunago/vm"
 
-
+    func cgExp(fi *funcInfo, node Exp, a, n int) {
+        switch exp := node.(type) {
+        case *NilExp:
+            fi.emitLoadNil(a, n)
+        case *FalseExp:
+            fi.emitLoadBool(a, 0, 0)
+        case *TrueExp:
+            fi.emitLoadBool(a, 1, 0)
+        case *IntegerExp:
+            fi.emitLoadK(a, exp.Val)
+        case *FloatExp:
+            fi.emitLoadK(a, exp.Val)
+        case *StringExp:
+            fi.emitLoadK(a, exp.Str)
+        case *ParensExp:
+            cgExp(fi, exp.Exp, a, 1)
+        case *VarargExp:
+            cgVarargExp(fi, exp, a, n)
+        case *FuncDefExp:
+            cgFuncDefExp(fi, exp, a)
+        case *TableConstructorExp:
+            cgTableConstructorExp(fi, exp, a)
+        case *UnopExp:
+            cgUnopExp(fi, exp, a)
+        case *BinopExp:
+            cgBinopExp(fi, exp, a)
+        case *ConcatExp:
+            cgConcatExp(fi, exp, a)
+        case *NameExp:
+            cgNameExp(fi, exp, a)
+        case *TableAccessExp:
+            cgTableAccessExp(fi, exp, a)
+        case *FuncCallExp:
+            cgFuncCallExp(fi, exp, a, n)
+        }
+    }
 
 
 
