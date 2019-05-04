@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:22:19
+* @Last Modified time: 2019-05-04 13:26:27
 */
 package codegen
 
@@ -211,7 +211,31 @@ func (self *funcInfo) addBreakJmp(pc int) {
     panic("<break> at line ? not inside a loop!")
 }
 
+/* upvalues */
 
+/**
+ * indexOfUpval判断名称是否已经和Upvalue绑定，
+ * 如果是，返回Upvalue索引，否则尝试绑定，然后返回索引。如果绑定失败，返回-1.
+ */
+func (self *funcInfo) indexOfUpval(name string) int {
+    if upval, ok := self.upvalues[name]; ok {
+        return upval.index
+    }
+    if self.parent != nil {
+        if locVar, found := self.parent.locNames[name]; found {
+            idx := len(self.upvalues)
+            self.upvalues[name] = upvalInfo{locVar.slot, -1, idx}
+            locVar.captured = true
+            return idx
+        }
+        if uvIdx := self.parent.indexOfUpval(name); uvIdx >= 0 {
+            idx := len(self.upvalues)
+            self.upvalues[name] = upvalInfo{-1, uvIdx, idx}
+            return idx
+        }
+    }
+    return -1
+}
 
 
 

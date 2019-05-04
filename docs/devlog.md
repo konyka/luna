@@ -8756,13 +8756,32 @@ Upvalue表
         //to do
     }    
 
+   其中upvalues保存Upvalue表，parent则能够定位到外围函数的局部变量表和Upvalue表。 
+
+   indexOfUpval判断名称是否已经和Upvalue绑定，如果是，返回Upvalue索引，否则尝试绑定，然后返回索引。如果绑定失败，返回-1.
+
+
+    func (self *funcInfo) indexOfUpval(name string) int {
+        if upval, ok := self.upvalues[name]; ok {
+            return upval.index
+        }
+        if self.parent != nil {
+            if locVar, found := self.parent.locNames[name]; found {
+                idx := len(self.upvalues)
+                self.upvalues[name] = upvalInfo{locVar.slot, -1, idx}
+                locVar.captured = true
+                return idx
+            }
+            if uvIdx := self.parent.indexOfUpval(name); uvIdx >= 0 {
+                idx := len(self.upvalues)
+                self.upvalues[name] = upvalInfo{-1, uvIdx, idx}
+                return idx
+            }
+        }
+        return -1
+    }
+
     
-
-
-
-
-
-
 
 
 
