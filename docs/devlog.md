@@ -8518,7 +8518,7 @@ for循环语句
             //to do
         }
 
-    主记录已经分配的寄存器数量和需要的足底啊寄存器数量就可以了。
+    主记录已经分配的寄存器数量和需要的足底啊寄存器数量就可以了。allocReg分配一个寄存器，必要的时候更新最大寄存器数量，并返回寄存器的索引。
 
     /* registers */
 
@@ -8533,13 +8533,18 @@ for循环语句
         return self.usedRegs - 1
     }
 
+    寄存器的索引是从0开始的，并且不能超过255.freeReg回收最近分配的寄存器
 
+    func (self *funcInfo) freeReg() {
+        if self.usedRegs <= 0 {
+            panic("usedRegs <= 0 !")
+        }
+        self.usedRegs--
+    }
 
+    allocRegs分配连续的n个寄存器，返回第一个寄存器的索引：
 
-
-
-
-
+    
 
 
 
