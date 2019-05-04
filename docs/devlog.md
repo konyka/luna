@@ -8504,17 +8504,34 @@ for循环语句
         return idx
     }
 
-    该方法返回常量在表总的索引，
+    该方法返回常量在表总的索引，如果常量不在表中，先把常量放到表中，在返回索引，索引从0开始递增。
 
+寄存器的分配    
 
+    lua虚拟机是基于寄存器的，所以在生成指令的时候需要进行寄存器的分配。简单的说，需要给每个局部变量和临时变量都分配一个寄存器，在局部变量退出作用域或者临时变量使用完毕以后，回收寄存器。给结构体funcInfo
+    增加字段
 
+        type funcInfo struct {
+            constants map[interface{}]int
+            usedRegs  int
+            maxRegs   int
+            //to do
+        }
 
+    主记录已经分配的寄存器数量和需要的足底啊寄存器数量就可以了。
 
+    /* registers */
 
-
-
-
-
+    func (self *funcInfo) allocReg() int {
+        self.usedRegs++
+        if self.usedRegs >= 255 {
+            panic("function or expression needs too many registers")
+        }
+        if self.usedRegs > self.maxRegs {
+            self.maxRegs = self.usedRegs
+        }
+        return self.usedRegs - 1
+    }
 
 
 
