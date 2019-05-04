@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 13:18:13
+* @Last Modified time: 2019-05-04 13:22:19
 */
 package codegen
 
@@ -18,6 +18,8 @@ type funcInfo struct {
     locVars   []*locVarInfo
     locNames  map[string]*locVarInfo
     breaks    [][]int
+    parent    *funcInfo
+    upvalues  map[string]upvalInfo
     //to do
 }
 

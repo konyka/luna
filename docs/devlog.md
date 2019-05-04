@@ -8734,18 +8734,29 @@ Upvalue表
     Upvalue实际上就是闭包，按照词法作用域捕获的外围函数中的局部变量。和局部变量类似，也需要把Upvalue名称和外围函数的局部变量绑定。不过由于Upvalue名称仅仅能绑定唯一的Upvalue，所以不需要使用链表结构。
 
     定义结构体upvalInfo
-    
+
     type upvalInfo struct {
         locVarSlot int
         upvalIndex int
         index      int
     }
 
+    如果Upvalue捕获的是直接外围函数的局部变量，则locVarSlot 保存该局部变量所占用的寄存器索引；否则Upvalue已经被直接的外围函数所捕获，upvalIndex记录该Upvalue在直接外围函数表中的索引。index记录Upvalue在函数中出现的顺序。修改结构体funcInfo，增加字段parent、Upvalues
 
+    type funcInfo struct {
+         constants map[interface{}]int
+         usedRegs  int
+         maxRegs   int
+         scopeLv   int
+         locVars   []*locVarInfo
+         locNames  map[string]*locVarInfo
+         breaks    [][]int
+         parent    *funcInfo
+         upvalues  map[string]upvalInfo
+        //to do
+    }    
 
-
-
-
+    
 
 
 
