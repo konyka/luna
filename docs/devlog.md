@@ -9490,21 +9490,38 @@ for循环语句
         fi.emitVararg(a, n)
     }   
 
+    其实也只是程程了一条vararg指令，单数要确保值有vararg函数内才能出现vararg表达式。
 
+函数定义表达式
 
+    lua源代码里面的函数定义和二进制chunk里面的函数原型一一对应，因此也和创建的funcInfo实例意义对应。当遇到函数定义表达式的时候，需要为它创建一个新的funcInfo实例，专门用来处理这个表达式。函数定义表达式的代码：
 
+     // f[a] := function(args) body end
+    func cgFuncDefExp(fi *funcInfo, node *FuncDefExp, a int) {
+        subFI := newFuncInfo(fi, node)
+        fi.subFuncs = append(fi.subFuncs, subFI)
 
+        for _, param := range node.ParList {
+            subFI.addLocVar(param)
+        }
 
+        cgBlock(subFI, node.Block)
+        subFI.exitScope()
+        subFI.emitReturn(0, 0)
 
+        bx := len(fi.subFuncs) - 1
+        fi.emitClosure(a, bx)
+    }    
 
+    先创建新的funcInfo实例，并让它和外围函数的funcInfo实例构成父子关系，然后对函数定义表达式进行处理。最后生成一条closure指令。前面两行和后面两行比较简单，对于中间的代码，需要说明的是：
+    1、函数的固定参数，本质上就是局部变量，所以需要预先声明这些变量
+    2、lua编译器给每个函数都追加了一条return指令，直接照搬就行
 
+表构造表达式
 
+    lua的表构造表达式语法很灵活，虽然给用户提供了极大的方便，不过却给编译器处理带来了不小的麻烦。
 
-
-
-
-
-
+    
 
 
 

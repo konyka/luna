@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 22:33:32
+* @Last Modified time: 2019-05-04 22:51:00
 */
 
 
@@ -56,6 +56,81 @@ func cgVarargExp(fi *funcInfo, node *VarargExp, a, n int) {
     }
     fi.emitVararg(a, n)
 }
+
+// f[a] := function(args) body end
+func cgFuncDefExp(fi *funcInfo, node *FuncDefExp, a int) {
+    subFI := newFuncInfo(fi, node)
+    fi.subFuncs = append(fi.subFuncs, subFI)
+
+    for _, param := range node.ParList {
+        subFI.addLocVar(param)
+    }
+
+    cgBlock(subFI, node.Block)
+    subFI.exitScope()
+    subFI.emitReturn(0, 0)
+
+    bx := len(fi.subFuncs) - 1
+    fi.emitClosure(a, bx)
+}
+
+func cgTableConstructorExp(fi *funcInfo, node *TableConstructorExp, a int) {
+    nArr := 0
+    for _, keyExp := range node.KeyExps {
+        if keyExp == nil {
+            nArr++
+        }
+    }
+    nExps := len(node.KeyExps)
+    multRet := nExps > 0 &&
+        isVarargOrFuncCall(node.ValExps[nExps-1])
+
+    fi.emitNewTable(a, nArr, nExps-nArr)
+
+    arrIdx := 0
+    for i, keyExp := range node.KeyExps {
+        valExp := node.ValExps[i]
+
+        if keyExp == nil {
+            arrIdx++
+            tmp := fi.allocReg()
+            if i == nExps-1 && multRet {
+                cgExp(fi, valExp, tmp, -1)
+            } else {
+                cgExp(fi, valExp, tmp, 1)
+            }
+
+            if arrIdx%50 == 0 || arrIdx == nArr { // LFIELDS_PER_FLUSH
+                n := arrIdx % 50
+                if n == 0 {
+                    n = 50
+                }
+                fi.freeRegs(n)
+                c := (arrIdx-1)/50 + 1 // todo: c > 0xFF
+                if i == nExps-1 && multRet {
+                    fi.emitSetList(a, 0, c)
+                } else {
+                    fi.emitSetList(a, n, c)
+                }
+            }
+
+            continue
+        }
+
+        b := fi.allocReg()
+        cgExp(fi, keyExp, b, 1)
+        c := fi.allocReg()
+        cgExp(fi, valExp, c, 1)
+        fi.freeRegs(2)
+
+        fi.emitSetTable(a, b, c)
+    }
+}
+
+
+
+
+
 
 
 
