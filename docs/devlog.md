@@ -8378,20 +8378,45 @@ for循环语句
 
     一元取负运算符表达式的优化
 
+    func optimizeUnm(exp *UnopExp) Exp {
+        switch x := exp.Exp.(type) { // number?
+        case *IntegerExp:
+            x.Val = -x.Val
+            return x
+        case *FloatExp:
+            if x.Val != 0 {
+                x.Val = -x.Val
+                return x
+            }
+        }
+        return exp
+    }
+
+
+    其他的优化函数也类似。。。。。具体看代码
+
+    这样，解析器基本上就差不多了，不过还需要一个入口函数，创建文件compiler/parser/parser.go，并定义函数Parse（）：
+
+
+    package parser
+
+    import . "lunago/compiler/ast"
+    import . "lunago/compiler/lexer"
+
+    /* recursive descent parser */
+
+    func Parse(chunk, chunkName string) *Block {
+        lexer := NewLexer(chunk, chunkName)
+        block := parseBlock(lexer)
+        lexer.NextTokenOfKind(TOKEN_EOF)
+        return block
+    } 
+
+    先创建词法分析器，然后解析一个语法块，最后确保所有的源代码都已经解析完了。
+
+单元测试
+
     
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
