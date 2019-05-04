@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 22:51:00
+* @Last Modified time: 2019-05-04 22:57:58
 */
 
 
@@ -128,7 +128,13 @@ func cgTableConstructorExp(fi *funcInfo, node *TableConstructorExp, a int) {
 }
 
 
-
+// r[a] := op exp
+func cgUnopExp(fi *funcInfo, node *UnopExp, a int) {
+    b := fi.allocReg()
+    cgExp(fi, node.Exp, b, 1)
+    fi.emitUnaryOp(node.Op, a, b)
+    fi.freeReg()
+}
 
 
 

@@ -9521,26 +9521,88 @@ for循环语句
 
     lua的表构造表达式语法很灵活，虽然给用户提供了极大的方便，不过却给编译器处理带来了不小的麻烦。
 
+     func cgTableConstructorExp(fi *funcInfo, node *TableConstructorExp, a int) {
+        nArr := 0
+        for _, keyExp := range node.KeyExps {
+            if keyExp == nil {
+                nArr++
+            }
+        }
+        nExps := len(node.KeyExps)
+        multRet := nExps > 0 &&
+            isVarargOrFuncCall(node.ValExps[nExps-1])
+
+        fi.emitNewTable(a, nArr, nExps-nArr)
+
+        arrIdx := 0
+        for i, keyExp := range node.KeyExps {
+            valExp := node.ValExps[i]
+
+            if keyExp == nil {
+                arrIdx++
+                tmp := fi.allocReg()
+                if i == nExps-1 && multRet {
+                    cgExp(fi, valExp, tmp, -1)
+                } else {
+                    cgExp(fi, valExp, tmp, 1)
+                }
+
+                if arrIdx%50 == 0 || arrIdx == nArr { // LFIELDS_PER_FLUSH
+                    n := arrIdx % 50
+                    if n == 0 {
+                        n = 50
+                    }
+                    fi.freeRegs(n)
+                    c := (arrIdx-1)/50 + 1 // todo: c > 0xFF
+                    if i == nExps-1 && multRet {
+                        fi.emitSetList(a, 0, c)
+                    } else {
+                        fi.emitSetList(a, n, c)
+                    }
+                }
+
+                continue
+            }
+
+            b := fi.allocReg()
+            cgExp(fi, keyExp, b, 1)
+            c := fi.allocReg()
+            cgExp(fi, valExp, c, 1)
+            fi.freeRegs(2)
+
+            fi.emitSetTable(a, b, c)
+        }
+    }   
+
+    先计算数组部分的长度，以及一些必要的状态，然后生成一条newtable指令。需要注意的是，newtable指令的操作数使用了服点字节编码方式
+
+
+    emitNewTable位于文件func_info.go中
+
+    func (self *funcInfo) emitNewTable(a, nArr, nRec int) {
+            self.emitABC(OP_NEWTABLE,
+                a, Int2fb(nArr), Int2fb(nRec))
+    }
+
+
+    然后是对表构造器中的数组部分进行处理。
     
+    然后是对表构造器里面的关联表部分进行处理。对每一个键值对，分别给键和值表达式分配局部变量，求值，并生成settable指令就可以了。   
 
+运算符表达式
 
+    运算符表达式包括一元和二元运算符表达式两种。
+    一元运算符表达式处理：
 
+    // r[a] := op exp
+    func cgUnopExp(fi *funcInfo, node *UnopExp, a int) {
+        b := fi.allocReg()
+        cgExp(fi, node.Exp, b, 1)
+        fi.emitUnaryOp(node.Op, a, b)
+        fi.freeReg()
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    先分配一个临时变量，然后对表达式求值，最后释放临时变量，并生成相应的一元运算符指令就可以了。
 
 
 
