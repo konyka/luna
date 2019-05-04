@@ -7763,7 +7763,7 @@ for循环语句
     }
 
     关键字for和第一个标识符已经读取，继续吧便是福列表解析完成，然后按照步骤解析其他语法元素就可以了。
-    
+
     // namelist ::= Name {‘,’ Name}
     func _finishNameList(lexer *Lexer, name0 string) []string {
         names := []string{name0}
@@ -7775,11 +7775,20 @@ for循环语句
         return names
     }
 
+局部变量声明以及函数定义语句 
 
+  局部变量声明以及函数定义语句都以关键字local开始，下面是着两句语的解析代码  
 
-
-
-
+    // local function Name funcbody
+    // local namelist [‘=’ explist]
+    func parseLocalAssignOrFuncDefStat(lexer *Lexer) Stat {
+        lexer.NextTokenOfKind(TOKEN_KW_LOCAL)
+        if lexer.LookAhead() == TOKEN_KW_FUNCTION {
+            return _finishLocalFuncDefStat(lexer)
+        } else {
+            return _finishLocalVarDeclStat(lexer)
+        }
+    }
 
 
 

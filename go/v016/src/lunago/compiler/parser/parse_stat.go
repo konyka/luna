@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:11:23
+* @Last Modified time: 2019-05-04 09:13:14
 */
 
 package parser
@@ -222,5 +222,30 @@ func _finishNameList(lexer *Lexer, name0 string) []string {
     }
     return names
 }
+
+
+/**
+ * local function Name funcbody
+ * local namelist [‘=’ explist]
+ */
+func parseLocalAssignOrFuncDefStat(lexer *Lexer) Stat {
+    lexer.NextTokenOfKind(TOKEN_KW_LOCAL)
+    if lexer.LookAhead() == TOKEN_KW_FUNCTION {
+        return _finishLocalFuncDefStat(lexer)
+    } else {
+        return _finishLocalVarDeclStat(lexer)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
