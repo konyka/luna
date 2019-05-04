@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:24:14
+* @Last Modified time: 2019-05-04 09:27:24
 */
 
 package parser
@@ -289,7 +289,16 @@ func parseAssignOrFuncCallStat(lexer *Lexer) Stat {
     }
 }
 
-
+/**
+ * varlist ‘=’ explist |
+ */
+func parseAssignStat(lexer *Lexer, var0 Exp) *AssignStat {
+    varList := _finishVarList(lexer, var0) // varlist
+    lexer.NextTokenOfKind(TOKEN_OP_ASSIGN) // =
+    expList := parseExpList(lexer)         // explist
+    lastLine := lexer.Line()
+    return &AssignStat{lastLine, varList, expList}
+}
 
 
 
