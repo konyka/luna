@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 12:55:12
+* @Last Modified time: 2019-05-04 12:59:00
 */
 package codegen
 
@@ -149,7 +149,23 @@ func (self *funcInfo) exitScope() {
     }
 }
 
-
+/**
+ * [func 当退出作用域以后，需要删除该作用域中的局部变量（解绑局部变量名、回收寄存器）]
+ * @Author   konyka
+ * @DateTime 2019-05-04T12:58:53+0800
+ * @param    {[type]}                 self *funcInfo)    removeLocVar(locVar *locVarInfo [description]
+ * @return   {[type]}                      [description]
+ */
+func (self *funcInfo) removeLocVar(locVar *locVarInfo) {
+    self.freeReg()
+    if locVar.prev == nil {
+        delete(self.locNames, locVar.name)
+    } else if locVar.prev.scopeLv == locVar.scopeLv {
+        self.removeLocVar(locVar.prev)
+    } else {
+        self.locNames[locVar.name] = locVar.prev
+    }
+}
 
 
 

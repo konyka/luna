@@ -8634,20 +8634,29 @@ for循环语句
     }
 
     exitScope退出作用域
-    
+
     func (self *funcInfo) exitScope() {
-    self.scopeLv--
-    for _, locVar := range self.locNames {
-        if locVar.scopeLv > self.scopeLv { // out of scope
-            self.removeLocVar(locVar)
+        self.scopeLv--
+        for _, locVar := range self.locNames {
+            if locVar.scopeLv > self.scopeLv { // out of scope
+                self.removeLocVar(locVar)
+            }
         }
     }
-}
 
+    当退出作用域以后，需要删除该作用域中的局部变量（解绑局部变量名、回收寄存器），把这个逻辑封装在
+removeLocVar中
 
-
-
-
+    func (self *funcInfo) removeLocVar(locVar *locVarInfo) {
+        self.freeReg()
+        if locVar.prev == nil {
+            delete(self.locNames, locVar.name)
+        } else if locVar.prev.scopeLv == locVar.scopeLv {
+            self.removeLocVar(locVar.prev)
+        } else {
+            self.locNames[locVar.name] = locVar.prev
+        }
+    }   
 
 
 
