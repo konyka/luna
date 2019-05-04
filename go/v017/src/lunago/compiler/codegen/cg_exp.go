@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 23:02:26
+* @Last Modified time: 2019-05-04 23:04:22
 */
 
 
@@ -149,7 +149,34 @@ func cgConcatExp(fi *funcInfo, node *ConcatExp, a int) {
     fi.emitABC(OP_CONCAT, a, b, c)
 }
 
+// r[a] := exp1 op exp2
+func cgBinopExp(fi *funcInfo, node *BinopExp, a int) {
+    switch node.Op {
+    case TOKEN_OP_AND, TOKEN_OP_OR:
+        b := fi.allocReg()
+        cgExp(fi, node.Exp1, b, 1)
+        fi.freeReg()
+        if node.Op == TOKEN_OP_AND {
+            fi.emitTestSet(a, b, 0)
+        } else {
+            fi.emitTestSet(a, b, 1)
+        }
+        pcOfJmp := fi.emitJmp(0, 0)
 
+        b = fi.allocReg()
+        cgExp(fi, node.Exp2, b, 1)
+        fi.freeReg()
+        fi.emitMove(a, b)
+        fi.fixSbx(pcOfJmp, fi.pc()-pcOfJmp)
+    default:
+        b := fi.allocReg()
+        cgExp(fi, node.Exp1, b, 1)
+        c := fi.allocReg()
+        cgExp(fi, node.Exp2, c, 1)
+        fi.emitBinaryOp(node.Op, a, b, c)
+        fi.freeRegs(2)
+    }
+}
 
 
 

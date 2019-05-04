@@ -9623,7 +9623,7 @@ for循环语句
     二元运算符表达式需要分三种情况处理。对于拼接表达式，语法分析器已经生成了不同的ast节点，循环处理每个操作数（分配临时变量、表达式求值），然后释放临时变量，生成一条concat指令就可以了。
     拼接表达式的处理函数：
 
-    
+
     // r[a] := exp1 .. exp2
     func cgConcatExp(fi *funcInfo, node *ConcatExp, a int) {
         for _, subExp := range node.Exps {
@@ -9637,23 +9637,97 @@ for循环语句
         fi.emitABC(OP_CONCAT, a, b, c)
     }
 
+    对于逻辑与、逻辑或表达式，因为其求值结果 是操作数之一，所以需要进行特殊的处理，生成testset、move指令。处理逻辑放到cgBinopExp：
 
+    // r[a] := exp1 op exp2
+    func cgBinopExp(fi *funcInfo, node *BinopExp, a int) {
+        switch node.Op {
+        case TOKEN_OP_AND, TOKEN_OP_OR:
+            b := fi.allocReg()
+            cgExp(fi, node.Exp1, b, 1)
+            fi.freeReg()
+            if node.Op == TOKEN_OP_AND {
+                fi.emitTestSet(a, b, 0)
+            } else {
+                fi.emitTestSet(a, b, 1)
+            }
+            pcOfJmp := fi.emitJmp(0, 0)
 
+            b = fi.allocReg()
+            cgExp(fi, node.Exp2, b, 1)
+            fi.freeReg()
+            fi.emitMove(a, b)
+            fi.fixSbx(pcOfJmp, fi.pc()-pcOfJmp)
+        default:
+            b := fi.allocReg()
+            cgExp(fi, node.Exp1, b, 1)
+            c := fi.allocReg()
+            cgExp(fi, node.Exp2, c, 1)
+            fi.emitBinaryOp(node.Op, a, b, c)
+            fi.freeRegs(2)
+        }
+    }
 
+    对于其他的二元运算符表达式，给两个操作数分配临时变量，并对表达式求值，然后生成相应的二元运算符指令，并释放临时变量就可以了。
 
+    // r[a] := exp1 op exp2
+    func cgBinopExp(fi *funcInfo, node *BinopExp, a int) {
+        switch node.Op {
+            。。。。。。
+        default:
+            b := fi.allocReg()
+            cgExp(fi, node.Exp1, b, 1)
+            c := fi.allocReg()
+            cgExp(fi, node.Exp2, c, 1)
+            fi.emitBinaryOp(node.Op, a, b, c)
+            fi.freeRegs(2)
+        }
+    }
 
+    emitBinaryOp位于func_info.go
 
+    // r[a] = rk[b] op rk[c]
+    // arith & bitwise & relational
+    func (self *funcInfo) emitBinaryOp(op, a, b, c int) {
+        if opcode, found := arithAndBitwiseBinops[op]; found {
+            self.emitABC(opcode, a, b, c)
+        } else {
+            switch op {
+            case TOKEN_OP_EQ:
+                self.emitABC(OP_EQ, 1, b, c)
+            case TOKEN_OP_NE:
+                self.emitABC(OP_EQ, 0, b, c)
+            case TOKEN_OP_LT:
+                self.emitABC(OP_LT, 1, b, c)
+            case TOKEN_OP_GT:
+                self.emitABC(OP_LT, 1, c, b)
+            case TOKEN_OP_LE:
+                self.emitABC(OP_LE, 1, b, c)
+            case TOKEN_OP_GE:
+                self.emitABC(OP_LE, 1, c, b)
+            }
+            self.emitJmp(0, 1)
+            self.emitLoadBool(a, 0, 1)
+            self.emitLoadBool(a, 1, 0)
+        }
+    }
 
+    比较运算符，因为对应的指令只有三条，另外需要搭配jmp和loadbool指令一起使用。其他的运算符都有对应的值ing，对应关系如下，也定义在func_info.go中：
 
-
-
-
-
-
-
-
-
-
+        var arithAndBitwiseBinops = map[int]int{
+        TOKEN_OP_ADD:  OP_ADD,
+        TOKEN_OP_SUB:  OP_SUB,
+        TOKEN_OP_MUL:  OP_MUL,
+        TOKEN_OP_MOD:  OP_MOD,
+        TOKEN_OP_POW:  OP_POW,
+        TOKEN_OP_DIV:  OP_DIV,
+        TOKEN_OP_IDIV: OP_IDIV,
+        TOKEN_OP_BAND: OP_BAND,
+        TOKEN_OP_BOR:  OP_BOR,
+        TOKEN_OP_BXOR: OP_BXOR,
+        TOKEN_OP_SHL:  OP_SHL,
+        TOKEN_OP_SHR:  OP_SHR,
+    }
 
 
 

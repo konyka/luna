@@ -2,13 +2,28 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 21:10:59
+* @Last Modified time: 2019-05-04 23:10:48
 */
 package codegen
 
 import . "lunago/compiler/ast"
 import . "lunago/compiler/lexer"
 import . "lunago/vm"
+
+var arithAndBitwiseBinops = map[int]int{
+    TOKEN_OP_ADD:  OP_ADD,
+    TOKEN_OP_SUB:  OP_SUB,
+    TOKEN_OP_MUL:  OP_MUL,
+    TOKEN_OP_MOD:  OP_MOD,
+    TOKEN_OP_POW:  OP_POW,
+    TOKEN_OP_DIV:  OP_DIV,
+    TOKEN_OP_IDIV: OP_IDIV,
+    TOKEN_OP_BAND: OP_BAND,
+    TOKEN_OP_BOR:  OP_BOR,
+    TOKEN_OP_BXOR: OP_BXOR,
+    TOKEN_OP_SHL:  OP_SHL,
+    TOKEN_OP_SHR:  OP_SHR,
+}
 
 type funcInfo struct {
     constants map[interface{}]int
