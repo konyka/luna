@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 21:08:30
+* @Last Modified time: 2019-05-04 21:10:59
 */
 package codegen
 
@@ -468,3 +468,30 @@ func (self *funcInfo) closeOpenUpvals() {
         self.emitJmp(a, 0)
     }
 }
+
+func (self *funcInfo) getJmpArgA() int {
+    hasCapturedLocVars := false
+    minSlotOfLocVars := self.maxRegs
+    for _, locVar := range self.locNames {
+        if locVar.scopeLv == self.scopeLv {
+            for v := locVar; v != nil && v.scopeLv == self.scopeLv; v = v.prev {
+                if v.captured {
+                    hasCapturedLocVars = true
+                }
+                if v.slot < minSlotOfLocVars && v.name[0] != '(' {
+                    minSlotOfLocVars = v.slot
+                }
+            }
+        }
+    }
+    if hasCapturedLocVars {
+        return minSlotOfLocVars + 1
+    } else {
+        return 0
+    }
+}
+
+
+
+
+

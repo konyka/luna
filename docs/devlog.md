@@ -9065,7 +9065,7 @@ Upvalue表
 
     当居于变量退出作用域的时候，调用 closeOpenUpvals 把处于开启状态的Upvalue 闭合。如果有需要处理的局部变量，这个方法就会产生一个jmp指令，其操作数A指出了需要处理的第一个局部变量的寄存器索引。代码：
     compiler/codegen/func_info.go
-    
+
     func (self *funcInfo) closeOpenUpvals() {
         a := self.getJmpArgA()
         if a > 0 {
@@ -9073,10 +9073,29 @@ Upvalue表
         }
     }
 
+    通过getJmpArgA获取jmp指令的操作数A：
 
-
-
-
+    func (self *funcInfo) getJmpArgA() int {
+        hasCapturedLocVars := false
+        minSlotOfLocVars := self.maxRegs
+        for _, locVar := range self.locNames {
+            if locVar.scopeLv == self.scopeLv {
+                for v := locVar; v != nil && v.scopeLv == self.scopeLv; v = v.prev {
+                    if v.captured {
+                        hasCapturedLocVars = true
+                    }
+                    if v.slot < minSlotOfLocVars && v.name[0] != '(' {
+                        minSlotOfLocVars = v.slot
+                    }
+                }
+            }
+        }
+        if hasCapturedLocVars {
+            return minSlotOfLocVars + 1
+        } else {
+            return 0
+        }
+    }    
 
 
 
