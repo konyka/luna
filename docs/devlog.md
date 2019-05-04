@@ -7396,8 +7396,8 @@ Chunk和块
 
     package parser
 
-    import . "luago/compiler/ast"
-    import . "luago/compiler/lexer"
+    import . "lunago/compiler/ast"
+    import . "lunago/compiler/lexer"
 
     // block ::= {stat} [retstat]
     func parseBlock(lexer *Lexer) *Block {
@@ -7512,21 +7512,84 @@ Chunk和块
         return exps
     }
 
+解析语句
+
+    lua有15中语句
+
+    stat ::=  ‘;’ | 
+         varlist ‘=’ explist | 
+         functioncall | 
+         label | 
+         break | 
+         goto Name | 
+         do block end | 
+         while exp do block end | 
+         repeat block until exp | 
+         if exp then block {elseif exp then block} [else block] end | 
+         for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end | 
+         for namelist in explist do block end | 
+         function funcname funcbody | 
+         local function Name funcbody | 
+         local namelist [‘=’ explist] 
 
 
+  通过前瞻一个token，可以锁定其中的13种语句，对于局部变量声明和局部函数定义语句，需要前瞻2个token才能确定要解析哪一种；对于for循环语句，则需要前瞻3个token才能确定解析数值for循环 还是通用for循环。
+  剩下的函数调用和赋值两种，只能想别的办法了。
 
+  compiler/parser/parse_stat.go
 
+  定义函数
 
+    package parser
 
+    import . "lunago/compiler/ast"
+    import . "lunago/compiler/lexer"
 
-
-
-
-
-
-
-
-
+    /*
+    stat ::=  ‘;’
+        | break
+        | ‘::’ Name ‘::’
+        | goto Name
+        | do block end
+        | while exp do block end
+        | repeat block until exp
+        | if exp then block {elseif exp then block} [else block] end
+        | for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end
+        | for namelist in explist do block end
+        | function funcname funcbody
+        | local function Name funcbody
+        | local namelist [‘=’ explist]
+        | varlist ‘=’ explist
+        | functioncall
+    */
+    func parseStat(lexer *Lexer) Stat {
+        switch lexer.LookAhead() {
+        case TOKEN_SEP_SEMI:
+            return parseEmptyStat(lexer)
+        case TOKEN_KW_BREAK:
+            return parseBreakStat(lexer)
+        case TOKEN_SEP_LABEL:
+            return parseLabelStat(lexer)
+        case TOKEN_KW_GOTO:
+            return parseGotoStat(lexer)
+        case TOKEN_KW_DO:
+            return parseDoStat(lexer)
+        case TOKEN_KW_WHILE:
+            return parseWhileStat(lexer)
+        case TOKEN_KW_REPEAT:
+            return parseRepeatStat(lexer)
+        case TOKEN_KW_IF:
+            return parseIfStat(lexer)
+        case TOKEN_KW_FOR:
+            return parseForStat(lexer)
+        case TOKEN_KW_FUNCTION:
+            return parseFuncDefStat(lexer)
+        case TOKEN_KW_LOCAL:
+            return parseLocalAssignOrFuncDefStat(lexer)
+        default:
+            return parseAssignOrFuncCallStat(lexer)
+        }
+    }
 
 
 
