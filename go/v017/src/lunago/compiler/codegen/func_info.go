@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 11:38:40
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 12:59:00
+* @Last Modified time: 2019-05-04 13:06:23
 */
 package codegen
 
@@ -17,6 +17,7 @@ type funcInfo struct {
     scopeLv   int
     locVars   []*locVarInfo
     locNames  map[string]*locVarInfo
+    breaks    [][]int
     //to do
 }
 

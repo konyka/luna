@@ -8658,18 +8658,31 @@ removeLocVar中
         }
     }   
 
+    先回收寄存器，然后检查是否有其他同名的局部变量，如果没有，则直接解绑局部变量名即可。如果有，并且在同一个作用域中，则递归调用removeLocVar进行处理。否则，同名的局部变零就在更外层的作用域中，需要把局部变量名与该局部变量重新绑定。
+
+ break表   
+
+    在for、repeat、while语句块的内部，可以使用break语句打断循环，。break语句处理起来有两个难点：
+    1、break 语句可能在更深层次的块中，所以需要穿透块找到距离break语句最接近的那个or、repeat、while块
+    2、break语句泗洪跳转指令实现，但是在处理break语句的时候，块可能还没有结束，所以跳转的目的地址还不确定。
+
+    为了解决这两个问题，需要把跳转指定的地址记录在对应的or、repeat、while块中，等到块结束的时候在修复跳转的目标地址。
+
+    给结构体funcInfo增加breaks字段
+
+    type funcInfo struct {
+         constants map[interface{}]int
+         usedRegs  int
+         maxRegs   int
+         scopeLv   int
+         locVars   []*locVarInfo
+         locNames  map[string]*locVarInfo
+         breaks    [][]int
+        //to do
+    }
 
 
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
