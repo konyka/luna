@@ -8190,9 +8190,32 @@ for循环语句
     }  
 
 
+    字段由函数 _parseField 解析
 
+    // field ::= ‘[’ exp ‘]’ ‘=’ exp | Name ‘=’ exp | exp
+    func _parseField(lexer *Lexer) (k, v Exp) {
+        if lexer.LookAhead() == TOKEN_SEP_LBRACK {
+            lexer.NextToken()                       // [
+            k = parseExp(lexer)                     // exp
+            lexer.NextTokenOfKind(TOKEN_SEP_RBRACK) // ]
+            lexer.NextTokenOfKind(TOKEN_OP_ASSIGN)  // =
+            v = parseExp(lexer)                     // exp
+            return
+        }
 
+        exp := parseExp(lexer)
+        if nameExp, ok := exp.(*NameExp); ok {
+            if lexer.LookAhead() == TOKEN_OP_ASSIGN {
+                // Name ‘=’ exp => ‘[’ LiteralString ‘]’ = exp
+                lexer.NextToken()
+                k = &StringExp{nameExp.Line, nameExp.Name}
+                v = parseExp(lexer)
+                return
+            }
+        }
 
+        return nil, exp
+    }
 
 
 

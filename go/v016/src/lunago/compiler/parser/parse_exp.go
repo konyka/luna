@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:33:46
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:30:56
+* @Last Modified time: 2019-05-04 10:32:15
 */
 
 package parser
@@ -362,5 +362,34 @@ func _isFieldSep(tokenKind int) bool {
     return tokenKind == TOKEN_SEP_COMMA || tokenKind == TOKEN_SEP_SEMI
 }
 
+/**
+ * field ::= ‘[’ exp ‘]’ ‘=’ exp | Name ‘=’ exp | exp
+ * @Author   konyka
+ * @DateTime 2019-05-04T10:32:14+0800
+ * @param    {[type]}                 lexer *Lexer)       (k, v Exp [description]
+ * @return   {[type]}                       [description]
+ */
+func _parseField(lexer *Lexer) (k, v Exp) {
+    if lexer.LookAhead() == TOKEN_SEP_LBRACK {
+        lexer.NextToken()                       // [
+        k = parseExp(lexer)                     // exp
+        lexer.NextTokenOfKind(TOKEN_SEP_RBRACK) // ]
+        lexer.NextTokenOfKind(TOKEN_OP_ASSIGN)  // =
+        v = parseExp(lexer)                     // exp
+        return
+    }
 
+    exp := parseExp(lexer)
+    if nameExp, ok := exp.(*NameExp); ok {
+        if lexer.LookAhead() == TOKEN_OP_ASSIGN {
+            // Name ‘=’ exp => ‘[’ LiteralString ‘]’ = exp
+            lexer.NextToken()
+            k = &StringExp{nameExp.Line, nameExp.Name}
+            v = parseExp(lexer)
+            return
+        }
+    }
+
+    return nil, exp
+}
 
