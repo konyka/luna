@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:33:46
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:28:56
+* @Last Modified time: 2019-05-04 10:30:56
 */
 
 package parser
@@ -355,7 +355,12 @@ func _parseFieldList(lexer *Lexer) (ks, vs []Exp) {
     return
 }
 
-
+/**
+ * fieldsep ::= ‘,’ | ‘;’
+ */
+func _isFieldSep(tokenKind int) bool {
+    return tokenKind == TOKEN_SEP_COMMA || tokenKind == TOKEN_SEP_SEMI
+}
 
 
 

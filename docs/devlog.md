@@ -8184,7 +8184,10 @@ for循环语句
     因为字段列表的末尾允许有可以可选的分隔符，所以有点麻烦。
     字段分隔符可以是逗号或者分号
 
-    
+    // fieldsep ::= ‘,’ | ‘;’
+    func _isFieldSep(tokenKind int) bool {
+        return tokenKind == TOKEN_SEP_COMMA || tokenKind == TOKEN_SEP_SEMI
+    }  
 
 
 
