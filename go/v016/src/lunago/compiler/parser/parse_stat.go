@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 09:13:14
+* @Last Modified time: 2019-05-04 09:24:14
 */
 
 package parser
@@ -238,11 +238,56 @@ func parseLocalAssignOrFuncDefStat(lexer *Lexer) Stat {
 }
 
 
+/*
+http://www.lua.org/manual/5.3/manual.html#3.4.11
+function f() end          =>  f = function() end
+function t.a.b.c.f() end  =>  t.a.b.c.f = function() end
+function t.a.b.c:f() end  =>  t.a.b.c.f = function(self) end
+local function f() end    =>  local f; f = function() end
+The statement `local function f () body end`
+translates to `local f; f = function () body end`
+not to `local f = function () body end`
+(This only makes a difference when the body of the function
+ contains references to f.)
+*/
+/**
+ * local function Name funcbody
+ */
+func _finishLocalFuncDefStat(lexer *Lexer) *LocalFuncDefStat {
+    lexer.NextTokenOfKind(TOKEN_KW_FUNCTION) // local function
+    _, name := lexer.NextIdentifier()        // name
+    fdExp := parseFuncDefExp(lexer)          // funcbody
+    return &LocalFuncDefStat{name, fdExp}
+}
+
+/**
+ * local namelist [‘=’ explist]
+ */
+func _finishLocalVarDeclStat(lexer *Lexer) *LocalVarDeclStat {
+    _, name0 := lexer.NextIdentifier()        // local Name
+    nameList := _finishNameList(lexer, name0) // { , Name }
+    var expList []Exp = nil
+    if lexer.LookAhead() == TOKEN_OP_ASSIGN {
+        lexer.NextToken()             // ==
+        expList = parseExpList(lexer) // explist
+    }
+    lastLine := lexer.Line()
+    return &LocalVarDeclStat{lastLine, nameList, expList}
+}
 
 
-
-
-
+/**
+ * varlist ‘=’ explist
+ * functioncall
+ */
+func parseAssignOrFuncCallStat(lexer *Lexer) Stat {
+    prefixExp := parsePrefixExp(lexer)
+    if fc, ok := prefixExp.(*FuncCallExp); ok {
+        return fc
+    } else {
+        return parseAssignStat(lexer, prefixExp)
+    }
+}
 
 
 

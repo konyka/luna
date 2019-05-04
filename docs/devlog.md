@@ -7790,22 +7790,51 @@ for循环语句
         }
     }
 
+    跳过local关键值，然后前瞻一个token，如果是是关键字funciton，就解析局部函数定义语句，否则解析局部变量声明语句。
+    局部函数定义语句的解析函数：
+
+    func _finishLocalFuncDefStat(lexer *Lexer) *LocalFuncDefStat {
+        lexer.NextTokenOfKind(TOKEN_KW_FUNCTION) // local function
+        _, name := lexer.NextIdentifier()        // name
+        fdExp := parseFuncDefExp(lexer)          // funcbody
+        return &LocalFuncDefStat{name, fdExp}
+    }
+
+    跳过关键字function，读取标识符，剩下的工作交给parseFuncDefExp完成，等会在说它。
+
+    局部变量声明语句的解析函数
+
+    // local namelist [‘=’ explist]
+    func _finishLocalVarDeclStat(lexer *Lexer) *LocalVarDeclStat {
+        _, name0 := lexer.NextIdentifier()        // local Name
+        nameList := _finishNameList(lexer, name0) // { , Name }
+        var expList []Exp = nil
+        if lexer.LookAhead() == TOKEN_OP_ASSIGN {
+            lexer.NextToken()             // ==
+            expList = parseExpList(lexer) // explist
+        }
+        lastLine := lexer.Line()
+        return &LocalVarDeclStat{lastLine, nameList, expList}
+    }
+
+赋值和函数调用语句
+    赋值和函数调用语句都以前缀表达式开始，而前缀表达式又是任意长度，所以需要有栈栈无限个token的能力才能区分着两种语句，或者借助回溯来解析。不过分析这两种语句的语法规则后，不难看到，函数调用既可以是语句，也可以是前缀表达式，单一定不是var表达式，据此，可以先解析一个前缀表达式，然后看看它是不是函数调用，如果是，那么解析出来的实际上就是一条函数调用语句；反之，解析出来的必须是一个var表达式，继续解析剩余的复制语句就可以了。
+
+    parseAssignOrFuncCallStat（）函数的定义如下
+
+    // varlist ‘=’ explist
+    // functioncall
+    func parseAssignOrFuncCallStat(lexer *Lexer) Stat {
+        prefixExp := parsePrefixExp(lexer)
+        if fc, ok := prefixExp.(*FuncCallExp); ok {
+            return fc
+        } else {
+            return parseAssignStat(lexer, prefixExp)
+        }
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
