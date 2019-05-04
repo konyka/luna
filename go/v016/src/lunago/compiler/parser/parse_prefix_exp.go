@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 10:36:43
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:41:28
+* @Last Modified time: 2019-05-04 10:45:45
 */
 
 package parser
@@ -55,6 +55,22 @@ func _finishPrefixExp(lexer *Lexer, exp Exp) Exp {
     return exp
 }
 
+/**
+ * 圆括号表达式的解析函数
+ */
+func parseParensExp(lexer *Lexer) Exp {
+    lexer.NextTokenOfKind(TOKEN_SEP_LPAREN) // (
+    exp := parseExp(lexer)                  // exp
+    lexer.NextTokenOfKind(TOKEN_SEP_RPAREN) // )
+
+    switch exp.(type) {
+    case *VarargExp, *FuncCallExp, *NameExp, *TableAccessExp:
+        return &ParensExp{exp}
+    }
+
+    // no need to keep parens
+    return exp
+}
 
 
 

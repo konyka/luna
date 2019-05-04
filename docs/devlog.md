@@ -8266,14 +8266,27 @@ for循环语句
         return exp
     }
 
+    表和字段访问表达式比较简单，直接在case中解析，顺便把字段访问表达式转换成了表访问表达式。函数调用表达式有点复杂，放到函数 _finishFuncCallExp 里面解析
 
 
+圆括号表达式
+    圆括号表达式的解析函数
+    
+    func parseParensExp(lexer *Lexer) Exp {
+        lexer.NextTokenOfKind(TOKEN_SEP_LPAREN) // (
+        exp := parseExp(lexer)                  // exp
+        lexer.NextTokenOfKind(TOKEN_SEP_RPAREN) // )
 
+        switch exp.(type) {
+        case *VarargExp, *FuncCallExp, *NameExp, *TableAccessExp:
+            return &ParensExp{exp}
+        }
 
+        // no need to keep parens
+        return exp
+    }
 
-
-
-
+    
 
 
 
