@@ -8243,7 +8243,28 @@ for循环语句
 
     前缀表达式只能以标识符或者左圆括号开始，所以先前瞻一个token，根据情况解析出标识符或者圆括号表达式，然后调用函数 _finishPrefixExp 完成后续的解析工作。
 
-
+    func _finishPrefixExp(lexer *Lexer, exp Exp) Exp {
+        for {
+            switch lexer.LookAhead() {
+            case TOKEN_SEP_LBRACK: // prefixexp ‘[’ exp ‘]’
+                lexer.NextToken()                       // ‘[’
+                keyExp := parseExp(lexer)               // exp
+                lexer.NextTokenOfKind(TOKEN_SEP_RBRACK) // ‘]’
+                exp = &TableAccessExp{lexer.Line(), exp, keyExp}
+            case TOKEN_SEP_DOT: // prefixexp ‘.’ Name
+                lexer.NextToken()                    // ‘.’
+                line, name := lexer.NextIdentifier() // Name
+                keyExp := &StringExp{line, name}
+                exp = &TableAccessExp{line, exp, keyExp}
+            case TOKEN_SEP_COLON, // prefixexp ‘:’ Name args
+                TOKEN_SEP_LPAREN, TOKEN_SEP_LCURLY, TOKEN_STRING: // prefixexp args
+                exp = _finishFuncCallExp(lexer, exp)
+            default:
+                return exp
+            }
+        }
+        return exp
+    }
 
 
 

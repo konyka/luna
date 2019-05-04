@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 10:36:43
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 10:37:13
+* @Last Modified time: 2019-05-04 10:41:28
 */
 
 package parser
@@ -31,6 +31,41 @@ func parsePrefixExp(lexer *Lexer) Exp {
     }
     return _finishPrefixExp(lexer, exp)
 }
+
+func _finishPrefixExp(lexer *Lexer, exp Exp) Exp {
+    for {
+        switch lexer.LookAhead() {
+        case TOKEN_SEP_LBRACK: // prefixexp ‘[’ exp ‘]’
+            lexer.NextToken()                       // ‘[’
+            keyExp := parseExp(lexer)               // exp
+            lexer.NextTokenOfKind(TOKEN_SEP_RBRACK) // ‘]’
+            exp = &TableAccessExp{lexer.Line(), exp, keyExp}
+        case TOKEN_SEP_DOT: // prefixexp ‘.’ Name
+            lexer.NextToken()                    // ‘.’
+            line, name := lexer.NextIdentifier() // Name
+            keyExp := &StringExp{line, name}
+            exp = &TableAccessExp{line, exp, keyExp}
+        case TOKEN_SEP_COLON, // prefixexp ‘:’ Name args
+            TOKEN_SEP_LPAREN, TOKEN_SEP_LCURLY, TOKEN_STRING: // prefixexp args
+            exp = _finishFuncCallExp(lexer, exp)
+        default:
+            return exp
+        }
+    }
+    return exp
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
