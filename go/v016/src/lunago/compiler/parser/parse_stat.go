@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 08:41:23
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 08:55:00
+* @Last Modified time: 2019-05-04 08:56:02
 */
 
 package parser
@@ -113,3 +113,24 @@ func parseWhileStat(lexer *Lexer) *WhileStat {
     lexer.NextTokenOfKind(TOKEN_KW_END)   // end
     return &WhileStat{exp, block}
 }
+
+/**
+ * repeat block until exp
+ */
+func parseRepeatStat(lexer *Lexer) *RepeatStat {
+    lexer.NextTokenOfKind(TOKEN_KW_REPEAT) // repeat
+    block := parseBlock(lexer)             // block
+    lexer.NextTokenOfKind(TOKEN_KW_UNTIL)  // until
+    exp := parseExp(lexer)                 // exp
+    return &RepeatStat{block, exp}
+}
+
+
+
+
+
+
+
+
+
+

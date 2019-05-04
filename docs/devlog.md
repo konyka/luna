@@ -7652,9 +7652,16 @@ Chunk和块
         return &WhileStat{exp, block}
     }
 
-    
+    repeat语句
 
-
+    // repeat block until exp
+    func parseRepeatStat(lexer *Lexer) *RepeatStat {
+        lexer.NextTokenOfKind(TOKEN_KW_REPEAT) // repeat
+        block := parseBlock(lexer)             // block
+        lexer.NextTokenOfKind(TOKEN_KW_UNTIL)  // until
+        exp := parseExp(lexer)                 // exp
+        return &RepeatStat{block, exp}
+    }
 
 
 
