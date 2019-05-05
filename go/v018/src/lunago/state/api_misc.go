@@ -2,10 +2,12 @@
 * @Author: konyka
 * @Date:   2019-04-29 15:24:47
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 11:22:38
+* @Last Modified time: 2019-05-05 11:47:46
 */
 
 package state
+
+import "lunago/number"
 
 /**
  * [func 对于长度运算（#），lua首先判断值是不是字符串，如果是，结果就是字符串的长度；
