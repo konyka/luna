@@ -10471,19 +10471,33 @@ for循环语句
 
     先dialingGetTop回去传入参数的数量，然后调用type和CheckString判断第一个参数是不是字符串“#”，如果是，则带哦用PushInteger把参数的数量-1后push到栈顶，然后返回1，这样就把可选参数的数量返回给了Lua，否则第一个参数必须是数字，CheckInteger方法可以做到这一点，接下来，对负数索引进行处理，并调用ArgCheck在索引超出范围的时候报错，最后将末尾的适当数量的参数，当作返回值返回给lua。
 
-    
+
+单元测试
+    修改main.go
+
+    package main
+
+    import "os"
+    import "lunago/state"
+
+    func main() {
+        if len(os.Args) > 1 {
+            ls := state.New()
+            ls.OpenLibs()
+            ls.LoadFile(os.Args[1])
+            ls.Call(0, -1)
+        }
+    }
 
 
+    在辅助api和基础库的帮助下，代码得到了简化。先创建luaState实例，然后调用OpenLibs打开标准库，接着调用LoadFile加载测试脚本，最后调用Call执行脚本。
 
 
+    a$ go run main.go helloworld.lua 
+    hello world！！
 
 
-
-
-
-
-
-
+==============
 
 
 
