@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 14:50:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 16:08:24
+* @Last Modified time: 2019-05-05 16:10:29
 */
 
 package stdlib
@@ -62,7 +62,21 @@ func OpenPackageLib(ls LuaState) int {
     return 1                /* return 'package' table */
 }
 
-
+func createSearchersTable(ls LuaState) {
+    searchers := []GoFunction{
+        preloadSearcher,
+        luaSearcher,
+    }
+    /* create 'searchers' table */
+    ls.CreateTable(len(searchers), 0)
+    /* fill it with predefined searchers */
+    for idx, searcher := range searchers {
+        ls.PushValue(-2) /* set 'package' as upvalue for all searchers */
+        ls.PushGoClosure(searcher, 1)
+        ls.RawSetI(-2, int64(idx+1))
+    }
+    ls.SetField(-2, "searchers") /* put it in field 'searchers' */
+}
 
 
 

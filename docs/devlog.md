@@ -11177,9 +11177,23 @@ package.path
 
     把package包以及里面的函数和变量准备好，并把require（）注册到全局表中。
 
+     func createSearchersTable(ls LuaState) {
+        searchers := []GoFunction{
+            preloadSearcher,
+            luaSearcher,
+        }
+        /* create 'searchers' table */
+        ls.CreateTable(len(searchers), 0)
+        /* fill it with predefined searchers */
+        for idx, searcher := range searchers {
+            ls.PushValue(-2) /* set 'package' as upvalue for all searchers */
+            ls.PushGoClosure(searcher, 1)
+            ls.RawSetI(-2, int64(idx+1))
+        }
+        ls.SetField(-2, "searchers") /* put it in field 'searchers' */
+    }   
+
     
-
-
 
 
 
