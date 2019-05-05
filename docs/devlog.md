@@ -11140,7 +11140,15 @@ package.path
         "require": pkgRequire,
     }
 
-
+    var pkgFuncs = map[string]GoFunction{
+        "searchpath": pkgSearchPath,
+        /* placeholders */
+        "preload":   nil,
+        "cpath":     nil,
+        "path":      nil,
+        "searchers": nil,
+        "loaded":    nil,
+    }
 
 
 

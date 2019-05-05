@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 14:50:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 16:04:11
+* @Last Modified time: 2019-05-05 16:04:50
 */
 
 package stdlib
@@ -29,7 +29,15 @@ var llFuncs = map[string]GoFunction{
     "require": pkgRequire,
 }
 
-
+var pkgFuncs = map[string]GoFunction{
+    "searchpath": pkgSearchPath,
+    /* placeholders */
+    "preload":   nil,
+    "cpath":     nil,
+    "path":      nil,
+    "searchers": nil,
+    "loaded":    nil,
+}
 
 
 
