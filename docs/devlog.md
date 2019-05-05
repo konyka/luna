@@ -11655,13 +11655,22 @@ package.path
         return nil
     }
 
+支持线程操作    
 
+    state/api_coroutine.go，实现协程操作相关的方法：
 
+    NewThread（）：
 
+    package state
 
+    import . "lunago/api"
 
-
-
+    func (self *luaState) NewThread() LuaState {
+        t := &luaState{registry: self.registry}
+        t.pushLuaStack(newLuaStack(LUA_MINSTACK, t))
+        self.stack.push(t)
+        return t
+    }
 
 
 
