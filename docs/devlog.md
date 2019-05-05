@@ -10180,9 +10180,16 @@ for循环语句
         return self.LoadFileX(filename, "bt")
     }
 
+    DoString加载并使用保护模式执行字符串：
 
+     func (self *luaState) DoString(str string) bool {
+        return self.LoadString(str) == LUA_OK &&
+            self.PCall(0, LUA_MULTRET, 0) == LUA_OK
+    }   
 
+    api/consts.go中定义常量
 
+    const LUA_MULTRET = -1
 
 
 

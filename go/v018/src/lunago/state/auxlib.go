@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:05:45
+* @Last Modified time: 2019-05-05 10:07:52
 */
 
 package state
@@ -100,7 +100,10 @@ func (self *luaState) LoadFile(filename string) int {
     return self.LoadFileX(filename, "bt")
 }
 
-
+func (self *luaState) DoString(str string) bool {
+    return self.LoadString(str) == LUA_OK &&
+        self.PCall(0, LUA_MULTRET, 0) == LUA_OK
+}
 
 
 
