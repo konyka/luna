@@ -11716,12 +11716,14 @@ package.path
         return self.GetTop()
     }    
 
+    首先把线程状态设置为挂起，然后通知协作方，恢复运行，最后等到再一次恢复运行。Status（）返回线程的当前状态，这个状态保存在coStatus里面，它的值可能是LUA_OK(正常状态)、LUA_YIELD（挂起状态）或者某种错误码（表示线程执行过程中遇到了某种错误）：
+
+    func (self *luaState) Status() int {
+        return self.coStatus
+    }
+
+
     
-
-
-
-
-
 
 
 
