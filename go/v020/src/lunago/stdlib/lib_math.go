@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 12:22:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 12:29:47
+* @Last Modified time: 2019-05-05 16:53:35
 */
 
 package stdlib
@@ -10,7 +10,7 @@ package stdlib
 import "math"
 import "math/rand"
 import . "luago/api"
-import "luago/number"
+import "lunago/number"
 
 var mathLib = map[string]GoFunction{
     "random":     mathRandom,
