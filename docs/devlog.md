@@ -11571,10 +11571,15 @@ package.path
 
 
 
+    XMove()是操作栈的，用于在两个线程的栈之间移动元素
+
+    state/api_stack.go ，实现XMove（）：
 
 
-
-
+    func (self *luaState) XMove(to LuaState, n int) {
+        vals := self.stack.popN(n)
+        to.(*luaState).stack.pushN(vals, n)
+    }
 
 
 

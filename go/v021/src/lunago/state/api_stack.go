@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:43:36
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-28 22:26:59
+* @Last Modified time: 2019-05-05 19:01:27
 */
 
 
@@ -155,7 +155,10 @@ func (self *luaState) SetTop(idx int) {
     }
 }
 
-
+func (self *luaState) XMove(to LuaState, n int) {
+    vals := self.stack.popN(n)
+    to.(*luaState).stack.pushN(vals, n)
+}
 
 
 
