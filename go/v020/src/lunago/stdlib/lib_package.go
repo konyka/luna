@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 14:50:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 15:55:28
+* @Last Modified time: 2019-05-05 16:04:11
 */
 
 package stdlib
@@ -24,6 +24,10 @@ const (
     LUA_EXEC_DIR  = "!"
     LUA_IGMARK    = "-"
 )
+
+var llFuncs = map[string]GoFunction{
+    "require": pkgRequire,
+}
 
 
 

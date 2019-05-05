@@ -11134,9 +11134,11 @@ package.path
         LUA_IGMARK    = "-"
     )
 
+    定义require 、searchpath函数：
 
-
-
+    var llFuncs = map[string]GoFunction{
+        "require": pkgRequire,
+    }
 
 
 
