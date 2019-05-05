@@ -11589,7 +11589,7 @@ package.path
     线程类型其实已经实现一部分了，只不过一致没有说明，那就是结构体luaState。
 
     state/lua_state.go，调整结构体luaState：
-    
+
     
     type luaState struct {
         registry *luaTable
@@ -11601,9 +11601,21 @@ package.path
     }
 
 
+    调整New函数：
 
+    func New() LuaState {
+        ls := &luaState{}
 
+        registry := newLuaTable(8, 0)
+        registry.put(LUA_RIDX_MAINTHREAD, ls)
+        registry.put(LUA_RIDX_GLOBALS, newLuaTable(0, 20))
 
+        ls.registry = registry
+        ls.pushLuaStack(newLuaStack(LUA_MINSTACK, ls))
+        return ls
+    }    
+
+    通过New（）创建的线程就是主线程，将其保存到lua注册表中，放到索引1处，其他线程通过NewThread（）创建
 
 
 
