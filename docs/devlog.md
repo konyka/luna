@@ -11702,13 +11702,21 @@ package.path
         <-lsFrom.coChan // wait coroutine to finish or yield
         return self.coStatus
     }
+
+
+    两个线程通过彼此的coChan相互协作，所以需要在收低用到这个字段的时候进行初始化。对于将要进入运行状态的线程，如果其coChan为nil，说明是首次开始运行，需要启动一个go语言协程（goroutine）来执行其主函数；否则，线程恢复运行，往它的coChan里面随便写个值就可以了。不管线程是首次运行 ，还是恢复运行，从它的coChan里接收一个值，可以等待它执行结束或者挂起。Yield（）可以挂起线程：
+
+    func (self *luaState) Yield(nResults int) int {
+        if self.coCaller == nil { // todo
+            panic("attempt to yield from outside a coroutine")
+        }
+        self.coStatus = LUA_YIELD
+        self.coCaller.coChan <- 1
+        <-self.coChan
+        return self.GetTop()
+    }    
+
     
-
-
-
-
-
-
 
 
 

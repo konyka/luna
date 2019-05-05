@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 19:29:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 19:38:08
+* @Last Modified time: 2019-05-05 19:42:33
 */
 
 package state
@@ -45,6 +45,16 @@ func (self *luaState) Resume(from LuaState, nArgs int) int {
     return self.coStatus
 }
 
+
+func (self *luaState) Yield(nResults int) int {
+    if self.coCaller == nil { // todo
+        panic("attempt to yield from outside a coroutine")
+    }
+    self.coStatus = LUA_YIELD
+    self.coCaller.coChan <- 1
+    <-self.coChan
+    return self.GetTop()
+}
 
 
 
