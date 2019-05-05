@@ -10072,7 +10072,27 @@ for循环语句
         return self.TypeName(self.Type(idx))
     }
    
+     Len2（）获取指定索引处的值的长度，并以整数形式返回，如果获得的长度不是整数（如果调用了__len方法，就可能会许仙这种情况），则抛出错误。
+
+     func (self *luaState) Len2(idx int) int64 {
+        self.Len(idx)
+        i, isNum := self.ToIntegerX(-1)
+        if !isNum {
+            self.Error2("object length is not an integer")
+        }
+        self.Pop(1)
+        return i
+    }
     
+
+
+
+
+
+
+
+
+     ToString2（）、Error2（）、CheckStack2（）
 
 
 
