@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 11:43:32
+* @Last Modified time: 2019-05-05 11:45:40
 */
 
 package state
@@ -267,4 +267,16 @@ func (self *luaState) intError(arg int) {
     }
 }
 
-
+func (self *luaState) typeError(arg int, tname string) int {
+    var typeArg string /* name for the type of the actual argument */
+    if self.GetMetafield(arg, "__name") == LUA_TSTRING {
+        typeArg = self.ToString(-1) /* use the given type name */
+    } else if self.Type(arg) == LUA_TLIGHTUSERDATA {
+        typeArg = "light userdata" /* special name for messages */
+    } else {
+        typeArg = self.TypeName2(arg) /* standard name */
+    }
+    msg := tname + " expected, got " + typeArg
+    self.PushString(msg)
+    return self.ArgError(arg, msg)
+}
