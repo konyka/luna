@@ -11621,9 +11621,16 @@ package.path
         return self.registry.get(LUA_RIDX_MAINTHREAD) == self
     }
 
+    state/lua_value.go 修改typeOf（）函数，添加线程支持：
 
-
-
+    func typeOf(val luaValue) LuaType {
+        switch val.(type) {
+            ......
+        case *luaState:
+            return LUA_TTHREAD
+            ......
+        }
+    }
 
 
 
