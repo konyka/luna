@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 14:50:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 16:10:29
+* @Last Modified time: 2019-05-05 16:13:55
 */
 
 package stdlib
@@ -78,7 +78,14 @@ func createSearchersTable(ls LuaState) {
     ls.SetField(-2, "searchers") /* put it in field 'searchers' */
 }
 
-
+func preloadSearcher(ls LuaState) int {
+    name := ls.CheckString(1)
+    ls.GetField(LUA_REGISTRYINDEX, "_PRELOAD")
+    if ls.GetField(-1, name) == LUA_TNIL { /* not found? */
+        ls.PushString("\n\tno field package.preload['" + name + "']")
+    }
+    return 1
+}
 
 
 

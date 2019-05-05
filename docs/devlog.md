@@ -11177,6 +11177,8 @@ package.path
 
     把package包以及里面的函数和变量准备好，并把require（）注册到全局表中。
 
+    createSearchersTable负责初始化package.searchers表：
+
      func createSearchersTable(ls LuaState) {
         searchers := []GoFunction{
             preloadSearcher,
@@ -11193,16 +11195,25 @@ package.path
         ls.SetField(-2, "searchers") /* put it in field 'searchers' */
     }   
 
+
+    在里面只是放了preload、Lua这两个搜索器，并且把package表设置成了这两个搜索器的upvalue
+
+    preload搜索器的代码：
+
+    func preloadSearcher(ls LuaState) int {
+        name := ls.CheckString(1)
+        ls.GetField(LUA_REGISTRYINDEX, "_PRELOAD")
+        if ls.GetField(-1, name) == LUA_TNIL { /* not found? */
+            ls.PushString("\n\tno field package.preload['" + name + "']")
+        }
+        return 1
+    }
+
+    搜索器通过Upvalue能够访问到package.preload表，然后在离 main查找加载器就可以了。
+
+    lua加载代码：
+
     
-
-
-
-
-
-
-
-
-
 
 
 
