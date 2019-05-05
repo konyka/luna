@@ -11335,12 +11335,28 @@ package.path
     }
 
 
+    简单的package库就实现了，还需要修改辅助api里面的OpenLibs
+    （state/auxlib.go），开启package库：
 
 
+    func (self *luaState) OpenLibs() {
+        libs := map[string]GoFunction{
+            "_G":      stdlib.OpenBaseLib,
+            "math":    stdlib.OpenMathLib,
+            "table":   stdlib.OpenTableLib,
+            "string":  stdlib.OpenStringLib,
+            "utf8":    stdlib.OpenUTF8Lib,
+            "os":      stdlib.OpenOSLib,
+            "package": stdlib.OpenPackageLib,
+        }
 
+        for name, fun := range libs {
+            self.RequireF(name, fun, true)
+            self.Pop(1)
+        }
+    }
 
-
-
+    
 
 
 
