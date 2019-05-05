@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 14:50:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 16:21:21
+* @Last Modified time: 2019-05-05 16:23:41
 */
 
 package stdlib
@@ -174,3 +174,32 @@ func pkgRequire(ls LuaState) int {
     return 1
 }
 
+
+func _findLoader(ls LuaState, name string) {
+    /* push 'package.searchers' to index 3 in the stack */
+    if ls.GetField(LuaUpvalueIndex(1), "searchers") != LUA_TTABLE {
+        ls.Error2("'package.searchers' must be a table")
+    }
+
+    /* to build error message */
+    errMsg := "module '" + name + "' not found:"
+
+    /*  iterate over available searchers to find a loader */
+    for i := int64(1); ; i++ {
+        if ls.RawGetI(3, i) == LUA_TNIL { /* no more searchers? */
+            ls.Pop(1)         /* remove nil */
+            ls.Error2(errMsg) /* create error message */
+        }
+
+        ls.PushString(name)
+        ls.Call(1, 2)          /* call it */
+        if ls.IsFunction(-2) { /* did it find a loader? */
+            return /* module loader found */
+        } else if ls.IsString(-2) { /* searcher returned error message? */
+            ls.Pop(1)                    /* remove extra return */
+            errMsg += ls.CheckString(-1) /* concatenate error message */
+        } else {
+            ls.Pop(2) /* remove both returns */
+        }
+    }
+}
