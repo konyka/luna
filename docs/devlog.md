@@ -10084,15 +10084,23 @@ for循环语句
         return i
     }
     
+    CheckStack2（）调用CheckStack确保栈里面还有足够的剩余空间，必要的时候需要对栈进行扩容。如果空间不足，并且扩容失败，就调用Error2（）抛出错误
+
+     func (self *luaState) CheckStack2(sz int, msg string) {
+        if !self.CheckStack(sz) {
+            if msg != "" {
+                self.Error2("stack overflow (%s)", msg)
+            } else {
+                self.Error2("stack overflow")
+            }
+        }
+    }   
 
 
 
 
 
-
-
-
-     ToString2（）、Error2（）、CheckStack2（）
+     ToString2（）、Error2（）、
 
 
 

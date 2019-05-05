@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 09:46:55
+* @Last Modified time: 2019-05-05 09:48:36
 */
 
 package state
@@ -29,7 +29,15 @@ func (self *luaState) Len2(idx int) int64 {
     return i
 }
 
-
+func (self *luaState) CheckStack2(sz int, msg string) {
+    if !self.CheckStack(sz) {
+        if msg != "" {
+            self.Error2("stack overflow (%s)", msg)
+        } else {
+            self.Error2("stack overflow")
+        }
+    }
+}
 
 
 
