@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-26 13:25:00
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-04-27 13:33:11
+* @Last Modified time: 2019-05-05 08:05:09
 */
 package binchunk
 
@@ -84,4 +84,12 @@ func Undump(data []byte) *Prototype {
 	reader.readByte()		//跳过Upvalue的数量
 	return reader.readProto("")	//读取函数原型信息
 }
+
+func IsBinaryChunk(data []byte) bool {
+	return len(data) > 4 &&
+		string(data[:4]) == LUA_SIGNATURE
+}
+
+
+
 

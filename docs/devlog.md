@@ -9934,20 +9934,18 @@ for循环语句
             proto = compiler.Compile(string(chunk), chunkName)
         }
 
-        c := newLuaClosure(proto)
-        self.stack.push(c)
-        if len(proto.Upvalues) > 0 {
-            env := self.registry.get(LUA_RIDX_GLOBALS)
-            c.upvals[0] = &upvalue{&env}
-        }
-        return LUA_OK
+        ......
     }    
 
 
+    binchunk/binary_chunk.go，添加函数IsBinaryChunk（）：
 
+    func IsBinaryChunk(data []byte) bool {
+        return len(data) > 4 &&
+            string(data[:4]) == LUA_SIGNATURE
+    }
 
-
-
+    这样lua解释器就有了自己的编译器。
 
 
 
