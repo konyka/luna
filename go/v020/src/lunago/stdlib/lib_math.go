@@ -2,14 +2,14 @@
 * @Author: konyka
 * @Date:   2019-05-05 12:22:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 16:53:35
+* @Last Modified time: 2019-05-05 16:54:57
 */
 
 package stdlib
 
 import "math"
 import "math/rand"
-import . "luago/api"
+import . "lunago/api"
 import "lunago/number"
 
 var mathLib = map[string]GoFunction{
