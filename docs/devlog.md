@@ -11723,7 +11723,12 @@ package.path
     }
 
 
+    GetStack（），其实是Lua调试api提供的，先实现一个简单版本，返回线程是否还在运行当中（还有调用栈）：
     
+
+    func (self *luaState) GetStack() bool {
+        return self.stack.prev != nil
+    } 
 
 
 

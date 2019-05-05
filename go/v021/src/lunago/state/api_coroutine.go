@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 19:29:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 19:45:59
+* @Last Modified time: 2019-05-05 19:47:42
 */
 
 package state
@@ -60,6 +60,14 @@ func (self *luaState) Yield(nResults int) int {
 func (self *luaState) Status() int {
     return self.coStatus
 }
+
+/**
+ * debug
+ */
+func (self *luaState) GetStack() bool {
+    return self.stack.prev != nil
+}
+
 
 
 
