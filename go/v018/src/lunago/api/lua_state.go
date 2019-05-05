@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 09:32:09
+* @Last Modified time: 2019-05-05 09:36:36
 */
 
 
@@ -110,7 +110,10 @@ type BasicAPI interface {
 }
 
 
-
+type LuaState interface {
+    BasicAPI
+    AuxLib
+}
 
 
 

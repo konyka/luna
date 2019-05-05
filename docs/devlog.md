@@ -10053,9 +10053,12 @@ for循环语句
         。。。
     }
 
+    然后重新定义接口LuaState，让其扩展BasicAPI和AuxLib接口，
 
-    
-
+    type LuaState interface {
+        BasicAPI
+        AuxLib
+    }
 
 
 
