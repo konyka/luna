@@ -10161,11 +10161,13 @@ for循环语句
 
     LoadString（）：
 
+    func (self *luaState) LoadString(s string) int {
+        return self.Load([]byte(s), s, "bt")
+    }    
+
+    LoadFileX加载文件
+
     
-
-
-
-
 
 
 

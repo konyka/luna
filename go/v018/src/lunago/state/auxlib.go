@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:03:50
+* @Last Modified time: 2019-05-05 10:04:38
 */
 
 package state
@@ -89,7 +89,12 @@ func (self *luaState) LoadString(s string) int {
     return self.Load([]byte(s), s, "bt")
 }
 
-
+func (self *luaState) LoadFileX(filename, mode string) int {
+    if data, err := ioutil.ReadFile(filename); err == nil {
+        return self.Load(data, "@" + filename, mode)
+    }
+    return LUA_ERRFILE
+}
 
 
 
