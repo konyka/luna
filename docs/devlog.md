@@ -11740,14 +11740,26 @@ package.path
     }
 
 
+实现协程库
+
+    stdlib/lib_coroutine.go，实现协程相关的函数，并将其整合到一个map中：
+
+    package stdlib
+
+    import . "lunago/api"
+
+    var coFuncs = map[string]GoFunction{
+        "create":      coCreate,
+        "resume":      coResume,
+        "yield":       coYield,
+        "status":      coStatus,
+        "isyieldable": coYieldable,
+        "running":     coRunning,
+        "wrap":        coWrap,
+    }
 
 
-
-
-
-
-
-
+    
 
 
 
