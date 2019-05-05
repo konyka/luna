@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:24:28
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 19:09:10
+* @Last Modified time: 2019-05-05 19:15:39
 */
 
 
@@ -51,7 +51,9 @@ func (self *luaState) popLuaStack() {
     stack.prev = nil
 }
 
-
+func (self *luaState) isMainThread() bool {
+    return self.registry.get(LUA_RIDX_MAINTHREAD) == self
+}
 
 
 

@@ -11615,7 +11615,11 @@ package.path
         return ls
     }    
 
-    通过New（）创建的线程就是主线程，将其保存到lua注册表中，放到索引1处，其他线程通过NewThread（）创建
+    通过New（）创建的线程就是主线程，将其保存到lua注册表中，放到索引1处，其他线程通过NewThread（）创建.在增加一个isMainThread（）方法，用于判断是不是为主线程。
+
+    func (self *luaState) isMainThread() bool {
+        return self.registry.get(LUA_RIDX_MAINTHREAD) == self
+    }
 
 
 
