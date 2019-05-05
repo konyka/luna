@@ -10499,31 +10499,78 @@ for循环语句
 
 ==============
 
+工具库
+
+数学库   
+
+    数学课数学课通过全局变量math提供了数学相关的常量和函数。其中常量有4个，分别表示整数最大值、整数最小值、浮点数正无穷以及圆周率pi.函数包括三角函数、对数函数以及指数函数的计算、随机数计算、绝对值计算、最大值最小值计算、取整、开平方等23个。
+
+    stdlib/lib_math.go
+
+    定义23个数学函数，并整理到一个map：
+
+     package stdlib
+
+    import "math"
+    import "math/rand"
+    import . "luago/api"
+    import "luago/number"
+
+    var mathLib = map[string]GoFunction{
+        "random":     mathRandom,
+        "randomseed": mathRandomSeed,
+        "max":        mathMax,
+        "min":        mathMin,
+        "exp":        mathExp,
+        "log":        mathLog,
+        "deg":        mathDeg,
+        "rad":        mathRad,
+        "sin":        mathSin,
+        "cos":        mathCos,
+        "tan":        mathTan,
+        "asin":       mathAsin,
+        "acos":       mathAcos,
+        "atan":       mathAtan,
+        "ceil":       mathCeil,
+        "floor":      mathFloor,
+        "fmod":       mathFmod,
+        "modf":       mathModf,
+        "abs":        mathAbs,
+        "sqrt":       mathSqrt,
+        "ult":        mathUlt,
+        "tointeger":  mathToInt,
+        "type":       mathType,
+        /* placeholders */
+        "pi":         nil,
+        "huge":       nil,
+        "maxinteger": nil,
+        "mininteger": nil,
+    }
+   
 
 
+    可以使用go语言的math标准库中的对应函数来实现
 
+    lua语言层面只有数字类型，并不区分整数还是浮点数，不过可以使用math.type（）,可以进一步对数字的类型进行区分，而math.tointeger()，则可以把能够转换为整数的值转换为整数
 
+    定义数学库开启函数：
 
+    func OpenMathLib(ls LuaState) int {
+        ls.NewLib(mathLib)
+        ls.PushNumber(math.Pi)
+        ls.SetField(-2, "pi")
+        ls.PushNumber(math.Inf(1))
+        ls.SetField(-2, "huge")
+        ls.PushInteger(math.MaxInt64)
+        ls.SetField(-2, "maxinteger")
+        ls.PushInteger(math.MinInt64)
+        ls.SetField(-2, "mininteger")
+        return 1
+    }
 
+表库
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
