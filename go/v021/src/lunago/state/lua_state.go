@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:24:28
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 19:07:33
+* @Last Modified time: 2019-05-05 19:09:10
 */
 
 
@@ -28,11 +28,14 @@ type luaState struct {
  * 给New函数增加了两个参数，第一个参数用于指定Lua栈的初始容量，第二个参数传入函数原型，以初始化proto字段。
  * 由于虚拟机肯定是从第一条指令开始执行的，因此pc字段初始化为0就可以了。
  */
-func New() *luaState {
-    registry := newLuaTable(0, 0)
-    registry.put(LUA_RIDX_GLOBALS, newLuaTable(0, 0))
+func New() LuaState {
+    ls := &luaState{}
 
-    ls := &luaState{registry: registry}
+    registry := newLuaTable(8, 0)
+    registry.put(LUA_RIDX_MAINTHREAD, ls)
+    registry.put(LUA_RIDX_GLOBALS, newLuaTable(0, 20))
+
+    ls.registry = registry
     ls.pushLuaStack(newLuaStack(LUA_MINSTACK, ls))
     return ls
 }
