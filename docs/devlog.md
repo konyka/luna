@@ -10228,7 +10228,13 @@ for循环语句
     }    
 
 
+    CheckType（）确保某个参数值属于指定的类型：
 
+    func (self *luaState) CheckType(arg int, t LuaType) {
+        if self.Type(arg) != t {
+            self.tagError(arg, t)
+        }
+    }    
 
 
 

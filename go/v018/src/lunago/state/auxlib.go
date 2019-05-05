@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:18:44
+* @Last Modified time: 2019-05-05 10:19:52
 */
 
 package state
@@ -129,7 +129,11 @@ func (self *luaState) CheckAny(arg int) {
 }
 
 
-
+func (self *luaState) CheckType(arg int, t LuaType) {
+    if self.Type(arg) != t {
+        self.tagError(arg, t)
+    }
+}
 
 
 
