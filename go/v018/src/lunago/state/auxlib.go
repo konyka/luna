@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:34:45
+* @Last Modified time: 2019-05-05 11:37:26
 */
 
 package state
@@ -233,6 +233,15 @@ func (self *luaState) GetSubTable(idx int, fname string) bool {
     return false              /* false, because did not find table there */
 }
 
+func (self *luaState) CallMeta(obj int, event string) bool {
+    obj = self.AbsIndex(obj)
+    if self.GetMetafield(obj, event) == LUA_TNIL { /* no metafield? */
+        return false
+    }
 
+    self.PushValue(obj)
+    self.Call(1, 1)
+    return true
+}
 
 
