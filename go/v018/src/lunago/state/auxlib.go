@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:19:52
+* @Last Modified time: 2019-05-05 10:22:29
 */
 
 package state
@@ -135,7 +135,34 @@ func (self *luaState) CheckType(arg int, t LuaType) {
     }
 }
 
+func (self *luaState) CheckInteger(arg int) int64 {
+    i, ok := self.ToIntegerX(arg)
+    if !ok {
+        self.intError(arg)
+    }
+    return i
+}
 
+// [-0, +0, v]
+// http://www.lua.org/manual/5.3/manual.html#luaL_checknumber
+func (self *luaState) CheckNumber(arg int) float64 {
+    f, ok := self.ToNumberX(arg)
+    if !ok {
+        self.tagError(arg, LUA_TNUMBER)
+    }
+    return f
+}
+
+// [-0, +0, v]
+// http://www.lua.org/manual/5.3/manual.html#luaL_checkstring
+// http://www.lua.org/manual/5.3/manual.html#luaL_checklstring
+func (self *luaState) CheckString(arg int) string {
+    s, ok := self.ToStringX(arg)
+    if !ok {
+        self.tagError(arg, LUA_TSTRING)
+    }
+    return s
+}
 
 
 

@@ -10236,12 +10236,35 @@ for循环语句
         }
     }    
 
+    CheckInteger CheckNumber、CheckString这三个参数确保某个参数值属于指定的类型，并返回该值。
+
+    func (self *luaState) CheckInteger(arg int) int64 {
+        i, ok := self.ToIntegerX(arg)
+        if !ok {
+            self.intError(arg)
+        }
+        return i
+    }
+
+    func (self *luaState) CheckNumber(arg int) float64 {
+        f, ok := self.ToNumberX(arg)
+        if !ok {
+            self.tagError(arg, LUA_TNUMBER)
+        }
+        return f
+    }
 
 
+    func (self *luaState) CheckString(arg int) string {
+        s, ok := self.ToStringX(arg)
+        if !ok {
+            self.tagError(arg, LUA_TSTRING)
+        }
+        return s
+    }    
 
 
-
-
+    
 
 
 
