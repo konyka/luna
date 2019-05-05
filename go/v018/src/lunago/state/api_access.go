@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 17:14:06
+* @Last Modified time: 2019-05-05 11:41:00
 */
 
 package state
@@ -239,7 +239,10 @@ func (self *luaState) RawLen(idx int) uint {
     }
 }
 
-
+func (self *luaState) ToPointer(idx int) interface{} {
+    // todo
+    return self.stack.get(idx)
+}
 
 
 
