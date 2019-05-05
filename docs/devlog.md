@@ -10060,12 +10060,19 @@ for循环语句
         AuxLib
     }
 
+    因为辅助api是建立在基础api之上，所以其中大部分方法实现都不难。照搬lua官方实现中的c代码（lauxlib.c），然后改成go语法。
 
+    辅助api放到state/auxlib.go中
 
+增强版的方法
 
+    TypeName2（）、Len2（）、ToString2（）、Error2（）、CheckStack2（）都是基础api对应方法的增强版本，由于go不支持方法重载，所以在方法名后面添加了数字2，其中  TypeName2（）方法返回指定索引处的值的类型名： 
 
-
-
+     func (self *luaState) TypeName2(idx int) string {
+        return self.TypeName(self.Type(idx))
+    }
+   
+    
 
 
 
