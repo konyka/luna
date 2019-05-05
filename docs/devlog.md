@@ -10047,10 +10047,14 @@ for循环语句
     辅助api中包含的类型和函数要比上面的多，userdata、luaL_Buffer、luaL_Steam、luaL_ref（）、luaL_unref（）等相关的类型和函数没有实现。
 
 
+    api/lua_state.go,LuaState接口 重命名为BasicAPI
+
+    type BasicAPI interface {
+        。。。
+    }
 
 
-
-
+    
 
 
 

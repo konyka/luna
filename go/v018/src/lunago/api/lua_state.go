@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 10:11:27
+* @Last Modified time: 2019-05-05 09:32:09
 */
 
 
@@ -25,7 +25,7 @@ func LuaUpvalueIndex(i int) int {
  * LuaState 接口定义
  * 
  */
-type LuaState interface {
+type BasicAPI interface {
     /* basic stack manipulation */
     GetTop() int
     AbsIndex(idx int) int
