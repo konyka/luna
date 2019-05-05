@@ -9945,16 +9945,52 @@ for循环语句
             string(data[:4]) == LUA_SIGNATURE
     }
 
+    compiler/codegen/cg_exp.go add def cgTailCallExp
+
+    // return f(args)
+    func cgTailCallExp(fi *funcInfo, node *FuncCallExp, a int) {
+        nArgs := prepFuncCall(fi, node, a)
+        fi.emitTailCall(a, nArgs)
+    }
+
+    compiler/codegen/exp_helper.go 
+
+    package codegen
+
+    import . "lunago/compiler/ast"
+
+    func isVarargOrFuncCall(exp Exp) bool {
+        switch exp.(type) {
+        case *VarargExp, *FuncCallExp:
+            return true
+        }
+        return false
+    }
+
+    func removeTailNils(exps []Exp) []Exp {
+        for n := len(exps) - 1; n >= 0; n-- {
+            if _, ok := exps[n].(*NilExp); !ok {
+                return exps[0 : n+1]
+            }
+        }
+        return nil
+    }
+
     这样lua解释器就有了自己的编译器。
 
 
+单元测试
+    export GOPATH=$PWD/v017
 
+    $ go run main.go helloworld.lua 
+    hello world！！！
+    
 
+==============
 
+辅助api和基础库
 
-
-
-
+    
 
 
 
