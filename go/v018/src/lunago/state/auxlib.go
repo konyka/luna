@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 12:02:35
+* @Last Modified time: 2019-05-05 12:03:31
 */
 
 package state
@@ -285,3 +285,11 @@ func (self *luaState) NewLib(l FuncReg) {
     self.NewLibTable(l)
     self.SetFuncs(l, 0)
 }
+
+func (self *luaState) NewLibTable(l FuncReg) {
+    self.CreateTable(0, len(l))
+}
+
+
+
+
