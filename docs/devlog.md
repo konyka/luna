@@ -10333,7 +10333,7 @@ for循环语句
 
     GetSubTable检查指定索引处的表的某个字段是不是表，如果是，就把这个子表push到栈顶，并返回；
     否则，创建一个空表，赋值给这个字段，并返回false
-    
+
     func (self *luaState) GetSubTable(idx int, fname string) bool {
         if self.GetField(idx, fname) == LUA_TTABLE {
             return true /* table already there */
@@ -10347,27 +10347,84 @@ for循环语句
     }
 
 
+基础库
 
+    基础库为lua语言提供了最基本的扩展
 
+    说明   
+   基础库是通过全局变量的形式提供的。基础库一共提供了24个全局变量，其中
+   _VERSION是字符串类型的变量，表示lua的版本号。_G是表类型的变量，全局变量实际上是某个表的字段，这个表就是_G。剩下的22个全局变量是函数类型，称之为全局函数。  
 
+   这22个全局函数，大致上可以分为类型相关、错误处理相关、迭代器相关、元编程相关、加载等六种。
 
+   元编程函数包括getmetatable\setmetatable\rawget\rawset\rawlen\rawequal 六个。
+   其中rawget(t, k)基本上等同于t[k],rawset(t, k, v)基本上等同于t[k] = v,rawlen(v)基本上等同于#v,rawequal(u, v)基本上等同于u == v,不过会忽略元方法。
 
+   迭代器函数包括next、pairs、ipairs三个
 
+   错误处理相关包括error、pcall、xpcall、assert四个
 
+   类型相关包括type、tonumber、tostring三个
 
+   加载相关包括load、loadfile、dofile三个
 
+   其余函数包括print、select、require三个
 
+基础库的实现
 
+    stdlib/lib_basic.go 定义基础库的函数，并将其整合到一个map中
 
+    package stdlib
 
+    import "fmt"
+    import "strconv"
+    import "strings"
+    import . "lunago/api"
 
+    var baseFuncs = map[string]GoFunction{
+        "print":        basePrint,
+        "assert":       baseAssert,
+        "error":        baseError,
+        "select":       baseSelect,
+        "ipairs":       baseIPairs,
+        "pairs":        basePairs,
+        "next":         baseNext,
+        "load":         baseLoad,
+        "loadfile":     baseLoadFile,
+        "dofile":       baseDoFile,
+        "pcall":        basePCall,
+        "xpcall":       baseXPCall,
+        "getmetatable": baseGetMetatable,
+        "setmetatable": baseSetMetatable,
+        "rawequal":     baseRawEqual,
+        "rawlen":       baseRawLen,
+        "rawget":       baseRawGet,
+        "rawset":       baseRawSet,
+        "type":         baseType,
+        "tostring":     baseToString,
+        "tonumber":     baseToNumber,
+    }
 
-
-
-
-
-
-
+    func basePrint(ls LuaState) int {
+        n := ls.GetTop() /* number of arguments */
+        ls.GetGlobal("tostring")
+        for i := 1; i <= n; i++ {
+            ls.PushValue(-1) /* function to be called */
+            ls.PushValue(i)  /* value to print */
+            ls.Call(1, 1)
+            s, ok := ls.ToStringX(-1) /* get result */
+            if !ok {
+                return ls.Error2("'tostring' must return a string to 'print'")
+            }
+            if i > 1 {
+                fmt.Print("\t")
+            }
+            fmt.Print(s)
+            ls.Pop(1) /* pop result */
+        }
+        fmt.Println()
+        return 0
+    }
 
 
 
