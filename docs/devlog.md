@@ -11256,11 +11256,24 @@ package.path
 
     pkgSearchPath的代码：
 
-    
+
+    func pkgSearchPath(ls LuaState) int {
+        name := ls.CheckString(1)
+        path := ls.CheckString(2)
+        sep := ls.OptString(3, ".")
+        rep := ls.OptString(4, LUA_DIRSEP)
+        if filename, errMsg := _searchPath(name, path, sep, rep); errMsg == "" {
+            ls.PushString(filename)
+            return 1
+        } else {
+            ls.PushNil()
+            ls.PushString(errMsg)
+            return 2
+        }
+    }
 
 
-
-
+    因为_searchPath处理了大部分的处理，所以pkgSearchPath实现起来也很简单。
 
 
 
