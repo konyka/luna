@@ -10570,64 +10570,190 @@ for循环语句
 
 表库
 
+  虽说是表库，不过其函数也是通过全局变量table来实现的，但是这些函数其实都是针对数组或者列表进行操作，而非关联表。一共有7个函数，move用于在同一个数组或者两个数组之间移动元素，insert用于向数组插入元素，remove用于从数组中删除元素，sort用于对数组进行排序，concat可以把数组拼接为字符串，pack把参数打包为数组，unpack把数组解包后返回。   
+
+  stdlib/lib_table.go，定义函数，并整合到一个map中：
+
+  package stdlib
+
+    import "sort"
+    import "strings"
+    import . "lunago/api"
+
+
+    var tabFuncs = map[string]GoFunction{
+        "move":   tabMove,
+        "insert": tabInsert,
+        "remove": tabRemove,
+        "sort":   tabSort,
+        "concat": tabConcat,
+        "pack":   tabPack,
+        "unpack": tabUnpack,
+    }
+
+    .....
+
+    表库只提供了函数，并没有提供变量，开启函数比较容易：
+
     
+    func OpenTableLib(ls LuaState) int {
+        ls.NewLib(tabFuncs)
+        return 1
+    }
 
 
+    concat实现：
+
+    func tabConcat(ls LuaState) int {
+        tabLen := _auxGetN(ls, 1, TAB_R)
+        sep := ls.OptString(2, "")
+        i := ls.OptInteger(3, 1)
+        j := ls.OptInteger(4, tabLen)
+
+        if i > j {
+            ls.PushString("")
+            return 1
+        }
+
+        buf := make([]string, j-i+1)
+        for k := i; k > 0 && k <= j; k++ {
+            ls.GetI(1, k)
+            if !ls.IsString(-1) {
+                ls.Error2("invalid value (%s) at index %d in table for 'concat'",
+                    ls.TypeName2(-1), i)
+            }
+            buf[k-i] = ls.ToString(-1)
+            ls.Pop(1)
+        }
+        ls.PushString(strings.Join(buf, sep))
+
+        return 1
+    }
 
 
+    需要说的是：
+
+    1、虽然lua也提供了拼接运算符，不过如果要拼接的值比较多，还是先把它们整合到数组中，然后在通过table.concat进行拼接效率会更好一些
+    2、数组中的元素，必须全部是字符串或者数字，否则table.concat就会抛出错误
+    3、go语言的strings标准库提供了一个Join函数，正好可以用来实现table.concat
 
 
+    sort实现：
+
+    func tabSort(ls LuaState) int {
+        w := wrapper{ls}
+        ls.ArgCheck(w.Len() < MAX_LEN, 1, "array too big")
+        sort.Sort(w)
+        return 0
+    }
+
+    可以使用go语言sort标准库中的Sort实现table.sort函数。不过呢，需要对LuaState接口进行一个简单的封装，提供Len、Less、Swap三个方法：
+
+    结构体wrapper：
+
+    type wrapper struct {
+        ls LuaState
+    }   
+
+    Len直接返回需要进行排序的数组长度  
+
+    func (self wrapper) Len() int {
+        return int(self.ls.Len2(1))
+    }
+
+    Less：
+
+     func (self wrapper) Less(i, j int) bool {
+        ls := self.ls
+        if ls.IsFunction(2) { // cmp is given
+            ls.PushValue(2)
+            ls.GetI(1, int64(i+1))
+            ls.GetI(1, int64(j+1))
+            ls.Call(2, 1)
+            b := ls.ToBoolean(-1)
+            ls.Pop(1)
+            return b
+        } else { // cmp is missing
+            ls.GetI(1, int64(i+1))
+            ls.GetI(1, int64(j+1))
+            b := ls.Compare(-2, -1, LUA_OPLT)
+            ls.Pop(2)
+            return b
+        }
+    }   
+
+    如果用户提供了比较函数，则通过这个函数对两个数组进行比较，否则默认通过<运算符对两个数组元素进行比较
+
+    Swap：
+
+    func (self wrapper) Swap(i, j int) {
+        ls := self.ls
+        ls.GetI(1, int64(i+1))
+        ls.GetI(1, int64(j+1))
+        ls.SetI(1, int64(i+1))
+        ls.SetI(1, int64(j+1))
+    }    
+
+字符串库
+
+    通过全局变量string提供了一些常用的字符串操作函数，比如反转、提取子串、格式化等，还可以进行模式匹配、通过类似正则表达式的模式对字符串进行搜索和替换等。
+
+    需要说的是，字符串库还给字符串类型设置了元表和__index元方法，这样就可以通过面相对象的方式来使用字符串库了
+
+    stdlib/lib_string.go，定义函数，并整合到一个map中：
 
 
+    package stdlib
+
+    import "fmt"
+    import "strings"
+    import . "lunago/api"
+
+    var strLib = map[string]GoFunction{
+        "len":      strLen,
+        "rep":      strRep,
+        "reverse":  strReverse,
+        "lower":    strLower,
+        "upper":    strUpper,
+        "sub":      strSub,
+        "byte":     strByte,
+        "char":     strChar,
+        "dump":     strDump,
+        "format":   strFormat,
+        "packsize": strPackSize,
+        "pack":     strPack,
+        "unpack":   strUnpack,
+        "find":     strFind,
+        "match":    strMatch,
+        "gsub":     strGsub,
+        "gmatch":   strGmatch,
+    }
 
 
+    字符串库，值听过了函数，没有提供变量，所以开启函数也容易：
+
+    func OpenStringLib(ls LuaState) int {
+        ls.NewLib(strLib)
+        createMetatable(ls)
+        return 1
+    }
 
 
+    createMetatable给字符串类型设置元表以及__index元方法：
+
+    func createMetatable(ls LuaState) {
+        ls.CreateTable(0, 1)       /* table to be metatable for strings */
+        ls.PushString("dummy")     /* dummy string */
+        ls.PushValue(-2)           /* copy table */
+        ls.SetMetatable(-2)        /* set table as metatable for strings */
+        ls.Pop(1)                  /* pop dummy string */
+        ls.PushValue(-2)           /* get string library */
+        ls.SetField(-2, "__index") /* metatable.__index = string */
+        ls.Pop(1)                  /* pop metatable */
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
