@@ -11730,8 +11730,14 @@ package.path
         return self.stack.prev != nil
     } 
 
+    IsYieldable（）判断是否可以yield
 
-
+    func (self *luaState) IsYieldable() bool {
+        if self.isMainThread() {
+            return false
+        }
+        return self.coStatus != LUA_YIELD // todo
+    }
 
 
 

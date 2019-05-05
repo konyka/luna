@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 19:29:13
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 19:47:42
+* @Last Modified time: 2019-05-05 19:49:48
 */
 
 package state
@@ -68,7 +68,12 @@ func (self *luaState) GetStack() bool {
     return self.stack.prev != nil
 }
 
-
+func (self *luaState) IsYieldable() bool {
+    if self.isMainThread() {
+        return false
+    }
+    return self.coStatus != LUA_YIELD // todo
+}
 
 
 
