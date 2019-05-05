@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-04 22:29:18
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-04 23:19:37
+* @Last Modified time: 2019-05-05 08:13:20
 */
 
 
@@ -240,7 +240,11 @@ func prepFuncCall(fi *funcInfo, node *FuncCallExp, a int) int {
     return nArgs
 }
 
-
+// return f(args)
+func cgTailCallExp(fi *funcInfo, node *FuncCallExp, a int) {
+    nArgs := prepFuncCall(fi, node, a)
+    fi.emitTailCall(a, nArgs)
+}
 
 
 
