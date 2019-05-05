@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:32:22
+* @Last Modified time: 2019-05-05 10:34:45
 */
 
 package state
@@ -217,7 +217,21 @@ func (self *luaState) RequireF(modname string, openf GoFunction, glb bool) {
     }
 }
 
-
+/**
+ * GetSubTable检查指定索引处的表的某个字段是不是表，如果是，就把这个子表push到栈顶，并返回；
+ *  否则，创建一个空表，赋值给这个字段，并返回false
+ */
+func (self *luaState) GetSubTable(idx int, fname string) bool {
+    if self.GetField(idx, fname) == LUA_TTABLE {
+        return true /* table already there */
+    }
+    self.Pop(1) /* remove previous result */
+    idx = self.stack.absIndex(idx)
+    self.NewTable()
+    self.PushValue(-1)        /* copy to be left at top */
+    self.SetField(idx, fname) /* assign new table to field */
+    return false              /* false, because did not find table there */
+}
 
 
 
