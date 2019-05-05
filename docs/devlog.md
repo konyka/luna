@@ -10156,10 +10156,12 @@ for循环语句
 
 
 加载方法
+    LoadString（）、LoadFileX（）、LoadFile（）是对Load（）的封装   
+
+
+    LoadString（）：
+
     
-
-
-
 
 
 

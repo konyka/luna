@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:02:10
+* @Last Modified time: 2019-05-05 10:03:50
 */
 
 package state
@@ -85,7 +85,9 @@ func (self *luaState) ToString2(idx int) string {
     return self.CheckString(-1)
 }
 
-
+func (self *luaState) LoadString(s string) int {
+    return self.Load([]byte(s), s, "bt")
+}
 
 
 
