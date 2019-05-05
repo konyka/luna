@@ -10210,7 +10210,15 @@ for循环语句
     }
 
 
+    ArgCheck 是通用的参数检查方法，其第一个参数表示检查是否通过，第二个参数表示被检查参数的索引，
+    第三个参数是附加信息：
 
+     func (self *luaState) ArgCheck(cond bool, arg int, extraMsg string) {
+        if !cond {
+            self.ArgError(arg, extraMsg)
+        }
+    }
+   
 
 
 

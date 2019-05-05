@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:15:02
+* @Last Modified time: 2019-05-05 10:17:34
 */
 
 package state
@@ -116,6 +116,11 @@ func (self *luaState) ArgError(arg int, extraMsg string) int {
     return self.Error2("bad argument #%d (%s)", arg, extraMsg) // todo
 }
 
+func (self *luaState) ArgCheck(cond bool, arg int, extraMsg string) {
+    if !cond {
+        self.ArgError(arg, extraMsg)
+    }
+}
 
 
 
