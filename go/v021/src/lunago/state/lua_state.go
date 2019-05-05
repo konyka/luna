@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:24:28
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-01 16:09:14
+* @Last Modified time: 2019-05-05 19:07:33
 */
 
 
@@ -17,7 +17,10 @@ import . "lunago/api"
 type luaState struct {
     registry *luaTable
     stack *luaStack
-
+    /* coroutine */
+    coStatus int
+    coCaller *luaState
+    coChan   chan int
 }
 
 /**

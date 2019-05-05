@@ -11582,15 +11582,23 @@ package.path
     }
 
 
+线程类型的支持    
 
+    lua有8种数据类型，其中nil、布尔、数字（包括整数和浮点数）、字符串类型、表类型、函数类型，还有一个 线程类型。用户数据以后再说。
 
+    线程类型其实已经实现一部分了，只不过一致没有说明，那就是结构体luaState。
 
-
-
-
-
-
-
+    state/lua_state.go，调整结构体luaState：
+    
+    
+    type luaState struct {
+        registry *luaTable
+        stack *luaStack
+        /* coroutine */
+        coStatus int
+        coCaller *luaState
+        coChan   chan int
+    }
 
 
 
