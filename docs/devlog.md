@@ -10836,34 +10836,99 @@ for循环语句
 
 
 os库    
-
+    os库，通过全局变量os提供操作系统相关的一些函数，这些函数的主要用于获取或者格式化日期 时间、删除、重命名文件、执行外部命令等，有11个。
     
+    os.time用于获取当前时刻，或者参数指定某个时刻的时间戳
+
+    print（os.time()）
+    print(os.time{year=2012, month=12, day=12, hour=0, min=0, sec=0})
+
+    其中传入表的year、month、day是必须的，hour默认值是12，min和sec默认是0。
+
+    os.date()格式化当前时刻或者指定的时刻
+
+    print（os.date()）
+    t = os.date("*t",)
+    print(t.year)
+    print(t.minth)
+    print(t.day)
+    print(t.hour)
+    print(t.min)
+    print(t.sec)
+
+    如果格式是“*t”,则返回一个table，里面有year, month, day, hour, min, sec。
+
+    stdlib/lib_os.go 创建函数，并整合到一个map中：
+
+     package stdlib
+
+    import "C"
+
+    import "os"
+    import "time"
+    import . "lunago/api"
+
+    var sysLib = map[string]GoFunction{
+        "clock":     osClock,
+        "difftime":  osDiffTime,
+        "time":      osTime,
+        "date":      osDate,
+        "remove":    osRemove,
+        "rename":    osRename,
+        "tmpname":   osTmpName,
+        "getenv":    osGetEnv,
+        "execute":   osExecute,
+        "exit":      osExit,
+        "setlocale": osSetLocale,
+    }
+
+    func OpenOSLib(ls LuaState) int {
+        ls.NewLib(sysLib)
+        return 1
+    }   
 
 
+    os.time:
 
+    func osTime(ls LuaState) int {
+        if ls.IsNoneOrNil(1) { /* called without args? */
+            t := time.Now().Unix() /* get current time */
+            ls.PushInteger(t)
+        } else {
+            ls.CheckType(1, LUA_TTABLE)
+            sec := _getField(ls, "sec", 0)
+            min := _getField(ls, "min", 0)
+            hour := _getField(ls, "hour", 12)
+            day := _getField(ls, "day", -1)
+            month := _getField(ls, "month", -1)
+            year := _getField(ls, "year", -1)
+            // todo: isdst
+            t := time.Date(year, time.Month(month), day,
+                hour, min, sec, 0, time.Local).Unix()
+            ls.PushInteger(t)
+        }
+        return 1
+    }
 
+    如果没有转入任何参数就调用go语言time库提供的Now（）获取当前时间，并转换为unix时间戳返回给lua。否则，调用go语言time库提供的Date（），获取指定的时间，并转换为unix时间戳。_getField从用户传入的表总提取参数：
 
+    func _getField(ls LuaState, key string, dft int64) int {
+        t := ls.GetField(-1, key) /* get field and its type */
+        res, isNum := ls.ToIntegerX(-1)
+        if !isNum { /* field is not an integer? */
+            if t != LUA_TNIL { /* some other value? */
+                return ls.Error2("field '%s' is not an integer", key)
+            } else if dft < 0 { /* absent field; no default? */
+                return ls.Error2("field '%s' missing in date table", key)
+            }
+            res = dft
+        }
+        ls.Pop(1)
+        return int(res)
+    }    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+开启五个标准库
+    state/auxlib.go
 
 
 
