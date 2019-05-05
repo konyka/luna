@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 14:50:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 16:04:50
+* @Last Modified time: 2019-05-05 16:08:24
 */
 
 package stdlib
@@ -39,7 +39,28 @@ var pkgFuncs = map[string]GoFunction{
     "loaded":    nil,
 }
 
-
+func OpenPackageLib(ls LuaState) int {
+    ls.NewLib(pkgFuncs) /* create 'package' table */
+    createSearchersTable(ls)
+    /* set paths */
+    ls.PushString("./?.lua;./?/init.lua")
+    ls.SetField(-2, "path")
+    /* store config information */
+    ls.PushString(LUA_DIRSEP + "\n" + LUA_PATH_SEP + "\n" +
+        LUA_PATH_MARK + "\n" + LUA_EXEC_DIR + "\n" + LUA_IGMARK + "\n")
+    ls.SetField(-2, "config")
+    /* set field 'loaded' */
+    ls.GetSubTable(LUA_REGISTRYINDEX, LUA_LOADED_TABLE)
+    ls.SetField(-2, "loaded")
+    /* set field 'preload' */
+    ls.GetSubTable(LUA_REGISTRYINDEX, LUA_PRELOAD_TABLE)
+    ls.SetField(-2, "preload")
+    ls.PushGlobalTable()
+    ls.PushValue(-2)        /* set 'package' as upvalue for next lib */
+    ls.SetFuncs(llFuncs, 1) /* open lib into global table */
+    ls.Pop(1)               /* pop global table */
+    return 1                /* return 'package' table */
+}
 
 
 
