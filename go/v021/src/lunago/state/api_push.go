@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 19:24:25
+* @Last Modified time: 2019-05-05 19:25:49
 */
 
 package state
@@ -110,7 +110,9 @@ func (self *luaState) PushFString(fmtStr string, a ...interface{}) {
     self.stack.push(str)
 }
 
-
+/**
+ * PushThread()将线程push到栈顶，返回的布尔值表示线程是不是为主线程。
+ */
 func (self *luaState) PushThread() bool {
     self.stack.push(self)
     return self.isMainThread()

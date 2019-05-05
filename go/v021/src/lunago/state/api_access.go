@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:39:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 11:41:00
+* @Last Modified time: 2019-05-05 19:27:37
 */
 
 package state
@@ -244,7 +244,18 @@ func (self *luaState) ToPointer(idx int) interface{} {
     return self.stack.get(idx)
 }
 
-
+/**
+ * ToThread()把指定索引处的值转换为线程并返回，如果值不是线程，就返回nil。
+ */
+func (self *luaState) ToThread(idx int) LuaState {
+    val := self.stack.get(idx)
+    if val != nil {
+        if ls, ok := val.(*luaState); ok {
+            return ls
+        }
+    }
+    return nil
+}
 
 
 

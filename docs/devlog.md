@@ -11632,7 +11632,7 @@ package.path
         }
     }
 
-    PushThread()将线程push到栈顶，返回的布尔值表示禅城是不是为主线程。
+    PushThread()将线程push到栈顶，返回的布尔值表示线程是不是为主线程。
 
     state/api_push.go 增加函数PushThread()：
 
@@ -11641,11 +11641,19 @@ package.path
         return self.isMainThread()
     }
 
+    ToThread()把指定索引处的值转换为线程并返回，如果值不是线程，就返回nil。
 
+    state/api_access.go，实现函数ToThread()：
 
-
-
-
+    func (self *luaState) ToThread(idx int) LuaState {
+        val := self.stack.get(idx)
+        if val != nil {
+            if ls, ok := val.(*luaState); ok {
+                return ls
+            }
+        }
+        return nil
+    }
 
 
 
