@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 10:51:37
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 11:01:00
+* @Last Modified time: 2019-05-05 11:07:29
 */
 
 package stdlib
@@ -75,6 +75,25 @@ func OpenBaseLib(ls LuaState) int {
     return 1
 }
 
+/**
+ * select (index, ···)
+ */
+func baseSelect(ls LuaState) int {
+    n := int64(ls.GetTop())
+    if ls.Type(1) == LUA_TSTRING && ls.CheckString(1) == "#" {
+        ls.PushInteger(n - 1)
+        return 1
+    } else {
+        i := ls.CheckInteger(1)
+        if i < 0 {
+            i = n + i
+        } else if i > n {
+            i = n
+        }
+        ls.ArgCheck(1 <= i, 1, "index out of range")
+        return int(n - i)
+    }
+}
 
 
 

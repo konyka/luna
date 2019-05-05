@@ -10442,19 +10442,36 @@ for循环语句
         return 1
     }
 
+    这个函数其实就是把基础库函数全部注册到全局变量而已。
+
+    select函数签名
+
+    select (index, ...)
 
 
+    select函数可以接收一个固定参数index和任意个可选的参数。如果传入的固定参数inex是数字，函数返回从index开始的全部可选参数（index也可以为负数，-1表示最后一个参数，-2表示倒数第二个参数。。。。。）。否则，传入的index必须是字符串“#”，该函数返回可选参数的数量
+
+    func baseSelect(ls LuaState) int {
+        n := int64(ls.GetTop())
+        if ls.Type(1) == LUA_TSTRING && ls.CheckString(1) == "#" {
+            ls.PushInteger(n - 1)
+            return 1
+        } else {
+            i := ls.CheckInteger(1)
+            if i < 0 {
+                i = n + i
+            } else if i > n {
+                i = n
+            }
+            ls.ArgCheck(1 <= i, 1, "index out of range")
+            return int(n - i)
+        }
+    }
 
 
+    先dialingGetTop回去传入参数的数量，然后调用type和CheckString判断第一个参数是不是字符串“#”，如果是，则带哦用PushInteger把参数的数量-1后push到栈顶，然后返回1，这样就把可选参数的数量返回给了Lua，否则第一个参数必须是数字，CheckInteger方法可以做到这一点，接下来，对负数索引进行处理，并调用ArgCheck在索引超出范围的时候报错，最后将末尾的适当数量的参数，当作返回值返回给lua。
 
-
-
-
-
-
-
-
-
+    
 
 
 
