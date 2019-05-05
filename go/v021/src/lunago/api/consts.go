@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:09:33
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 17:02:35
+* @Last Modified time: 2019-05-05 19:11:49
 */
 
 package api
@@ -11,7 +11,9 @@ const LUA_MINSTACK = 20
 const LUAI_MAXSTACK = 1000000
 const LUA_REGISTRYINDEX = -LUAI_MAXSTACK - 1000
 const LUA_RIDX_GLOBALS int64 = 2
+const LUA_RIDX_MAINTHREAD int64 = 1
 const LUA_MULTRET = -1
+
 
 /* basic types */
 const (
