@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-27 18:09:33
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:08:41
+* @Last Modified time: 2019-05-05 17:02:35
 */
 
 package api
@@ -65,7 +65,10 @@ const (
 	LUA_ERRFILE
 )
 
-
+const (
+	LUA_MAXINTEGER = 1<<63 - 1
+	LUA_MININTEGER = -1 << 63
+)
 
 
 
