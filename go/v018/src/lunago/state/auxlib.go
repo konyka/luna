@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 12:03:31
+* @Last Modified time: 2019-05-05 12:06:28
 */
 
 package state
@@ -290,6 +290,17 @@ func (self *luaState) NewLibTable(l FuncReg) {
     self.CreateTable(0, len(l))
 }
 
-
+func (self *luaState) SetFuncs(l FuncReg, nup int) {
+    self.CheckStack2(nup, "too many upvalues")
+    for name, fun := range l { /* fill the table with given functions */
+        for i := 0; i < nup; i++ { /* copy upvalues to the top */
+            self.PushValue(-nup)
+        }
+        // r[-(nup+2)][name]=fun
+        self.PushGoClosure(fun, nup) /* closure with those upvalues */
+        self.SetField(-(nup + 2), name)
+    }
+    self.Pop(nup) /* remove upvalues */
+}
 
 
