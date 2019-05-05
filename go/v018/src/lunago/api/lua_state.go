@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 09:36:36
+* @Last Modified time: 2019-05-05 09:56:09
 */
 
 
@@ -106,6 +106,8 @@ type BasicAPI interface {
 
     Error() int
     PCall(nArgs, nResults, msgh int) int
+
+    PushFString(fmt string, a ...interface{})
 
 }
 

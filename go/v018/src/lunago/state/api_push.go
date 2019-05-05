@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-02 08:53:06
+* @Last Modified time: 2019-05-05 09:58:40
 */
 
 package state
@@ -104,7 +104,10 @@ func (self *luaState) PushGoClosure(f GoFunction, n int) {
     self.stack.push(closure)
 }
 
-
+func (self *luaState) PushFString(fmtStr string, a ...interface{}) {
+    str := fmt.Sprintf(fmtStr, a...)
+    self.stack.push(str)
+}
 
 
 

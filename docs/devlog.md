@@ -10103,6 +10103,10 @@ for循环语句
         return self.Error()
     }
 
+    PushFString属于基础api，给接口BasicAPI添加这个方法（api/lua_state.go）,并在state/api_push.go中实现：
+
+    
+
 
      ToString2（）、、
 
