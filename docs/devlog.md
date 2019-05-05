@@ -10753,39 +10753,91 @@ for循环语句
     }
 
 
+ UTF-8库   
+
+    lua字符串实际上就是一串字节，可以包含任何信息。UTF-8库通过全局变量utf8对字符串提供了基本的UTF-8支持。UTF-8库有5个函数，其中utf8.len也和string.len类似，只不过返回的是字符串中utf8字符数，而非字节数
+
+    utf8.char和string.char类似，只不过参数是任意个unicode代码点，而非字节
+
+    print(utf8.char(0x4f60, 0x597d))--->你好
+    print("\u{4f60}\u{597d}")--->你好
+
+    utf8.char会对代码进行UTF-8b编码，生成字符串，其效果和使用unicode转义序列的字面量一样"\u{4f60}\u{597d}"。
+
+    utf8.offset返回某个utf-8zifu在字符串中的字节偏移量
+
+    lua数组下标是从1开始的，偏移量也是从1开始的。
+
+    utf8.codepoint和utf8.offset功能相反，返回偏移量处的unicode字符代码点
+
+    utf8.codes允许对uft-8字符串中的unicode代码点进行迭代
+    for p, c in utf8.codes("你好啊") do
+        print(p, c)
+    end
+
+    stdlib/lib_utf8.go,定义函数，并整合到一个map中
+
+     package stdlib
+
+    import "unicode/utf8"
+    import . "lunago/api"
+
+    const UTF8PATT = "[\x00-\x7F\xC2-\xF4][\x80-\xBF]*"
+
+    const MAX_UNICODE = 0x10FFFF
+
+    var utf8Lib = map[string]GoFunction{
+        "len":       utfLen,
+        "offset":    utfByteOffset,
+        "codepoint": utfCodePoint,
+        "char":      utfChar,
+        "codes":     utfIterCodes,
+        /* placeholders */
+        "charpattern": nil,
+    }
+
+    func OpenUTF8Lib(ls LuaState) int {
+        ls.NewLib(utf8Lib)
+        ls.PushString(UTF8PATT)
+        ls.SetField(-2, "charpattern")
+        return 1
+    }
+   
+    utf8库可以使用go语言的unicode/uft8实现
+
+    func utfChar(ls LuaState) int {
+        n := ls.GetTop() /* number of arguments */
+        codePoints := make([]rune, n)
+
+        for i := 1; i <= n; i++ {
+            cp := ls.CheckInteger(i)
+            ls.ArgCheck(0 <= cp && cp <= MAX_UNICODE, i, "value out of range")
+            codePoints[i-1] = rune(cp)
+        }
+
+        ls.PushString(_encodeUtf8(codePoints))
+        return 1
+    }
+
+    先把unicode码点保存到一个数组中，然后调用_encodeUtf8吧码点编码为utf-8个市的字符串。具体的utf-8编码由go语言utf-8库的EncodeRune实现
+
+
+    func _encodeUtf8(codePoints []rune) string {
+        buf := make([]byte, 6)
+        str := make([]byte, 0, len(codePoints))
+
+        for _, cp := range codePoints {
+            n := utf8.EncodeRune(buf, cp)
+            str = append(str, buf[0:n]...)
+        }
+
+        return string(str)
+    }
+
+
+os库    
+
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
