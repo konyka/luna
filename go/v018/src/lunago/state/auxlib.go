@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 09:48:36
+* @Last Modified time: 2019-05-05 09:50:11
 */
 
 package state
@@ -39,7 +39,10 @@ func (self *luaState) CheckStack2(sz int, msg string) {
     }
 }
 
-
+func (self *luaState) Error2(fmt string, a ...interface{}) int {
+    self.PushFString(fmt, a...) // todo
+    return self.Error()
+}
 
 
 

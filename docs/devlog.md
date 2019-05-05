@@ -10096,11 +10096,15 @@ for循环语句
         }
     }   
 
+    Error2（）先调用PushString，向栈顶push一个格式化好的字符串，然后调用Error抛出错误
+
+    func (self *luaState) Error2(fmt string, a ...interface{}) int {
+        self.PushFString(fmt, a...) // todo
+        return self.Error()
+    }
 
 
-
-
-     ToString2（）、Error2（）、
+     ToString2（）、、
 
 
 
