@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 11:12:26
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 09:56:09
+* @Last Modified time: 2019-05-05 11:26:06
 */
 
 
@@ -108,6 +108,7 @@ type BasicAPI interface {
     PCall(nArgs, nResults, msgh int) int
 
     PushFString(fmt string, a ...interface{})
+    StringToNumber(s string) bool
 
 }
 
