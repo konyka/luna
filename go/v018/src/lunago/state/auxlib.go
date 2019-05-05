@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 11:45:40
+* @Last Modified time: 2019-05-05 12:02:35
 */
 
 package state
@@ -279,4 +279,9 @@ func (self *luaState) typeError(arg int, tname string) int {
     msg := tname + " expected, got " + typeArg
     self.PushString(msg)
     return self.ArgError(arg, msg)
+}
+
+func (self *luaState) NewLib(l FuncReg) {
+    self.NewLibTable(l)
+    self.SetFuncs(l, 0)
 }
