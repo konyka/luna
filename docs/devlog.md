@@ -11673,9 +11673,36 @@ package.path
     }
 
 
+    创建一个新线程，将其push到栈顶，同时也作为返回值返回。新建的线程和创建它的线程共享相同的全局变量，但是有各自的调用栈。新创建的线程处于挂起状态，Resume（）方法让其进入运行状态：
 
+    func (self *luaState) Resume(from LuaState, nArgs int) int {
+        lsFrom := from.(*luaState)
+        if lsFrom.coChan == nil {
+            lsFrom.coChan = make(chan int)
+        }
 
+        if self.coChan == nil {
+            // start coroutine
+            self.coChan = make(chan int)
+            self.coCaller = lsFrom
+            go func() {
+                self.coStatus = self.PCall(nArgs, -1, 0)
+                lsFrom.coChan <- 1
+            }()
+        } else {
+            // resume coroutine
+            if self.coStatus != LUA_YIELD { // todo
+                self.stack.push("cannot resume non-suspended coroutine")
+                return LUA_ERRRUN
+            }
+            self.coStatus = LUA_OK
+            self.coChan <- 1
+        }
 
+        <-lsFrom.coChan // wait coroutine to finish or yield
+        return self.coStatus
+    }
+    
 
 
 
