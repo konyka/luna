@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 11:38:52
+* @Last Modified time: 2019-05-05 11:43:32
 */
 
 package state
@@ -259,6 +259,12 @@ func (self *luaState) GetMetafield(obj int, event string) LuaType {
     return tt /* return metafield type */
 }
 
-
+func (self *luaState) intError(arg int) {
+    if self.IsNumber(arg) {
+        self.ArgError(arg, "number has no integer representation")
+    } else {
+        self.tagError(arg, LUA_TNUMBER)
+    }
+}
 
 
