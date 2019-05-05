@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:22:29
+* @Last Modified time: 2019-05-05 10:25:00
 */
 
 package state
@@ -143,8 +143,6 @@ func (self *luaState) CheckInteger(arg int) int64 {
     return i
 }
 
-// [-0, +0, v]
-// http://www.lua.org/manual/5.3/manual.html#luaL_checknumber
 func (self *luaState) CheckNumber(arg int) float64 {
     f, ok := self.ToNumberX(arg)
     if !ok {
@@ -153,9 +151,7 @@ func (self *luaState) CheckNumber(arg int) float64 {
     return f
 }
 
-// [-0, +0, v]
-// http://www.lua.org/manual/5.3/manual.html#luaL_checkstring
-// http://www.lua.org/manual/5.3/manual.html#luaL_checklstring
+
 func (self *luaState) CheckString(arg int) string {
     s, ok := self.ToStringX(arg)
     if !ok {
@@ -164,6 +160,28 @@ func (self *luaState) CheckString(arg int) string {
     return s
 }
 
+func (self *luaState) OptInteger(arg int, def int64) int64 {
+    if self.IsNoneOrNil(arg) {
+        return def
+    }
+    return self.CheckInteger(arg)
+}
+
+
+func (self *luaState) OptNumber(arg int, def float64) float64 {
+    if self.IsNoneOrNil(arg) {
+        return def
+    }
+    return self.CheckNumber(arg)
+}
+
+
+func (self *luaState) OptString(arg int, def string) string {
+    if self.IsNoneOrNil(arg) {
+        return def
+    }
+    return self.CheckString(arg)
+}
 
 
 

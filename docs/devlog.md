@@ -10264,9 +10264,30 @@ for循环语句
     }    
 
 
-    
+    OptInteger、OptNumber、OptString，对可选参数进行检查，如果可选参数有值，确保数值属于指定的类型，并返回这个值；否则返回默认值。    
+
+    func (self *luaState) OptInteger(arg int, def int64) int64 {
+        if self.IsNoneOrNil(arg) {
+            return def
+        }
+        return self.CheckInteger(arg)
+    }
 
 
+    func (self *luaState) OptNumber(arg int, def float64) float64 {
+        if self.IsNoneOrNil(arg) {
+            return def
+        }
+        return self.CheckNumber(arg)
+    }
+
+
+    func (self *luaState) OptString(arg int, def string) string {
+        if self.IsNoneOrNil(arg) {
+            return def
+        }
+        return self.CheckString(arg)
+    }    
 
 
 
