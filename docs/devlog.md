@@ -10290,14 +10290,24 @@ for循环语句
     }    
 
 
+    tagError（）会抛出类似“argument #1 (string expected,got table)”这样的错误。
 
 
 
+标准库开启方法
 
+    lua的标准库完全是可选的。如果想在lua脚本中使用标准库函数，需要在创建lua解释器实例以后，显式开启各个标准库。辅助api提供了OpenLibs（）方法，可以开启全部的标准库。
+    
+    func (self *luaState) OpenLibs() {
+        libs := map[string]GoFunction{
+            "_G": stdlib.OpenBaseLib,
+        }
 
-
-
-
+        for name, fun := range libs {
+            self.RequireF(name, fun, true)
+            self.Pop(1)
+        }
+    }
 
 
 

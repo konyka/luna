@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:25:00
+* @Last Modified time: 2019-05-05 10:29:30
 */
 
 package state
@@ -183,10 +183,21 @@ func (self *luaState) OptString(arg int, def string) string {
     return self.CheckString(arg)
 }
 
+func (self *luaState) tagError(arg int, tag LuaType) {
+    self.typeError(arg, self.TypeName(LuaType(tag)))
+}
 
 
+func (self *luaState) OpenLibs() {
+    libs := map[string]GoFunction{
+        "_G": stdlib.OpenBaseLib,
+    }
 
-
+    for name, fun := range libs {
+        self.RequireF(name, fun, true)
+        self.Pop(1)
+    }
+}
 
 
 
