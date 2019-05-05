@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 14:50:58
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 16:15:45
+* @Last Modified time: 2019-05-05 16:17:16
 */
 
 package stdlib
@@ -109,5 +109,23 @@ func luaSearcher(ls LuaState) int {
             ls.CheckString(1), filename, ls.CheckString(-1))
     }
 }
+
+func _searchPath(name, path, sep, dirSep string) (filename, errMsg string) {
+    if sep != "" {
+        name = strings.Replace(name, sep, dirSep, -1)
+    }
+
+    for _, filename := range strings.Split(path, LUA_PATH_SEP) {
+        filename = strings.Replace(filename, LUA_PATH_MARK, name, -1)
+        if _, err := os.Stat(filename); !os.IsNotExist(err) {
+            return filename, ""
+        }
+        errMsg += "\n\tno file '" + filename + "'"
+    }
+
+    return "", errMsg
+}
+
+
 
 

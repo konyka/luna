@@ -11236,13 +11236,27 @@ package.path
         }
     }
 
+    在搜索路径中搜索lua文件的功能由函数 _searchPath 实现：
+
+    func _searchPath(name, path, sep, dirSep string) (filename, errMsg string) {
+        if sep != "" {
+            name = strings.Replace(name, sep, dirSep, -1)
+        }
+
+        for _, filename := range strings.Split(path, LUA_PATH_SEP) {
+            filename = strings.Replace(filename, LUA_PATH_MARK, name, -1)
+            if _, err := os.Stat(filename); !os.IsNotExist(err) {
+                return filename, ""
+            }
+            errMsg += "\n\tno file '" + filename + "'"
+        }
+
+        return "", errMsg
+    }
+
+    pkgSearchPath的代码：
 
     
-
-
-
-
-
 
 
 
