@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 12:06:28
+* @Last Modified time: 2019-05-05 14:21:54
 */
 
 package state
@@ -190,7 +190,12 @@ func (self *luaState) tagError(arg int, tag LuaType) {
 
 func (self *luaState) OpenLibs() {
     libs := map[string]GoFunction{
-        "_G": stdlib.OpenBaseLib,
+        "_G":     stdlib.OpenBaseLib,
+        "math":   stdlib.OpenMathLib,
+        "table":  stdlib.OpenTableLib,
+        "string": stdlib.OpenStringLib,
+        "utf8":   stdlib.OpenUTF8Lib,
+        "os":     stdlib.OpenOSLib,
     }
 
     for name, fun := range libs {
