@@ -10200,11 +10200,14 @@ for循环语句
 
 
 
+参数检查方法
 
+    用于检传递给go的参数，如果非可选参数缺失，或者参数类型和预期的不匹配，可以调用函数ArgError抛出错误：
 
-
-
-
+    func (self *luaState) ArgError(arg int, extraMsg string) int {
+        // bad argument #arg to 'funcname' (extramsg)
+        return self.Error2("bad argument #%d (%s)", arg, extraMsg) // todo
+    }
 
 
 

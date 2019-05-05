@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:11:10
+* @Last Modified time: 2019-05-05 10:15:02
 */
 
 package state
@@ -111,7 +111,10 @@ func (self *luaState) DoFile(filename string) bool {
 }
 
 
-
+func (self *luaState) ArgError(arg int, extraMsg string) int {
+    // bad argument #arg to 'funcname' (extramsg)
+    return self.Error2("bad argument #%d (%s)", arg, extraMsg) // todo
+}
 
 
 
