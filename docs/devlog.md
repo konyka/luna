@@ -11632,10 +11632,14 @@ package.path
         }
     }
 
+    PushThread()将线程push到栈顶，返回的布尔值表示禅城是不是为主线程。
 
+    state/api_push.go 增加函数PushThread()：
 
-
-
+    func (self *luaState) PushThread() bool {
+        self.stack.push(self)
+        return self.isMainThread()
+    }
 
 
 

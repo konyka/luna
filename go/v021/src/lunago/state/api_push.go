@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-28 22:33:14
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 11:49:26
+* @Last Modified time: 2019-05-05 19:24:25
 */
 
 package state
@@ -111,7 +111,10 @@ func (self *luaState) PushFString(fmtStr string, a ...interface{}) {
 }
 
 
-
+func (self *luaState) PushThread() bool {
+    self.stack.push(self)
+    return self.isMainThread()
+}
 
 
 
