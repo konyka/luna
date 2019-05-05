@@ -10191,9 +10191,12 @@ for循环语句
 
     const LUA_MULTRET = -1
 
+    DoFile加载并使用保护模式执行文件：
 
-
-
+    func (self *luaState) DoFile(filename string) bool {
+        return self.LoadFile(filename) == LUA_OK &&
+            self.PCall(0, LUA_MULTRET, 0) == LUA_OK
+    }    
 
 
 
