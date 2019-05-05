@@ -10105,15 +10105,58 @@ for循环语句
 
     PushFString属于基础api，给接口BasicAPI添加这个方法（api/lua_state.go）,并在state/api_push.go中实现：
 
+     func (self *luaState) PushFString(fmtStr string, a ...interface{}) {
+        str := fmt.Sprintf(fmtStr, a...)
+        self.stack.push(str)
+    }   
+
+
+    基础api中的ToString只适用于数字和字符串，ToString2则适用于任何类型的值。此外，ToString2在讲值转换为字符串的时候，还会优先使用元方法__tostring.
+
+    func (self *luaState) ToString2(idx int) string {
+        if self.CallMeta(idx, "__tostring") { /* metafield? */
+            if !self.IsString(-1) {
+                self.Error2("'__tostring' must return a string")
+            }
+        } else {
+            switch self.Type(idx) {
+            case LUA_TNUMBER:
+                if self.IsInteger(idx) {
+                    self.PushString(fmt.Sprintf("%d", self.ToInteger(idx))) // todo
+                } else {
+                    self.PushString(fmt.Sprintf("%g", self.ToNumber(idx))) // todo
+                }
+            case LUA_TSTRING:
+                self.PushValue(idx)
+            case LUA_TBOOLEAN:
+                if self.ToBoolean(idx) {
+                    self.PushString("true")
+                } else {
+                    self.PushString("false")
+                }
+            case LUA_TNIL:
+                self.PushString("nil")
+            default:
+                tt := self.GetMetafield(idx, "__name") /* try name */
+                var kind string
+                if tt == LUA_TSTRING {
+                    kind = self.CheckString(-1)
+                } else {
+                    kind = self.TypeName2(idx)
+                }
+
+                self.PushString(fmt.Sprintf("%s: %p", kind, self.ToPointer(idx)))
+                if tt != LUA_TNIL {
+                    self.Remove(-2) /* remove '__name' */
+                }
+            }
+        }
+        return self.CheckString(-1)
+    }
+
+
+加载方法
     
-
-
-     ToString2（）、、
-
-
-
-
-
 
 
 

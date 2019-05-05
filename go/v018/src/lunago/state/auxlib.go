@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 09:50:11
+* @Last Modified time: 2019-05-05 10:02:10
 */
 
 package state
@@ -43,6 +43,55 @@ func (self *luaState) Error2(fmt string, a ...interface{}) int {
     self.PushFString(fmt, a...) // todo
     return self.Error()
 }
+
+func (self *luaState) ToString2(idx int) string {
+    if self.CallMeta(idx, "__tostring") { /* metafield? */
+        if !self.IsString(-1) {
+            self.Error2("'__tostring' must return a string")
+        }
+    } else {
+        switch self.Type(idx) {
+        case LUA_TNUMBER:
+            if self.IsInteger(idx) {
+                self.PushString(fmt.Sprintf("%d", self.ToInteger(idx))) // todo
+            } else {
+                self.PushString(fmt.Sprintf("%g", self.ToNumber(idx))) // todo
+            }
+        case LUA_TSTRING:
+            self.PushValue(idx)
+        case LUA_TBOOLEAN:
+            if self.ToBoolean(idx) {
+                self.PushString("true")
+            } else {
+                self.PushString("false")
+            }
+        case LUA_TNIL:
+            self.PushString("nil")
+        default:
+            tt := self.GetMetafield(idx, "__name") /* try name */
+            var kind string
+            if tt == LUA_TSTRING {
+                kind = self.CheckString(-1)
+            } else {
+                kind = self.TypeName2(idx)
+            }
+
+            self.PushString(fmt.Sprintf("%s: %p", kind, self.ToPointer(idx)))
+            if tt != LUA_TNIL {
+                self.Remove(-2) /* remove '__name' */
+            }
+        }
+    }
+    return self.CheckString(-1)
+}
+
+
+
+
+
+
+
+
 
 
 
