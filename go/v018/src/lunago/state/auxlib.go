@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 11:37:26
+* @Last Modified time: 2019-05-05 11:38:52
 */
 
 package state
@@ -243,5 +243,22 @@ func (self *luaState) CallMeta(obj int, event string) bool {
     self.Call(1, 1)
     return true
 }
+
+func (self *luaState) GetMetafield(obj int, event string) LuaType {
+    if !self.GetMetatable(obj) { /* no metatable? */
+        return LUA_TNIL
+    }
+
+    self.PushString(event)
+    tt := self.RawGet(-2)
+    if tt == LUA_TNIL { /* is metafield nil? */
+        self.Pop(2) /* remove metatable and metafield */
+    } else {
+        self.Remove(-2) /* remove only metatable */
+    }
+    return tt /* return metafield type */
+}
+
+
 
 
