@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-04-29 15:24:47
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-03 10:21:47
+* @Last Modified time: 2019-05-05 11:22:38
 */
 
 package state
@@ -85,3 +85,14 @@ func (self *luaState) Error() int {
     panic(err)
 }
 
+func (self *luaState) StringToNumber(s string) bool {
+    if n, ok := number.ParseInteger(s); ok {
+        self.PushInteger(n)
+        return true
+    }
+    if n, ok := number.ParseFloat(s); ok {
+        self.PushNumber(n)
+        return true
+    }
+    return false
+}
