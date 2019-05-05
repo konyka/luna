@@ -11213,10 +11213,31 @@ package.path
 
     lua加载代码：
 
+    func luaSearcher(ls LuaState) int {
+        name := ls.CheckString(1)
+        ls.GetField(LuaUpvalueIndex(1), "path")
+        path, ok := ls.ToStringX(-1)
+        if !ok {
+            ls.Error2("'package.path' must be a string")
+        }
+
+        filename, errMsg := _searchPath(name, path, ".", LUA_DIRSEP)
+        if errMsg != "" {
+            ls.PushString(errMsg)
+            return 1
+        }
+
+        if ls.LoadFile(filename) == LUA_OK { /* module loaded successfully? */
+            ls.PushString(filename) /* will be 2nd argument to module */
+            return 2                /* return open function and file name */
+        } else {
+            return ls.Error2("error loading module '%s' from file '%s':\n\t%s",
+                ls.CheckString(1), filename, ls.CheckString(-1))
+        }
+    }
+
+
     
-
-
-
 
 
 
