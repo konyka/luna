@@ -10297,7 +10297,7 @@ for循环语句
 标准库开启方法
 
     lua的标准库完全是可选的。如果想在lua脚本中使用标准库函数，需要在创建lua解释器实例以后，显式开启各个标准库。辅助api提供了OpenLibs（）方法，可以开启全部的标准库。
-    
+
     func (self *luaState) OpenLibs() {
         libs := map[string]GoFunction{
             "_G": stdlib.OpenBaseLib,
@@ -10309,9 +10309,26 @@ for循环语句
         }
     }
 
+    实际上就是循环调用各个标准库的开启函数，其中函数 OpenBaseLib 用于开启基础库。
+    RequireF用于开启单个标准库。
 
-
-
+    func (self *luaState) RequireF(modname string, openf GoFunction, glb bool) {
+        self.GetSubTable(LUA_REGISTRYINDEX, "_LOADED")
+        self.GetField(-1, modname) /* LOADED[modname] */
+        if !self.ToBoolean(-1) {   /* package not already loaded? */
+            self.Pop(1) /* remove field */
+            self.PushGoFunction(openf)
+            self.PushString(modname)   /* argument to open function */
+            self.Call(1, 1)            /* call 'openf' to open module */
+            self.PushValue(-1)         /* make copy of module (call result) */
+            self.SetField(-3, modname) /* _LOADED[modname] = module */
+        }
+        self.Remove(-2) /* remove _LOADED table */
+        if glb {
+            self.PushValue(-1)      /* copy of module */
+            self.SetGlobal(modname) /* _G[modname] = module */
+        }
+    }
 
 
 

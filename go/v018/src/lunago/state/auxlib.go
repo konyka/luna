@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:29:30
+* @Last Modified time: 2019-05-05 10:32:22
 */
 
 package state
@@ -199,7 +199,23 @@ func (self *luaState) OpenLibs() {
     }
 }
 
-
+func (self *luaState) RequireF(modname string, openf GoFunction, glb bool) {
+    self.GetSubTable(LUA_REGISTRYINDEX, "_LOADED")
+    self.GetField(-1, modname) /* LOADED[modname] */
+    if !self.ToBoolean(-1) {   /* package not already loaded? */
+        self.Pop(1) /* remove field */
+        self.PushGoFunction(openf)
+        self.PushString(modname)   /* argument to open function */
+        self.Call(1, 1)            /* call 'openf' to open module */
+        self.PushValue(-1)         /* make copy of module (call result) */
+        self.SetField(-3, modname) /* _LOADED[modname] = module */
+    }
+    self.Remove(-2) /* remove _LOADED table */
+    if glb {
+        self.PushValue(-1)      /* copy of module */
+        self.SetGlobal(modname) /* _G[modname] = module */
+    }
+}
 
 
 
