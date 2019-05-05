@@ -10219,7 +10219,13 @@ for循环语句
         }
     }
    
+    CheckAny（）确保某个参数一定存在：
 
+    func (self *luaState) CheckAny(arg int) {
+        if self.Type(arg) == LUA_TNONE {
+            self.ArgError(arg, "value expected")
+        }
+    }    
 
 
 

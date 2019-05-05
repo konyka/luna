@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:17:34
+* @Last Modified time: 2019-05-05 10:18:44
 */
 
 package state
@@ -122,6 +122,11 @@ func (self *luaState) ArgCheck(cond bool, arg int, extraMsg string) {
     }
 }
 
+func (self *luaState) CheckAny(arg int) {
+    if self.Type(arg) == LUA_TNONE {
+        self.ArgError(arg, "value expected")
+    }
+}
 
 
 
