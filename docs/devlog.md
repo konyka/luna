@@ -10427,9 +10427,20 @@ for循环语句
     }
 
 
+    实现OpenBasicLib：
 
-
-
+    func OpenBaseLib(ls LuaState) int {
+        /* open lib into global table */
+        ls.PushGlobalTable()
+        ls.SetFuncs(baseFuncs, 0)
+        /* set global _G */
+        ls.PushValue(-1)
+        ls.SetField(-2, "_G")
+        /* set global _VERSION */
+        ls.PushString("Lua 5.3") // todo
+        ls.SetField(-2, "_VERSION")
+        return 1
+    }
 
 
 

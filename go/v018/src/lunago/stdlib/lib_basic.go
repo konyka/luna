@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 10:51:37
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:56:08
+* @Last Modified time: 2019-05-05 11:01:00
 */
 
 package stdlib
@@ -62,7 +62,18 @@ func basePrint(ls LuaState) int {
     return 0
 }
 
-
+func OpenBaseLib(ls LuaState) int {
+    /* open lib into global table */
+    ls.PushGlobalTable()
+    ls.SetFuncs(baseFuncs, 0)
+    /* set global _G */
+    ls.PushValue(-1)
+    ls.SetField(-2, "_G")
+    /* set global _VERSION */
+    ls.PushString("Lua 5.3") // todo
+    ls.SetField(-2, "_VERSION")
+    return 1
+}
 
 
 
