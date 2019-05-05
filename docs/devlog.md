@@ -11275,7 +11275,33 @@ package.path
 
     因为_searchPath处理了大部分的处理，所以pkgSearchPath实现起来也很简单。
 
+    require (modname)的实现：
 
+    // require (modname)
+    func pkgRequire(ls LuaState) int {
+        name := ls.CheckString(1)
+        ls.SetTop(1) /* LOADED table will be at index 2 */
+        ls.GetField(LUA_REGISTRYINDEX, LUA_LOADED_TABLE)
+        ls.GetField(2, name)  /* LOADED[name] */
+        if ls.ToBoolean(-1) { /* is it there? */
+            return 1 /* package is already loaded */
+        }
+        /* else must load package */
+        ls.Pop(1) /* remove 'getfield' result */
+        _findLoader(ls, name)
+        ls.PushString(name) /* pass name as argument to module loader */
+        ls.Insert(-2)       /* name is 1st argument (before search data) */
+        ls.Call(2, 1)       /* run loader to load module */
+        if !ls.IsNil(-1) {  /* non-nil return? */
+            ls.SetField(2, name) /* LOADED[name] = returned value */
+        }
+        if ls.GetField(2, name) == LUA_TNIL { /* module set no value? */
+            ls.PushBoolean(true) /* use true as result */
+            ls.PushValue(-1)     /* extra copy to be returned */
+            ls.SetField(2, name) /* LOADED[name] = true */
+        }
+        return 1
+    }
 
 
 
