@@ -2,7 +2,7 @@
 * @Author: konyka
 * @Date:   2019-05-05 09:40:08
 * @Last Modified by:   konyka
-* @Last Modified time: 2019-05-05 10:04:38
+* @Last Modified time: 2019-05-05 10:05:45
 */
 
 package state
@@ -96,6 +96,9 @@ func (self *luaState) LoadFileX(filename, mode string) int {
     return LUA_ERRFILE
 }
 
+func (self *luaState) LoadFile(filename string) int {
+    return self.LoadFileX(filename, "bt")
+}
 
 
 

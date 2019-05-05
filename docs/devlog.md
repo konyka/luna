@@ -10167,10 +10167,18 @@ for循环语句
 
     LoadFileX加载文件
 
-    
+    func (self *luaState) LoadFileX(filename, mode string) int {
+        if data, err := ioutil.ReadFile(filename); err == nil {
+            return self.Load(data, "@" + filename, mode)
+        }
+        return LUA_ERRFILE
+    }
 
+    LoadFile使用默认模式加载文件：
 
-
+    func (self *luaState) LoadFile(filename string) int {
+        return self.LoadFileX(filename, "bt")
+    }
 
 
 
