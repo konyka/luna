@@ -11356,32 +11356,218 @@ package.path
         }
     }
 
-    
+
+    stdlib/str.go 添加一些函数：
+
+    package stdlib
+
+    import "regexp"
+    import "strings"
+
+    // tag = %[flags][width][.precision]specifier
+    var tagPattern = regexp.MustCompile(`%[ #+-0]?[0-9]*(\.[0-9]+)?[cdeEfgGioqsuxX%]`)
+
+    func parseFmtStr(fmt string) []string {
+        if fmt == "" || strings.IndexByte(fmt, '%') < 0 {
+            return []string{fmt}
+        }
+
+        parsed := make([]string, 0, len(fmt)/2)
+        for {
+            if fmt == "" {
+                break
+            }
+
+            loc := tagPattern.FindStringIndex(fmt)
+            if loc == nil {
+                parsed = append(parsed, fmt)
+                break
+            }
+
+            head := fmt[:loc[0]]
+            tag := fmt[loc[0]:loc[1]]
+            tail := fmt[loc[1]:]
+
+            if head != "" {
+                parsed = append(parsed, head)
+            }
+            parsed = append(parsed, tag)
+            fmt = tail
+        }
+        return parsed
+    }
+
+    func find(s, pattern string, init int, plain bool) (start, end int) {
+        tail := s
+        if init > 1 {
+            tail = s[init-1:]
+        }
+
+        if plain {
+            start = strings.Index(tail, pattern)
+            end = start + len(pattern) - 1
+        } else {
+            re, err := _compile(pattern)
+            if err != "" {
+                panic(err) // todo
+            } else {
+                loc := re.FindStringIndex(tail)
+                if loc == nil {
+                    start, end = -1, -1
+                } else {
+                    start, end = loc[0], loc[1]-1
+                }
+            }
+        }
+        if start >= 0 {
+            start += len(s) - len(tail) + 1
+            end += len(s) - len(tail) + 1
+        }
+
+        return
+    }
+
+    func match(s, pattern string, init int) []int {
+        tail := s
+        if init > 1 {
+            tail = s[init-1:]
+        }
+
+        re, err := _compile(pattern)
+        if err != "" {
+            panic(err) // todo
+        } else {
+            found := re.FindStringSubmatchIndex(tail)
+            if len(found) > 2 {
+                return found[2:]
+            } else {
+                return found
+            }
+        }
+    }
+
+    // todo
+    func gsub(s, pattern, repl string, n int) (string, int) {
+        re, err := _compile(pattern)
+        if err != "" {
+            panic(err) // todo
+        } else {
+            indexes := re.FindAllStringIndex(s, n)
+            if indexes == nil {
+                return s, 0
+            }
+
+            nMatches := len(indexes)
+            lastEnd := indexes[nMatches-1][1]
+            head, tail := s[:lastEnd], s[lastEnd:]
+
+            newHead := re.ReplaceAllString(head, repl)
+            return newHead + tail, nMatches
+        }
+    }
+
+    func _compile(pattern string) (*regexp.Regexp, string) {
+        re, err := regexp.Compile(pattern)
+        if err != nil {
+            return nil, err.Error() // todo
+        } else {
+            return re, ""
+        }
+    }
+
+
+ 单元测试
+ 
+    因为模块的搜索路径只包含当前目录，所以切换到v020目录下测试   
+
+    $ go run main.go test020.lua 
+    foo
+    bar
+
+======================
+
+协程
+
+    lua通过协程库（coroutine）对协作式（co-operative）多任务（multi-tasking）执行提供了支持。
+
+    协程库是lua5.0引入的，最初包括create（）、resume（）、yield（）、status（）、wrap（）五个函数，lua 5.1添加了一个running（）、5.3添加了一个isyieldable（），全部都封装在coroutine表中。
+
+    创建协程：
+
+   co = coroutine.create(function() print("hello") end)
+    print(type(co)) --> thread
+
+    新创建的协程和java的线程类似，是一个独立的执行单位，拥有自己的调用栈、程序计数器PC、局部变量等，不过全局变量是多个协程共享的。不同之处在于，java等语言中的线程是由调度器（比如os等）根据世家年和优先级等来进行调度的，而lua协程泽需要相互协作来完成任务。
+
+    协程在lua里面的类型是线程，更准确的说是非抢占式线程。在没有歧义的前提下，以后出现的线程或者协程表示相同的意思，均指lua里面的非抢占式线程。协程在lua里面是一等公民，可以把协程赋值给变量、存在表中、作为参数传递给函数 或者作为返回值从函数里面返回等等
+
+    协程有四个状态：运行running、挂起suspended、正常normal以及死亡dead。任何时刻，只能有一个协程处于运行状态，通过running（）可以获取这个协程，通过status（）可以获取任意协程的状态。即使完全不使用协程库，脚本也是在一个协程内执行，这个协程称之为主线程。
+
+    main = coroutine.running()
+    print(type(main))             --> thread
+    print(coroutine.status(main)) --> running
+
+    新创建的协程楚喻挂起状态。处于运行状态的协程可以通过resune（）让某个处于挂起状态的协程开始或者恢复运行（进入运行状态），自己则进入normal正常状态。被恢复而处于运行状态的协程可以痛殴yield（）挂起自身，等待下一次被恢复。如果协程正常执行而结束，则处于死亡状态。
+
+    resume（）和yield（）是协程库中最主要的两个函数，协程之间，通过这两个函数互相协作，完成工作，这就是协作多任务的含义。状态迁移：
+
+    co = coroutine.create(function()
+      print(coroutine.status(co)) --> running
+      coroutine.resume(coroutine.create(function()
+        print(coroutine.status(co)) --> normal
+      end))
+    end)
+    print(coroutine.status(co)) --> suspended
+    coroutine.resume(co)
+    print(coroutine.status(co)) --> dead
+
+
+    co会先后进入挂起、运行、正常、死亡这四个状态。要想真正的进行协作，光靠挂起和恢复还不够。对于resume（）来说，可以给即将开始或者恢复运行的协程传递参数，如果协程是首次开始运行，参数会传递给创建该协程时提供的函数，否则参数会作为yield（）调用的返回值返回。
+
+    co = coroutine.create(function(a, b, c)
+      print(a, b, c)
+      while true do 
+        print(coroutine.yield())
+      end
+    end)
+    coroutine.resume(co, 1, 2, 3) --> 1 2 3
+    coroutine.resume(co, 4, 5, 6) --> 4 5 6
+    coroutine.resume(co, 7, 8, 9) --> 7 8 9
+
+
+    另外，resume（）也有返回值，如果被恢复的协程调用了yield（），则resume（）返回true和yield（）接收到的参数。如果被恢复的协程正常返回，则resume（）返回true以及返回值。如果被恢复的协程出现了执行出错等情况，则resume（）返回false以及一个错误信息：
+
+    co = coroutine.create(function()
+      for k, v in pairs({"a", "b", "c"}) do
+        coroutine.yield(k, v)
+      end
+      return "d", 4
+    end)
+    print(coroutine.resume(co)) --> true  1  a
+    print(coroutine.resume(co)) --> true  2  b
+    print(coroutine.resume(co)) --> true  3  c
+    print(coroutine.resume(co)) --> true  d  4
+    print(coroutine.resume(co)) --> false cannot resume dead coroutin
 
 
 
+协程api
 
+    扩展协程API，从底层实现对协程的支持。
+    api/lua_state.go，给BasicAPI接口添加9个方法：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    type BasicAPI interface { 
+    ....   
+        NewThread() LuaState
+        Resume(from LuaState, nArgs int) int
+        Yield(nResults int) int
+        Status() int
+        IsYieldable() bool
+        ToThread(idx int) LuaState
+        PushThread() bool
+        XMove(to LuaState, n int)
+        GetStack() bool // debug
+    }
 
 
 
